@@ -1,0 +1,64 @@
+<template>
+    <div>
+        <section class="title">
+            填写疾病信息
+            <span @click="subInfo">确认</span>
+        </section>
+        <section style="text-align: center">
+            <label>
+                <input placeholder="搜索疾病" type="text">
+            </label>
+        </section>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "diseaseDialog",
+        data(){
+            return{
+
+            }
+        },
+        methods:{
+            subInfo(){
+                this.$emit('subInfo',{std:3,obj:''})
+            }
+        }
+    }
+</script>
+
+<style scoped lang="scss">
+    .title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        line-height: .9rem;
+        padding: 0 .3rem;
+        background: #4ae2df;
+        color: white;
+        text-align: center;
+        font-size: .3rem;
+
+        :nth-child(2),:nth-child(1) {
+            line-height: .6rem;
+            background: linear-gradient(to bottom right, #4ae2df, #02bdb9);
+            padding: 0 .2rem;
+            border-radius: .1rem;
+            box-shadow: 0 0 5px 2px rgba(75, 75, 75, 0.1);
+        }
+    }
+    input[type='text']{
+        font-size: .28rem;
+        border-radius: .6rem;
+        border:1px #eff1ef solid;
+        width: 80%;
+        line-height: .6rem;
+        background-image: url("../../../../assets/search.png");
+        background-size: .3rem;
+        background-repeat: no-repeat;
+        background-position: .2rem;
+        padding-left: .7rem;
+        margin-top: .3rem;
+    }
+</style>
