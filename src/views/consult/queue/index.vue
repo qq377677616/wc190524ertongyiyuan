@@ -32,13 +32,14 @@
           this.getStudio();
         },
         methods:{
-            goTo(index){
+            goTo(id){
                 //跳转科室挂号页面
-                this.$router.push({path:'/consult/queue/bespeak',query:{id:index}})
+                this.$router.push({path:'/consult/queue/bespeak',query:{id:id}})
             },
             getStudio() {
                 //获取科室
-                this.$axios.get('Patient/departmentClass').then(res => {
+                this.$axios.get('Patient/departmentClass',{user_id:12}).then(res => {
+                    console.log(res);
                     if (res.data.code === 200){
                         this.items = res.data.department_class;
                     } else {
@@ -55,9 +56,11 @@
     input[type='text']{
         border-radius: .6rem;
         border:1px #eff1ef solid;
+        font-size: .32rem;
         width: 80%;
         line-height: .6rem;
         background-image: url("../../../assets/search.png");
+        background-size: .3rem;
         background-repeat: no-repeat;
         background-position: .2rem;
         padding-left: .7rem;

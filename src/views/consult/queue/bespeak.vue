@@ -1,7 +1,7 @@
 <template>
     <div>
         <section class="bespeak-title">
-            <span @click="activeMenu = key"
+            <span @click="activeMenuSwitch(key)"
                   :class="{'active-menu':key === activeMenu}"
                   v-for="(item, key) of ['按专家预约','按日期预约']"
                   :key="key">{{item}}</span>
@@ -9,33 +9,35 @@
         <section class="bespeak-date"
                  v-show="activeMenu === 1">
             <article>
-                <div v-for="(item, key) of 9" :key="key" @click="activeDateTime = key">
+                <div v-for="(item, key) of timeDate" :key="key"
+                     @click="timeDataDoctors(item.time,key)"
+                     :class="{'active-dateTime':activeDateTime === key}">
                     <div>
-                        <p>周六</p>
-                        <p>05.18</p>
+                        <p>{{item.cTimeName}}</p>
+                        <p>{{item.time.substr(5)}}</p>
                     </div>
-                    <p :class="{'active-dateTime':activeDateTime === key}"></p>
+                    <p ></p>
                 </div>
             </article>
         </section>
         <section class="bespeak-content"
                  :style="`top:${activeMenu===0?'.9rem':'2.1rem'}`">
             <article class="registered-title"
-                     v-for="(item,key) of doctorsList"
+                     v-for="(item,key) of scheduling"
                      :key="key"
                      @click="goTo(item)">
                 <div class="doctors-info">
                     <div class="title-n1">
-                        <img :src="item.avatar" alt="">
+                        <img :src="item.doctor_avatar" alt="">
                     </div>
                     <div class="title-n2">
                         <div>
-                            <span>{{item.real_name}}</span>
+                            <span>{{item.doctor_name}}</span>
                             <span> | {{item.level === '2'?'知名专家':'专家'}}</span>
                             <p>
-                                <span class="tag" v-for="label of item.label">{{label}}</span>
+                                <span class="tag" v-for="label of item.doctor_label">{{label}}</span>
                             </p>
-                            <p>擅长：{{item.create_time}}</p>
+                            <!--                            <p class="title-n2-jx">擅长：{{item.doctor_describe}}</p>-->
                         </div>
                     </div>
                 </div>
@@ -47,6 +49,7 @@
                         <i class="el-icon-star-on"></i>
                         <i class="el-icon-star-on"></i>
                         <i class="el-icon-star-on"></i>
+                        {{item.doctor_star_rating}}
                     </span>
                     <span class="btn" @click="goTo">挂号</span>
                 </div>
@@ -57,25 +60,119 @@
 </template>
 
 <script>
+
+
+    function doHandleMonth(month) {
+        let m = month;
+        if (month.toString().length === 1) {
+            m = "0" + month;
+        }
+        return m;
+    }
+
+    function getDay(day) {
+        let today = new Date();
+
+        let targetday_milliseconds = today.getTime() + 1000 * 60 * 60 * 24 * day;
+
+        today.setTime(targetday_milliseconds); //注意，这行是关键代码
+
+        let tYear = today.getFullYear();
+        let tMonth = today.getMonth();
+        let tDate = today.getDate();
+        tMonth = doHandleMonth(tMonth + 1);
+        tDate = doHandleMonth(tDate);
+        return tYear + "-" + tMonth + "-" + tDate;
+    }
+
+    function timeDateList() {
+        let timeDate = []
+        for (let i = 0; i <= 7; i++) {
+            timeDate[i] = {time: getDay(i)}
+            switch (new Date(getDay(i)).getDay()) {
+                case 0:
+                    timeDate[i].cTimeName = '星期天'
+                    break;
+                case 1:
+                    timeDate[i].cTimeName = '星期一'
+                    break;
+                case 2:
+                    timeDate[i].cTimeName = '星期二'
+                    break;
+                case 3:
+                    timeDate[i].cTimeName = '星期三'
+                    break;
+                case 4:
+                    timeDate[i].cTimeName = '星期四'
+                    break;
+                case 5:
+                    timeDate[i].cTimeName = '星期五'
+                    break;
+                case 6:
+                    timeDate[i].cTimeName = '星期六'
+                    break;
+            }
+        }
+        return timeDate
+    }
+
     export default {
         name: "bespeak",
         data() {
             return {
+                scheduling: [],
+                schedulingDate: {},
                 activeMenu: 0,
-                activeDateTime:0,
-                doctorsList: [
-                    {
-                        real_name: '天才的',
-                        label: ['认证', '负责'],
-                        level: 1,
-                        create_time: '递四方速递',
-
-                    }, 2, 3]
+                activeDateTime: 0,
+                doctorsList: [],
+                timeDate: timeDateList(),
             }
         },
-        methods:{
-            goTo(){
-                this.$router.push({path:'/consult/queue/visitingtime'})
+        created() {
+            this.getScheduling();
+        },
+        methods: {
+            activeMenuSwitch(key){
+                this.activeMenu = key
+                switch (key) {
+                    case 0:
+                        this.getScheduling();
+                        break;
+                    case 1:
+                        this.timeDataDoctors(getDay(0), 0)
+                        break;
+                }
+            },
+            timeDataDoctors(date, key){
+                this.activeDateTime = key
+                this.$axios.get('Consulting/getScheduling', {
+                    department_class_id: this.$route.query.id,
+                    Scheduling_time:date
+                }).then(res => {
+                    this.scheduling = res.data.data
+                })
+            },
+            getScheduling() {
+                this.$axios.get('Consulting/getScheduling', {
+                    department_class_id: this.$route.query.id,
+                }).then(res => {
+                    console.log(res)
+                    this.scheduling = res.data.data
+                })
+            },
+            goTo() {
+                this.$router.push({path: '/consult/queue/visitingtime'})
+            }
+        },
+        computed: {
+            dataList() {
+                const {activeMenu} = this
+                switch (activeMenu) {
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                }
             }
         }
     }
@@ -90,7 +187,10 @@
     }
 
     .active-dateTime {
-        border-bottom: 2px #00b5bd solid;
+        color: #00b5bd;
+        >p{
+            border-bottom: 2px #00b5bd solid;
+        }
     }
 
     .bespeak-date::-webkit-scrollbar {
@@ -231,7 +331,10 @@
             p {
                 margin-top: 5px;
                 color: #b9babb;
+
             }
+
+            /*}*/
 
             .tag {
                 font-size: .25rem;

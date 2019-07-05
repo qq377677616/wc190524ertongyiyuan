@@ -2,7 +2,7 @@ import Vue    from 'vue'
 import App    from './App.vue'
 import router from './router'
 //通讯IM SDK
-import webim from './util/webim'
+// import './util/webim'
 //rem适配
 import './util/flexible'
 //Swiper组件
@@ -22,9 +22,12 @@ import axios from 'axios'
 import Qs from 'qs'
 
 import moment from 'moment'
+import "./util/imchat"
+
 
 
 import './util/default'
+
 // Vue.use(webim);
 Vue.use(animated);
 Vue.use(VueAwesomeSwiper);

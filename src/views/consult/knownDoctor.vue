@@ -12,27 +12,28 @@
                     </div>
                 </article>
 
-                <article class="text">
-                    <p style="display: flex;align-items: center;">推荐热度 (综合) ：5.0 <i class="el-icon-star-on"></i>
-                        (近两年患者推荐)
-                    </p>
-                    <span>在线服务满意度：100% </span>
-                    <span>一般等待时长：快</span>
-                    <p>近两周回复数: 99+</p>
+<!--                <article class="text">-->
+<!--                    <p style="display: flex;align-items: center;">推荐热度 (综合) ：5.0 <i class="el-icon-star-on"></i>-->
+<!--                        (近两年患者推荐)-->
+<!--                    </p>-->
+<!--                    <span>在线服务满意度：100% </span>-->
+<!--                    <span>一般等待时长：快</span>-->
+<!--                    <p>近两周回复数: 99+</p>-->
 
-                </article>
+<!--                </article>-->
                 <article class="dynamic-btn">
-                    <div>
-                        <span @click="attention" :class="{'isFollow':doctorInfo.is_follow === 1}"><i class="el-icon-user"></i> {{this.doctorInfo.is_follow ===1?'已关注':'关注'}}</span>
-                    </div>
-                    <div>
-                        <span @click="chat"><i class="el-icon-chat-line-round"></i> 私信</span>
-                    </div>
                     <article class="tally">
 
                         <span>关注数:29385</span>
                         <!--                    <span class="studio">工作室介绍</span>-->
                     </article>
+                    <div>
+                        <span @click="attention" :class="{'isFollow':doctorInfo.is_follow === 1}"><i class="el-icon-user"></i> {{this.doctorInfo.is_follow ===1?'已关注':'关注'}}</span>
+                    </div>
+<!--                    <div>-->
+<!--&lt;!&ndash;                        <span @click="chat"><i class="el-icon-chat-line-round"></i> 私信</span>&ndash;&gt;-->
+<!--                    </div>-->
+
                 </article>
 
 <!--                <article class="tally">-->
@@ -43,7 +44,7 @@
         </section>
         <section class="listDate">
             <article class="listDate-title">
-                <span v-for="(item, index) in ['咨询','动态','科普','项目',]" :key="item" @click="selectPj(index)">
+                <span v-for="(item, index) in ['咨询','动态','科普',]" :key="item" @click="selectPj(index)">
                     <span :class="{'active-title':index===activeIndex}">{{item}}</span>
                 </span>
             </article>
@@ -132,7 +133,7 @@
             }
         },
         created() {
-            this.$axios.get('Patient/doctorDetails', {doctor_id: this.$route.query.id,user_id:12}).then(res => {
+            this.$axios.get('Patient/doctorDetails', {doctor_id: this.$route.query.id,user_id:sessionStorage.user_id}).then(res => {
                 console.log(res.data.data)
                 this.doctorInfo = res.data.data
                 this.getDynamic('',this.doctorInfo.id);
@@ -361,21 +362,18 @@
         box-shadow:0 0 3px 2px rgba(1,189,187,0.3);
     }
     .dynamic-btn {
+        padding: 0 .3rem;
         position: absolute;
-        bottom: 22%;
-        /*text-align: center;*/
-        /*position: fixed;*/
+        bottom: 1.2rem;
         width: 100%;
         display: flex;
-        padding-top: .3rem;
+        box-sizing: border-box;
         align-content: center;
-
         div {
-            text-align: center;
-            /*width: 40%;*/
+            /*text-align: center;*/
+            text-align: right;
+            width: 100%;
             margin-left: .2rem;
-
-
             span {
                 font-size: .3rem;
                 padding: .1rem .3rem;
@@ -397,10 +395,28 @@
     .doctors-info {
         padding-top: .3rem;
         width: 100%;
-        height: 5rem;
+        height: 3.5rem;
         background: url("../../assets/phoneserve/BG.png");
         background-size: cover;
+        .tally {
+            width: 100%;
+            span {
+                padding-left: .35rem;
+                font-size: .3rem;
+                color: white;
+                background: url("../../assets/doctorDetails/guanzhu.png") no-repeat;
+                background-position-y: center;
+                background-size: .3rem;
+            }
 
+            .studio {
+                margin-left: .3rem;
+                display: inline-block;
+                background: rgba(255, 255, 255, .4);
+                padding: .15rem .3rem;
+                border-radius: .1rem;
+            }
+        }
         div {
             height: 100%;
             position: relative;
@@ -472,30 +488,7 @@
                 }
             }
 
-            .tally {
-                flex: 1;
-                text-align: right;
-                margin-right: .3rem;
-                /*position: absolute;*/
-                /*right: .3rem;*/
-                /*bottom: 20%;*/
-                span {
-                    padding-left: .35rem;
-                    font-size: .3rem;
-                    color: white;
-                    background: url("../../assets/doctorDetails/guanzhu.png") no-repeat;
-                    background-position-y: center;
-                    background-size: .3rem;
-                }
 
-                .studio {
-                    margin-left: .3rem;
-                    display: inline-block;
-                    background: rgba(255, 255, 255, .4);
-                    padding: .15rem .3rem;
-                    border-radius: .1rem;
-                }
-            }
         }
     }
 
@@ -520,7 +513,7 @@
 
             span {
                 display: block;
-                width: calc(100% / 4);
+                width: calc(100% / 3);
 
                 span {
                     width: 50%;

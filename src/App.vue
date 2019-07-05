@@ -1,20 +1,16 @@
 <template>
     <div id="app">
-<!--        <header>-->
-<!--            <i v-show="!isBack" class="el-icon-arrow-left" @click="gobackTo"></i>-->
-<!--            <span>{{title}}</span>-->
-<!--        </header>-->
         <main :class="isBack?'':'btm'">
             <transition name="fade" mode="out-in">
                 <router-view></router-view>
             </transition>
         </main>
         <transition name="fade-footer" mode="out-in">
-            <footer v-show="isBack" >
+            <footer v-show="isBack">
                 <div @click="goTo(index)"
                      v-for="(item,index) in tabBar"
                      :key="item.name">
-                    <img :src="activeTabBar===index?item.activeIcon:item.icon" alt="">
+                    <img :src="activeTabBar==index?item.activeIcon:item.icon" alt="">
                     <p>{{item.name}}</p>
                 </div>
             </footer>
@@ -40,7 +36,8 @@
                     {
                         name: '首页',
                         icon: require('./assets/footer/shouye.png'),
-                        activeIcon: require('./assets/footer/ashouye.png')
+                        activeIcon: require('./assets/footer/ashouye.png'),
+                        path: '/index'
                     },
                     {
                         name: '社区',
@@ -55,97 +52,75 @@
                     {
                         name: '个人',
                         icon: require('./assets/footer/geren.png'),
-                        activeIcon: require('./assets/footer/ageren.png')
+                        activeIcon: require('./assets/footer/ageren.png'),
+                        path: '/consult/personal/personal'
                     },
                 ]
-                // beforeUrl:''
             }
         },
         created() {
+            // sessionStorage.user_id = 16; //本地测试userID
+            // sessionStorage.openid='oSx-51JbMrtfk5394YIx8IQ8JlRI' //本地测试openId
 
-
-            // document.addEventListener('WeixinJSBridgeReady', function onBridgeReady(e) {
-            //     console.log(e);
-            //     WeixinJSBridge.call('hideToolbar');
-            // });
-
-            // homeUrl.includes(this.$route.path);
             this.isBack = homeUrl.includes(this.$route.path);
-            // console.log(homeUrl.includes(this.$route.path));
-            // console.log(this.$route.path)
+
             this.title = this.$route.name;
-            // this.getArea();
-            // if (window.location.href.indexOf('doctors') != -1) {
-            //   this.isShowTab = false
-            // }
+
+            this.tabBarIndex()
         },
         methods: {
-            getArea(){
-              this.$axios.get('Consulting/getProvince').then((res)=>{
-                  // console.log(res)
-              });
-                this.$axios.get('Consulting/getCity').then((res)=>{
-                    // console.log(res)
-                });
-                this.$axios.get('Consulting/getDistrict',{city_id:"110100"}).then((res)=>{
-                    // console.log(res)
-                });
-
-            },
             goTo(index) {
-                this.activeTabBar = index
-                switch (index) {
-                    case 0:this.$router.push({path:'/index'});break;
-                    case 1:this.$router.push({path:''});break;
-                    case 2:this.$router.push({path:''});break;
-                    case 3:this.$router.push({path:'/consult/personal/personal'});break;
-                }
-
+                //tabBar路由跳转
+                this.activeTabBar = index;
+                this.$router.push({path: this.tabBar[index].path});
             },
-            gobackTo() {
-                this.$router.go(-1)
+            tabBarIndex() {
+                //保存tabBar状态
+                for (let i = 0; i < this.tabBar.length; i++) {
+                    if (this.tabBar[i].path === this.$route.path) {
+                        this.activeTabBar = i
+                    }
+                }
             }
         },
         watch: {
             $route(aUrl, bUrl) {
                 //获取之前的url，和判断当前url 是否需要footer
-                // this.beforeUrl = bUrl.path;
-
-                console.log(this.isBack)
                 this.title = this.$route.name;
-                this.isBack = aUrl.path !== '/'?homeUrl.includes(aUrl.path):true
+                this.isBack = aUrl.path !== '/' ? homeUrl.includes(aUrl.path) : true
             }
         }
     }
 </script>
-<style lang="scss" >
-    .van-picker__cancel, .van-picker__confirm{
+<style lang="scss">
+    .van-picker__cancel, .van-picker__confirm {
         color: white !important;
         font-size: .3rem !important;
     }
-    .van-picker-column{
+
+    .van-picker-column {
         background-color: #eff1ef;
     }
-    .van-picker__title{
+
+    .van-picker__title {
         font-size: .32rem !important;
         font-weight: 400 !important;
         color: white !important;
     }
-    .van-picker-column__item{
+
+    .van-picker-column__item {
         font-size: .3rem !important;
         color: #4c4c4c !important;
     }
-    .van-picker__toolbar{
+
+    .van-picker__toolbar {
         background-color: #45cac6;
     }
+
     .btm {
         bottom: 0 !important;
     }
 
-    .el-input__inner {
-        border-radius: 30px !important;
-
-    }
 
     .el-progress__text {
         color: #93dddc !important;
@@ -155,54 +130,18 @@
         background-color: #01bdb8 !important;
     }
 
-     main,header, footer {
+    footer {
         position: fixed;
         width: 100%;
-         z-index: 2000;
+        z-index: 2000;
     }
-
-    header {
-        position: fixed;
-        text-align: center;
-        height: 1rem;
-        background: #02bdb9;
-        top: 0;
-        color: white;
-
-        i {
-            left: .2rem;
-            position: absolute;
-            font-size: .45rem;
-            top: calc(50% - .225rem);
-            /*margin-left: .3rem;*/
-            color: white;
-        }
-
-        span {
-            display: block;
-            position: absolute;
-            font-size: .35rem;
-            width: 70%;
-            height: .5rem;
-            top: calc(50% - .22rem);
-            left: calc(50% - 35%);
-        }
-    }
-
     main {
-        /*padding-top: 1rem;*/
-        top: 0;
-        bottom: 1.3rem;
-        /*background: #f3f4f5;*/
-        /*overflow: auto;*/
+        height: 100vh;
         overflow-x: hidden;
-        /*overflow-y: auto;*/
-        /*-webkit-overflow-scrolling:touch;*/
-
     }
 
     footer {
-        box-shadow: 0 0 8px 1px rgba(1,189,187,0.1);
+        box-shadow: 0 0 8px 1px rgba(1, 189, 187, 0.1);
         bottom: 0;
         height: 1.3rem;
         background: #f5f5f5;
@@ -249,6 +188,7 @@
         transform: translateY(100%);
         opacity: 1
     }
+
     .fade-footer-enter-active, .fade-footer-leave-active {
         transition: all .4s ease;
     }

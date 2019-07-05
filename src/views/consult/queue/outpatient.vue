@@ -1,11 +1,12 @@
 <template>
     <div style="position: absolute;top: 2rem;bottom: 0;width: 100%">
         <section class="form-info">
-            <p><span>就诊医院：</span>京都儿童医院</p>
-            <p><span>预约医生：</span>张讲过</p>
-            <p style="color: #00b5bd"><span>门诊时间：</span>2019-06-17 星期一</p>
-            <p><span>门诊类型：</span>口腔科专家门诊</p>
-            <p><span>挂号费：</span>100元</p>
+            <p><span>就诊医院：</span>{{doctorInfo.hospital_name}}</p>
+            <p><span>预约医生：</span>{{doctorInfo.real_name}}</p>
+            <p style="color: #00b5bd"><span>门诊时间：</span>{{doctorInfo.pb_list?doctorInfo.pb_list[dateIndex].cbrq:''}}</p>
+            <p><span>门诊类型：</span>{{doctorInfo.class_name}} {{doctorInfo.level ==
+                1?'专家':doctorInfo.level==2?'知名专家':'骨干'}}门诊</p>
+            <p><span>挂号费：</span>{{doctorInfo.pb_list?doctorInfo.pb_list[dateIndex].price:''}}元</p>
         </section>
         <section>
             <div class="form-sub" @click="isShow('patientDialog')">
@@ -14,27 +15,28 @@
             </div>
             <div class="form-sub" @click="isShow('periodDialog')">
                 <span>预约时间段</span>
-                <p>{{userInfo.timer}} <i class="el-icon-arrow-right"></i></p>
+                <p>{{userInfo.timer.sjd}} <i class="el-icon-arrow-right"></i></p>
             </div>
             <div class="form-sub">
                 <span>初/复诊</span>
                 <div>
-                    <input type="radio" value="1" id="female" name="sex"/>
-                    <label for="female" style="margin-right: .2rem">出诊</label>
-                    <input type="radio" value="2" id="female1" name="sex"/>
+                    <input type="radio" value="0" id="female" name="sex" v-model="userInfo.radio"/>
+                    <label for="female" style="margin-right: .2rem">初诊</label>
+                    <input type="radio" value="1" id="female1" name="sex" v-model="userInfo.radio"/>
                     <label for="female1">复诊</label>
                     <i class="el-icon-arrow-right"></i>
                 </div>
             </div>
             <div class="form-sub" @click="isShow('diseaseDialog')">
                 <span>病例信息</span>
-                <p>请填写疾病信息 <i class="el-icon-arrow-right"></i></p>
+                <p>{{userInfo.diseased.length>10?`${userInfo.diseased.substr(1,
+                    10)}...`:userInfo.diseased}} <i class="el-icon-arrow-right"></i></p>
             </div>
         </section>
         <transition name="fade-up">
             <section class="popup-show" v-show="show">
                 <div>
-                    <div @subInfo="addInfo" :is="showComp"></div>
+                    <div :identifier="doctorInfo.id" @subInfo="addInfo" :is="showComp"></div>
                 </div>
             </section>
         </transition>
@@ -51,6 +53,7 @@
     import diseaseDialog from './popups/diseaseDialog'
 
     export default {
+        props: ['doctorInfo'],
         components: {
             patientDialog,
             periodDialog,
@@ -59,6 +62,7 @@
         name: "outpatient",
         data() {
             return {
+                dateIndex: this.$route.query.index,
                 showComp: '',
                 show: false,
                 activeText: {
@@ -68,11 +72,20 @@
                 userInfo: {
                     name: {name: '请选择'},
                     timer: '请选择',
+                    diseased: '请填写疾病信息',
+                    radio:0
                 }
             }
         },
+        created(){
+          if (sessionStorage.getItem('userInfo') !== null){
+              this.userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
+              sessionStorage.removeItem('userInfo')
+          }
+        },
         methods: {
             addInfo(item) {
+                console.log(item.obj)
                 switch (item.std) {
                     case 1:
                         this.userInfo.name = item.obj;
@@ -81,12 +94,40 @@
                         this.userInfo.timer = item.obj;
                         break;
                     case 3:
+                        this.userInfo.diseased = item.obj;
                         break
                 }
                 this.show = false
             },
             goTo() {
-                this.$router.push({path: '/consult/queue/payForm'})
+                const {doctorInfo, dateIndex, userInfo} = this
+                let obj = {
+                    hospital: doctorInfo.hospital_name,
+                    doctorName: doctorInfo.real_name,
+                    date: doctorInfo.pb_list[dateIndex].cbrq,
+                    types: `${doctorInfo.class_name} ${doctorInfo.level == 1 ? '专家' : doctorInfo.level == 2 ? '知名专家' : '骨干'}门诊`,
+                    cost: doctorInfo.pb_list[dateIndex].price,
+                    name: userInfo.name.name,
+                    phone: userInfo.name.mobile,
+                    card: userInfo.name.custody_identity
+                }
+                console.log(obj)
+                sessionStorage.setItem('userInfo',JSON.stringify(userInfo))
+                this.$router.push({
+                    path: '/consult/queue/payForm', query: {
+                        hospital: doctorInfo.hospital_name,
+                        doctorName: doctorInfo.real_name,
+                        date: doctorInfo.pb_list[dateIndex].cbrq,
+                        types: `${doctorInfo.class_name} ${doctorInfo.level == 1 ? '专家' : doctorInfo.level == 2 ? '知名专家' : '骨干'}门诊`,
+                        cost: doctorInfo.pb_list[dateIndex].price,
+                        name: userInfo.name.name,
+                        phone: userInfo.name.mobile,
+                        card: userInfo.name.custody_identity,
+                        timer: JSON.stringify(userInfo.timer),
+                        diseased:userInfo.diseased,
+                        radio:userInfo.radio
+                    }
+                })
             },
             isShow(item) {
                 switch (item) {
@@ -213,6 +254,7 @@
     }
 
     .form-sub {
+
         padding: .3rem;
         display: flex;
         justify-content: space-between;
@@ -224,8 +266,17 @@
         }
 
         p {
+
+            /*width: 2rem;*/
             color: #4c4c4c;
         }
+
+        /*.diseased{*/
+        /*    overflow: hidden;*/
+        /*    text-overflow:ellipsis;*/
+        /*    white-space: nowrap;*/
+        /*    width: 2rem;*/
+        /*}*/
 
         label {
             color: #4c4c4c;

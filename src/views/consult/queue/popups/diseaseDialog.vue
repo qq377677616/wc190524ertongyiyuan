@@ -4,9 +4,9 @@
             填写疾病信息
             <span @click="subInfo">确认</span>
         </section>
-        <section style="text-align: center">
+        <section style="text-align: center;padding: .3rem">
             <label>
-                <input placeholder="搜索疾病" type="text">
+                <textarea v-model="diseased" placeholder="请简要填写疾病信息"></textarea>
             </label>
         </section>
     </div>
@@ -17,13 +17,13 @@
         name: "diseaseDialog",
         data(){
             return{
-
+                diseased:''
             }
         },
         methods:{
             subInfo(){
-                this.$emit('subInfo',{std:3,obj:''})
-            }
+                this.$emit('subInfo',{std:3,obj:this.diseased})
+            },
         }
     }
 </script>
@@ -48,17 +48,21 @@
             box-shadow: 0 0 5px 2px rgba(75, 75, 75, 0.1);
         }
     }
-    input[type='text']{
+    textarea{
         font-size: .28rem;
-        border-radius: .6rem;
+        border-radius: .1rem;
         border:1px #eff1ef solid;
-        width: 80%;
-        line-height: .6rem;
-        background-image: url("../../../../assets/search.png");
-        background-size: .3rem;
-        background-repeat: no-repeat;
-        background-position: .2rem;
-        padding-left: .7rem;
-        margin-top: .3rem;
+        width: 100%;
+        padding: .2rem;
+        resize: none;
+        height: 3.5rem;
+        box-sizing: border-box;
+        /*line-height: .6rem;*/
+        /*background-image: url("../../../../assets/search.png");*/
+        /*background-size: .3rem;*/
+        /*background-repeat: no-repeat;*/
+        /*background-position: .2rem;*/
+        /*padding-left: .7rem;*/
+        /*margin-top: .3rem;*/
     }
 </style>

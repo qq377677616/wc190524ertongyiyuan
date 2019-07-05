@@ -6,41 +6,53 @@
 
         </section>
         <section class="fillout">
-<!--            <p>您想要为哪位患者咨询？</p>-->
+            <p>儿童信息</p>
             <article class="patient-form">
                 <label for="name">
-                    <span>患者姓名</span>
+                    <span>儿童姓名</span>
                     <input @blur="blur"  type="text" name="name" v-model="userInfo.name" id="name" placeholder="请输入姓名">
                 </label>
 
                 <div style="display: flex;font-size: 0.32rem">
-                    <span style="width: 25%;color:#a9aaab;">性别选择</span>
-                    <input type="radio" :value="1" v-model="userInfo.gender" id="female" name="gender"/>
+                    <span style="width: 25%;color:#a9aaab;">儿童选择</span>
+                    <input type="radio" :value="1" v-model="userInfo.sex" id="female" name="gender"/>
                     <label for="female" style="margin-left: 0.2rem">男</label>
-                    <input type="radio" :value="2" v-model="userInfo.gender" id="female1" name="gender"/>
+                    <input type="radio" :value="2" v-model="userInfo.sex" id="female1" name="gender"/>
                     <label for="female1" style="margin-left: 1rem">女</label>
                 </div>
 
-                <label for="ID-card">
+                <label>
                     <span>出生日期</span>
-                    <span @click="showAll=1">{{userInfo.dateTime}}</span>
+                    <span @click="showAll=1">{{userInfo.date_of_birth}}</span>
                 </label>
-                <label for="area">
-                    <span>所在城市</span>
-                    <span  @click="showAll=2">{{userInfo.area[0].name}} {{userInfo.area[1].name}} {{userInfo.area[2].name}}</span>
-                </label>
-                <label for="relationship">
-                    <span>患者关系</span>
-                    <span @click="showAll=3">{{userInfo.relationship.text}}</span>
-                </label>
-                <label for="phone">
-                    <span>手机号码</span>
-                    <input @blur="blur"  v-model="userInfo.phone" placeholder="便于获取医生回复通知" type="number" name="phone" id="phone">
-                </label>
+<!--                <label>-->
+<!--                    <span>所在城市</span>-->
+<!--                    <span  @click="showAll=2">{{userInfo.area[0].name}} {{userInfo.area[1].name}} {{userInfo.area[2].name}}</span>-->
+<!--                </label>-->
+<!--                <label>-->
+<!--                    <span>患者关系</span>-->
+<!--                    <span @click="showAll=3">{{userInfo.relationship.text}}</span>-->
+<!--                </label>-->
+
                 <label for="description">
                     <span>病情描述</span>
-                    <textarea @blur="blur" v-model="userInfo.description" placeholder="简单的介绍病情,限200字,选填" type="text" name="description"
+                    <textarea @blur="blur" v-model="userInfo.describe" placeholder="简单的介绍病情,限200字,选填" type="text" name="description"
                               id="description"></textarea>
+                </label>
+            </article>
+            <p>监护人</p>
+            <article class="patient-form">
+                <label for="custody_name">
+                    <span>监护人姓名</span>
+                    <input @blur="blur"  v-model="userInfo.custody_name" placeholder="" type="text" name="custody_name" id="custody_name">
+                </label>
+                <label for="mobile">
+                    <span>监护人电话</span>
+                    <input @blur="blur"  v-model="userInfo.mobile" placeholder="便于获取医生回复通知" type="number" name="mobile" id="mobile">
+                </label>
+                <label for="custody_identity">
+                    <span>身份证</span>
+                    <input @blur="blur"  v-model="userInfo.custody_identity" placeholder="" type="number" name="custody_identity" id="custody_identity">
                 </label>
             </article>
             <article class="spanBtn">
@@ -87,16 +99,16 @@
         // console.log(obj.name)
         if (obj.name === undefined || obj.name.length < 0){
             return '请填写姓名'
-        } else if(obj.gender === undefined){
+        } else if(obj.sex === undefined){
             return '请选择性别'
-        }else if(obj.dateTime === undefined){
+        }else if(obj.date_of_birth === undefined){
             return '请选择出生日期'
-        }else if(obj.area[0] === ''){
-            return '请选择城市'
         }
         //验证手机号码
+
         let myreg = /^[1][3,4,5,7,8,9][0-9]{9}$/;
-        if (myreg.test(obj.phone)) {
+        // console.log(myreg.test(obj.mobile))
+        if (myreg.test(obj.mobile)) {
             return '1000'
         } else {
             return '请填写正确的手机号码'
@@ -122,7 +134,6 @@
                 currentDate: new Date(2000, 0, 1),
                 show: true,
                 userInfo: {
-                    relationship:{text:'本人',value:1},
                     area:[
                         '',
                         '',
@@ -143,24 +154,20 @@
 
                     let item = res.data.data
                     console.log(item)
-                    // console.log(areaList.city_list[item.city_id],areaList.county_list[item.district_id],areaList.province_list[item.province_id])
-                    let list = []
-                    list[0] = {code:item.city_id,name:areaList.city_list[item.city_id]}
-                    list[1] = {code:item.district_id,name:areaList.county_list[item.district_id]}
-                    list[2] = {code:item.province_id,name:areaList.province_list[item.province_id]}
-                    this.$set(this.userInfo,'area',list)
-                    // this.$set(this.userInfo,'dateTime',item.date_of_birth)
-                    this.userInfo.dateTime = item.date_of_birth
-                    this.userInfo.phone = item.mobile
-                    this.userInfo.gender = item.sex
-                    this.userInfo.name = item.name
-                    this.userInfo.description = item.describe
-                    for (let item of this.relations){
-                        if (item.value == item.relations){
-                            // this.userInfo.relationship = item
-                            this.$set(this.userInfo,'relationship',item)
-                        }
-                    }
+                    this.$set(this.userInfo,'name',item.name)
+                    this.$set(this.userInfo,'sex',item.sex)
+                    this.$set(this.userInfo,'date_of_birth',item.date_of_birth)
+                    this.$set(this.userInfo,'custody_name',item.custody_name)
+                    this.$set(this.userInfo,'mobile',item.mobile)
+                    this.$set(this.userInfo,'custody_identity',item.custody_identity)
+                    this.$set(this.userInfo,'describe',item.describe)
+                    // this.userInfo.date_of_birth = item.date_of_birth
+                    // for (let item of this.relations){
+                    //     if (item.value == item.relations){
+                    //         // this.userInfo.relationship = item
+                    //         this.$set(this.userInfo,'relationship',item)
+                    //     }
+                    // }
                     // console.log(this.userInfo)
 
                 })
@@ -171,7 +178,7 @@
             },
             getTime(date){
                 this.showAll=false
-                this.userInfo.dateTime = this.$moment(date).format('YYYY-MM-DD')
+                this.userInfo.date_of_birth = this.$moment(date).format('YYYY-MM-DD')
 
             },
             getArea(item){
@@ -197,14 +204,15 @@
                     this.$axios.post('Consulting/editPatient',this.$Qs.stringify({
                         id:this.queryId,
                         name:this.userInfo.name,
-                        date_of_birth:this.userInfo.dateTime,
-                        province_id:this.userInfo.area[0].code,
-                        city_id:this.userInfo.area[1].code,
-                        district_id:this.userInfo.area[2].code,
-                        sex:this.userInfo.gender,
-                        relations:this.userInfo.relationship.value,
-                        mobile:this.userInfo.phone,
-                        describe:this.userInfo.description,
+                        date_of_birth:this.userInfo.date_of_birth,
+                        // province_id:this.userInfo.area[0].code,
+                        // city_id:this.userInfo.area[1].code,
+                        // district_id:this.userInfo.area[2].code,
+                        sex:this.userInfo.sex,
+                        custody_name:this.userInfo.custody_name,
+                        mobile:this.userInfo.mobile,
+                        describe:this.userInfo.describe,
+                        custody_identity:this.userInfo.custody_identity
                     })).then(res=>{
                         console.log(res)
                         if (res.data.msg === 'ok'){
@@ -218,14 +226,15 @@
                 this.$axios.post('Consulting/addPatient',this.$Qs.stringify({
                     user_id:sessionStorage.user_id,
                     name:this.userInfo.name,
-                    date_of_birth:this.userInfo.dateTime,
-                    province_id:this.userInfo.area[0].code,
-                    city_id:this.userInfo.area[1].code,
-                    district_id:this.userInfo.area[2].code,
-                    sex:this.userInfo.gender,
-                    relations:this.userInfo.relationship.value,
-                    mobile:this.userInfo.phone,
-                    describe:this.userInfo.description,
+                    date_of_birth:this.userInfo.date_of_birth,
+                    // province_id:this.userInfo.area[0].code,
+                    // city_id:this.userInfo.area[1].code,
+                    // district_id:this.userInfo.area[2].code,
+                    sex:this.userInfo.sex,
+                    custody_name:this.userInfo.custody_name,
+                    mobile:this.userInfo.mobile,
+                    describe:this.userInfo.describe,
+                    custody_identity:this.userInfo.custody_identity
                 })).then(res=>{
                     if (res.data.msg === 'ok'){
                         // if (this.$route.query.title ==='图文咨询'){

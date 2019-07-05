@@ -78,7 +78,7 @@
             },
 
             getRegistered(){
-                this.$axios.get('Patient/departmentList',{department_class_id:this.studio}).then(res=>{
+                this.$axios.get('Patient/departmentList',{department_class_id:this.studio,user_id:sessionStorage.user_id}).then(res=>{
                     console.log(res.data.data);
                     this.registeredList = res.data.data
                 })

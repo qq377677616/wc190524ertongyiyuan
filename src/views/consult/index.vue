@@ -1,5 +1,5 @@
 <template>
-    <div style="height: 100%;min-height:calc(100vh - 1.4rem)">
+    <div style="" class="consult">
         <!--        <div style="position: fixed;width: 100%;height: 2rem;background-color: #02bdb9;top: 0"></div>-->
         <section>
 
@@ -27,12 +27,12 @@
                     </span>
                 </div>
                 <span></span>
-                <div>
+                <div @click="goToService">
                     <span class="c-icon">
-                    <img src="../../assets/index/guahao.png" alt="">
+                    <img src="../../assets/index/tese.png" alt="">
                     </span>
                     <span class="text">
-                        <span>挂号</span><br>
+                        <span>特色服务</span><br>
                         <span>全国6839家医院</span>
                     </span>
                 </div>
@@ -40,7 +40,7 @@
         </section>
         <section>
             <article class="consult-studio">
-                <div v-for="(item,key) of items" :key="key" @click="goTo(item.id)">
+                <div v-for="(item,key) of items" :key="key" @click="goToRegistered(item.id)">
                     <span class="studio-bg">
                         <span>
                             <img :src="item.img_url" alt="icon">
@@ -51,7 +51,7 @@
             </article>
         </section>
         <section class="btn" @click="customerService">
-            <span>联系客服</span>
+            <span>导诊</span>
         </section>
     </div>
 </template>
@@ -82,16 +82,19 @@
             this.getStudio();
         },
         methods: {
+            goToService(){
+              this.$router.push({path:'/consult/featured',})
+            },
             customerService() {
                 this.$toast.fail('暂未开发')
             },
             getStudio() {
-                this.$axios.get('Patient/departmentClass').then(res => {
+                this.$axios.get('Patient/departmentClass',{user_id:sessionStorage.user_id}).then(res => {
                     console.log(res.data.department_class);
                     this.items = res.data.department_class
                 })
             },
-            goTo(el) {
+            goToRegistered(el) {
                 this.$router.push({path: '/consult/registered', query: {id: el}})
             },
             callback() {
@@ -102,6 +105,13 @@
 </script>
 
 <style scoped lang="scss">
+    .consult{
+        height: 100vh;
+        background-image: url("../../assets/reservation/BG.png");
+        background-repeat: no-repeat;
+        background-size: 100% 2rem;
+        background-position: top;
+    }
     .swiper-box {
         padding: .3rem .3rem 0 .3rem;
         border-radius: .1rem
@@ -112,7 +122,8 @@
         line-height: .8rem;
         background: #00b5bd;
         bottom: 1.3rem;
-        width: 100%;
+        left: 0;
+        right: 0;
         text-align: center;
         color: white
     }

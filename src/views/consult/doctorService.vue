@@ -78,7 +78,7 @@
                     // console.log(res.data.data)
                     this.activeMoney = res.data.data
                 });
-                this.$axios.get('Patient/doctorDetails',{doctor_id: this.$route.query.id}).then(res => {
+                this.$axios.get('Patient/doctorDetails',{doctor_id: this.$route.query.id,user_id: sessionStorage.user_id}).then(res => {
                     this.doctorInfo = res.data.data
                 })
             },
@@ -226,7 +226,7 @@
 
     .btn {
         position: fixed;
-        bottom: 0.35rem;
+        bottom: 1.3rem;
         width: 100%;
         text-align: center;
 

@@ -1,61 +1,77 @@
 <template>
     <div class="public-view">
-        <section>
-
-            <article @click="goTo(item.doctor_id)" class="registered-title" v-for="(item,key) of doctorList" :key="key">
-                <div class="title-n1">
-                    <img :src="item.doctor_avatar" alt="">
+        <section class="top" v-show="!isShow">
+            <p>您的问诊将会在他们之中任意一人接受</p>
+            <header>
+                <div class="avatar" v-for="item of doctorLists">
+                    <div :style="`background-image:url(${item.avatar})`"></div>
+                    <span>{{item.real_name}}</span>
                 </div>
-                <div class="title-n2">
-                    <div style="">
-                        <span>{{item.real_name}}</span>
-                        <span style="color:#b9babb "> | {{item.level==='1'?'专家':'知名专家'}}</span>
-                        <p>
-                            <span v-for="(tag,key) of item.label" :key="key" class="tag">{{tag}}</span>
-                        </p>
-                    </div>
-                </div>
-            </article>
-<!--            </transition>-->
-            <article>
-
-            </article>
+            </header>
         </section>
-        <p v-show="doctorList === undefined">暂无医生</p>
+        <section class="content" v-show="!isShow">
+            <div class="advisory-select">
+                <div @click="selectIndex(item.name)" class="box active-box" v-for="item in items"
+                     :key="item.name">
+                    <span class="icon"><img :src="item.icon" alt=""></span>
+                    <p>{{item.name}}</p>
+                </div>
+            </div>
+        </section>
+        <p v-show="isShow">暂无医生</p>
     </div>
 </template>
 
 <script>
     // /consult/registered/introduction
     export default {
-        props: ['activeViewName'],
         name: "publicView",
         components: {},
-        data(){
-            return{
-                doctorList:[],
+        data() {
+            return {
+                isShow:false,
+                items: [
+                    {name: '图文咨询', icon: require('../../assets/knownDoctor/tuweny.png')},
+                    {name: '电话咨询', icon: require('../../assets/knownDoctor/dianhua.png')},
+                    {name: '视频咨询', icon: require('../../assets/knownDoctor/shiping.png')},
+                ],
+                doctorList: [],
             }
         },
-        created(){
+        created() {
             this.getDoctors();
         },
         methods: {
-            getDoctors(){
-              this.$axios.get('Patient/doctorList',{type:this.$route.query.id,department_id:this.$route.query.nid}).then(res=>{
-                  // console.log(res.data.msg)
-                  this.doctorList = res.data.msg
-                  // console.log(this.doctorList)
-              })
+            getDoctors() {
+                this.$axios.get('Consulting/getStudioDoctor',{
+                    // type:this.$route.query.id,
+                    level:this.$route.query.id,
+                    department_id:this.$route.query.studio,
+                    user_id:sessionStorage.user_id
+                }).then(res=>{
+                    console.log(res.data.data)
+                    this.doctorList = res.data.data
+                    if (this.doctorList.doctor_list.length <= 0) {
+                        this.isShow = true;
+                    }
+                })
             },
-            goTo(nid){
-              this.$router.push({path:'/consult/registered/knowndoctor',query:{id:nid}})
+            selectIndex(item) {
+                // this.activeBox = item;
+                this.$router.push({path:'/consult/registered/phoneservice',query:{
+                    title:item,
+                        studio:this.$route.query.studio,
+                        id:this.$route.query.id,
+                        consulting:JSON.stringify(this.doctorList.consulting)
+                }});
             },
-            goBack() {
-                this.$emit('goBack')
-            }
         },
-        computed:{
-
+        computed: {
+            doctorLists(){
+                if (this.doctorList.doctor_list === undefined) return
+                if (this.doctorList.doctor_list.length > 5) return this.doctorList.slice(0,5)
+                return this.doctorList.doctor_list
+            }
         }
     }
 </script>
@@ -63,60 +79,76 @@
 <style scoped lang="scss">
     .public-view{
         >p{
-            font-size: .5rem;
-            color: #a1a7a8;
             text-align: center;
-            margin-top: 30%;
+            padding-top: 2rem;
+            color: #96999e;
+            font-size: .6rem;
         }
-    }
-    .registered-title {
-        position: relative;
-        display: flex;
-        padding: .3rem;
-        background: white;
-        border-bottom: .1rem #f4f5f6 solid;
-        .title-n1 {
-            width: 1.8rem;
-            height: 1.8rem;
-            background: bisque;
-            img{
+        .top{
+            height: 3.5rem;
+            background-size: cover;
+            background: url("../../assets/phoneserve/BG.png");
+            >p{
+                padding-top: .3rem;
+                color: white;
+                text-align: center;
+            }
+        }
+        .content{
+            background: white;
+            margin-top: -.5rem;
+            border-radius: .5rem;
+            height: 100%;
+            .advisory-select {
+                padding-top: .1rem;
+                font-size: .3rem;
                 width: 100%;
-                height: 100%;
-                border-radius: .1rem;
-            }
+                .box {
+                    margin: .6rem auto;
+                    width: 90%;
+                    padding: .25rem 0;
+                    background: linear-gradient(to bottom right, #4ae2df, #02bdb9);
+                    text-align: center;
+                    border-radius: 5px;
+                    color: white;
+                    .icon {
+                        margin-left: calc(50% - .325rem);
+                        margin-bottom: .1rem;
+                        display: block;
+                        width: .8rem;
+                        height: .8rem;
+                        background: #fbfbfb;
+                        border-radius: 50%;
 
-        }
-
-        .title-n2 {
-            height: 1.8rem;
-            line-height: 0.6rem;
-            div{
-                height: 80%;
-                margin-top: calc(50% - 45%);
-                margin-left: .2rem;
-                >span:nth-child(1){
-                    font-size: .35rem;
+                        img {
+                            width: 50%;
+                            height: 40%;
+                            margin-top: calc(50% - 20%);
+                        }
+                    }
                 }
-                >span:nth-child(2){
-                    font-size: .3rem;
-                }
-            }
-
-            p {
-                margin-top: 5px;
-                color: #b9babb;
-            }
-            .tag{
-                font-size: .25rem;
-                background: rgba(171,220,219,0.4);
-                padding: .05rem .2rem;
-                border-radius: .3rem;
-                margin-right: .2rem;
-                color: #01bdb8;
             }
         }
-
     }
+    header{
+        padding: .3rem;
+        display: flex;
+        box-sizing: border-box;
+        /*padding-top: .3rem;*/
+        .avatar{
+            width: 100%;
+            text-align: center;
+            font-size: .25rem;
+            color: white;
+            div{
+                height: 1.3rem;
+                width: 1.3rem;
+                background-color: #f4f4f4;
+                border-radius: 50%;
+                background-size: cover;
+                margin: 0 auto;
 
-
+            }
+        }
+    }
 </style>

@@ -115,7 +115,7 @@
               this.$toast.fail('暂未开放')
             },
             getDoctorInfo(){
-              this.$axios.get('personinfo/myinfo',{openid:'oSx-51JbMrtfk5394YIx8IQ8JlRI'}).then(res=>{
+              this.$axios.get('personinfo/myinfo',{openid:sessionStorage.openid}).then(res=>{
                   console.log(res.data.data[0]);
                   this.doctorInfo = res.data.data[0];
               })

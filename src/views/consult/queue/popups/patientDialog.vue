@@ -50,7 +50,7 @@
               this.$emit('subInfo',{std:1,obj:this.activeUserInfo})
             },
             getUserInfoList() {
-                this.$axios.get('Consulting/getPatientList', {user_id: 12}).then(res => {
+                this.$axios.get('Consulting/getPatientList', {user_id: sessionStorage.user_id}).then(res => {
                     console.log(res);
                     this.userInfoList = res.data.data
                 })

@@ -79,6 +79,7 @@
         data() {
             return {
                 radio: false,
+                // consulting:JSON.parse(),
                 dataList:[
                     {title:'电话咨询',content:'提交手机号码，医生会联系您',},
                     {title:'视频咨询',content:'提交手机号码，医生会联系您',},
@@ -94,12 +95,12 @@
         },
         methods:{
             getPrice(){
-              this.$axios.get('Consulting/getConsulting',{team_id:1}).then(res=>{
-                  // console.log(res.data.data)
-                  console.log(res.data.data)
-                  this.activeMoney =res.data.data
-              });
-                this.$axios.get('Patient/depaDetails',{id:this.$route.query.id,user_id:'12'}).then(res=>{
+              // this.$axios.get('Consulting/getConsulting',{team_id:this.$route.query.studio,user_id:sessionStorage.user_id}).then(res=>{
+              //     // console.log(res.data.data)
+              //     console.log(res)
+              //     this.activeMoney =res.data.data
+              // });
+                this.$axios.get('Patient/depaDetails',{id:this.$route.query.studio,user_id:sessionStorage.user_id}).then(res=>{
                     console.log(res)
                     this.depaInfo = res.data.data
                 })
@@ -108,7 +109,7 @@
                 console.log(this.doctorInfo)
                 let title = this.$route.query.title;
                 this.$router.push({path:'/consult/registered/existingdata',query:{
-                        department_id:this.$route.query.id,
+                        department_id:this.$route.query.studio,
                         // doctor_id:this.doctorInfo.id,
                         type:this.getMoney.id,
                         money:this.getMoney.money,
@@ -129,18 +130,18 @@
             },
             getMoney(){
                 let i={};
-
+                let consulting = JSON.parse(this.$route.query.consulting)
                 switch (this.$route.query.title) {
                     case '图文咨询':
-                        i.money = this.activeMoney.msg_money;
+                        i.money = consulting.msg_money;
                         i.id = 1;
                         break;
                     case '视频咨询':
-                        i.money = this.activeMoney.video_money;
+                        i.money = consulting.video_money;
                         i.id = 2;
                         break;
                     case '电话咨询':
-                        i.money = this.activeMoney.phone_money;
+                        i.money = consulting.phone_money;
                         i.id = 3;
                         break;
                 }
@@ -177,6 +178,7 @@
             padding:0 .3rem;
 
             img {
+                border-radius: .1rem;
                 margin-right: 0.2rem;
                 float: left;
                 width: 1.45rem;

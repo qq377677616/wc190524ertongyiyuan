@@ -4,23 +4,36 @@
         <section v-for="(item, key) of userInfoAll" :key="key">
             <el-row class="userInfo">
                 <el-col :span="4">
-                    <span class="ac"><span>{{item.name.charAt(0)}}</span></span>
+                    <span class="ac">
+                        <span>{{item.name.charAt(0)}}</span>
+                    </span>
                 </el-col>
                 <el-col :span="15" class="info">
-                    <span>{{item.name}} <span>{{item.sex === '1'?'男':'女'}}</span><span>{{item.age}}</span></span>
+                    <span>{{item.name}} <span>
+                        {{item.sex === '1'?'男':'女'}}
+                    </span>
+                        <span> {{item.age}}岁</span>
+                    </span>
                     <p>{{item.mobile}}</p>
                     <p>{{item.passport}}</p>
                 </el-col>
                 <el-col :span="5">
                     <span class="bj">
-                        <span @click="gotoFillout(item.id)">编辑 <i class="el-icon-arrow-right"></i> </span>
-                        <span @click="delUserInfo(item.id, key)" style="color: red">删除</span>
+                        <span @click="gotoFillout(item.id)">编辑
+                            <i class="el-icon-arrow-right"></i> </span>
+                        <span @click="delUserInfo(item.id, key)"
+                              style="color: red">删除</span>
                     </span>
                 </el-col>
             </el-row>
         </section>
-
-        <button @click="goTo" type="button" class="btn"><i class="el-icon-plus"></i> 创建患者信息</button>
+        <button
+                click="goTo"
+                type="button"
+                class="btn">
+            <i class="el-icon-plus"></i>
+            创建患者信息
+        </button>
     </div>
 </template>
 
@@ -45,8 +58,8 @@
                     title: '确认删除',
                     message: '删除以后将不能恢复'
                 }).then(() => {
-                    this.$axios.post('Consulting/delPatient', this.$Qs.stringify({id: userId})).then((res) => {
-                        // console.log(res);
+                    this.$axios.post('Consulting/delPatient',
+                        this.$Qs.stringify({id: userId})).then((res) => {
                         if (res.data.msg === 'ok') {
                             this.userInfoAll.splice(key, 1)
                         } else {
@@ -54,12 +67,10 @@
                         }
                     })
                 })
-
             },
             getUserInfoAll() {
-                this.$axios.get('Consulting/getPatientList', {user_id: sessionStorage.user_id}).then(res => {
-                    console.log(res);
-                    console.log(res.data.data);
+                this.$axios.get('Consulting/getPatientList',
+                    {user_id: sessionStorage.user_id}).then(res => {
                     this.userInfoAll = res.data.data
                 })
             },
@@ -67,7 +78,6 @@
                 this.$router.push({path: '/consult/registered/fillout'})
             }
         }
-
     }
 </script>
 
@@ -109,6 +119,7 @@
         width: 3.5rem;
         height: 0.8rem;
         background: white;
+        box-shadow: 0 0 10px 5px rgba(75, 75, 75, 0.1);
         border-radius: 5px;
         border: 1px #01bdb8 solid;
         color: #01bdb8;
@@ -127,6 +138,7 @@
         background: white;
         display: flex;
         align-items: center;
+        box-shadow: 0 0 10px 3px rgba(75, 75, 75, 0.1);
 
         .ac {
             display: block;

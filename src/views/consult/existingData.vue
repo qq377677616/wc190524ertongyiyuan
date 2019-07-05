@@ -102,6 +102,7 @@
                         record_id:this.activeUserInfo.id,
                         type:this.order.type,
                         money:this.order.money,
+                        register_time:'1999-12-23'
                     })).then(res=>{
 
                         if (res.data.msg === 'ok') {
@@ -171,7 +172,7 @@
 
 <style scoped lang="scss">
     button[type='submit']{
-        position: absolute;
+        position: fixed;
         bottom: 1rem;
         background: linear-gradient(to bottom right, #4ae2df, #02bdb9);
         border-radius: .1rem;

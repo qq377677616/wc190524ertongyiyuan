@@ -2,26 +2,42 @@
     <div style="height: 100%">
         <section class="doctor-info">
             <div id="left">
-                <div class="avatar"></div>
+                <div class="avatar" :style="`background-image:url(${doctorInfo.avatar})`"></div>
                 <div class="info">
                     <p>
-                        <span>张讲过</span>
-                        <span> 主任医师</span>
+                        <span>{{doctorInfo.real_name}}</span>
+                        <span> {{doctorInfo.position}}</span>
                     </p>
-                    <p>已挂号：200</p>
+                    <p>已挂号：{{doctorInfo.ghs}}</p>
                 </div>
             </div>
             <i id="right" class="el-icon-arrow-right"></i>
         </section>
         <transition name="fade" mode="out-in">
-        <router-view></router-view>
+        <router-view :doctorInfo="doctorInfo"></router-view>
         </transition>
     </div>
 </template>
 
 <script>
     export default {
-        name: "visitingTime"
+        name: "visitingTime",
+        data(){
+            return{
+                doctorInfo:{}
+            }
+        },
+        created() {
+            this.getDoctorGh()
+        },
+        methods:{
+            getDoctorGh(){
+                this.$axios.get('Consulting/getDoctorGh',{doctor_id:1,}).then(res=>{
+                    console.log(res.data.data)
+                    this.doctorInfo = res.data.data
+                })
+            }
+        }
     }
 </script>
 
@@ -43,6 +59,7 @@
         display: flex;
         align-items: center;
         .avatar{
+            background-size: cover;
             background-color: white;
             border-radius: 50%;
             height: 1.4rem;

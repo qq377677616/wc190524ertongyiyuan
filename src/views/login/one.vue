@@ -12,7 +12,7 @@
                 <label class="code-input">
                     <span>验证码</span>
                     <input class="code" type="text">
-                    <span>获取验证码</span>
+                    <span @click="requestPhoneCode">获取验证码</span>
                 </label>
             </article>
             <!--            第二步-->
@@ -82,6 +82,13 @@
         data(){
             return{
                 index:1
+            }
+        },
+        methods:{
+            requestPhoneCode(){
+                this.$axios.get('consulting/request_phone_code',{mobile:15111176120}).then(res=>{
+                    console.log(res)
+                })
             }
         },
         computed:{

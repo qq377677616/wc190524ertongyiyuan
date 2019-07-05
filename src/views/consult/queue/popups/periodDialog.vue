@@ -1,33 +1,42 @@
 <template>
     <div>
         <section class="title">
-
-            <!--            <span>选择就诊人</span>-->
             预约时间段
             <span @click="subInfo">确认</span>
-            <!--            <span>确认</span>-->
         </section>
     <div class="period-dataTime">
-
         <p
                 @click="activeTimer = item"
                 :class="{'active-timer':activeTimer === item}"
-                v-for="item of 9">14:52 <span>-</span> 15:52</p>
+                v-for="item of timer">{{item.sjd}}
+<!--            <span>-</span> 15:52-->
+        </p>
     </div>
     </div>
 </template>
 
 <script>
     export default {
+        props:['identifier'],
         name: "periodDialog",
         data(){
             return{
-                activeTimer:null
+                activeTimer:null,
+                timer:[]
             }
+        },
+        created(){
+          this.getPbTime();
         },
         methods:{
             subInfo(){
                 this.$emit('subInfo',{std:2,obj:this.activeTimer})
+            },
+            getPbTime(){
+                this.$axios.get('Consulting/getPbTime',{plan_id:this.identifier}).then(res=>{
+                    console.log(res)
+                    this.timer = res.data.data
+                })
             }
         }
     }

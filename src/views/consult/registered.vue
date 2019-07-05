@@ -1,66 +1,83 @@
 <template>
     <div class="registered">
-        <section class="search">
-            <!-- 搜索框 -->
-            <label>
-                <input v-model="searchValue" type="text" class="search ">
-            </label>
-        </section>
-        <transition-group name="fade-std-list">
-        <section  class="registered-box"  v-for="(item,key) of searchList" :key="key" @click="goTo(item.id)">
-            <article class="registered-title">
-                <div class="title-n1">
+        <header>
+            <span :class="{'active-header':activeMens === key}" @click="activeMens = key"
+                  v-for="(item, key) of ['工作室列表','医生列表']" :key="key">{{item}}</span>
+        </header>
+        <div v-show="activeMens === 1">
+            <article @click="goTo(item.id)" class="doctors-title" v-for="(item,key) of doctorList" :key="key">
+                <div class="doctors-n1">
                     <img :src="item.avatar" alt="">
                 </div>
-                <div class="title-n2">
+                <div class="doctors-n2">
                     <div>
-                        <h3>{{item.name}}</h3>
-                        <p>一般等待时间：快</p>
-                        <p>近两周回复数：99+</p>
-                    </div>
-                </div>
-<!--                <span ">查看</span>-->
-            </article>
-            <article class="registered-star">
-                <div class="personal-ws">
-                    <div class="personal-ws-box">
-                        <span class="left">疗效：</span>
-                        <my-personal
-                                :percent="87"
-                                left-bg="#4ed1ce"
-                                height="0.2rem"
-                                width="100%"></my-personal>
-                        <span class="right">满意</span>
-                    </div>
-                    <div style="width: .7rem"></div>
-                    <div class="personal-ws-box">
-                        <span class="left">态度：</span>
-                        <my-personal
-                                :percent="93"
-                                left-bg="#4ed1ce"
-                                height="0.2rem"
-                                width="100%"></my-personal>
-                        <span class="right">满意</span>
+                        <span>{{item.real_name}}</span>
+                        <span style="color:#b9babb "> | {{item.level==='1'?'专家':'知名专家'}}</span>
+                        <p>
+                            <span v-for="(tag,key) of item.label" :key="key" class="tag">{{tag}}</span>
+                        </p>
                     </div>
                 </div>
             </article>
-            <div class="my-rate" style="">
-                <p>评星：</p>
-                <my-rate size=".35rem"></my-rate>
-            </div>
-            <article class="comment">
-                <p>评论：</p>
-                <p>{{item.comment}}</p>
-            </article>
-        </section>
-        </transition-group>
+        </div>
+        <div v-show="activeMens === 0">
+            <section class="search">
+                <!-- 搜索框 -->
+                <label>
+                    <input v-model="searchValue" type="text" class="search ">
+                </label>
+            </section>
+            <transition-group name="fade-std-list">
+                <section class="registered-box" v-for="(item,key) of searchList" :key="item.id" @click="goTo(item.id)">
+                    <article class="registered-title">
+                        <div class="title-n1">
+                            <img :src="item.avatar" alt="">
+                        </div>
+                        <div class="title-n2">
+                            <div>
+                                <h3>{{item.name}}</h3>
+                                <p>一般等待时间：快</p>
+                                <p>近两周回复数：99+</p>
+                            </div>
+                        </div>
+                        <!--                <span ">查看</span>-->
+                    </article>
+                    <article class="registered-star">
+                        <div class="personal-ws">
+                            <div class="personal-ws-box">
+                                <span class="left">疗效：</span>
+                                <my-personal
+                                        :percent="87"
+                                        left-bg="#4ed1ce"
+                                        height="0.2rem"
+                                        width="100%"></my-personal>
+                                <span class="right">满意</span>
+                            </div>
+                            <div style="width: .7rem"></div>
+                            <div class="personal-ws-box">
+                                <span class="left">态度：</span>
+                                <my-personal
+                                        :percent="93"
+                                        left-bg="#4ed1ce"
+                                        height="0.2rem"
+                                        width="100%"></my-personal>
+                                <span class="right">满意</span>
+                            </div>
+                        </div>
+                    </article>
+                    <div class="my-rate" style="">
+                        <p>评星：</p>
+                        <my-rate size=".35rem"></my-rate>
+                    </div>
+                    <article class="comment">
+                        <p>评论：</p>
+                        <p>{{item.comment}}</p>
+                    </article>
+                </section>
+            </transition-group>
 
-        <p v-show="searchList.length <=0">没有相关医生</p>
-<!--        <div v-show="!mySelectDialog" class="switch" @click="mySelectDialog = true">切换</div>-->
-
-
-<!--        <my-select @replace="getRegistered" :show.sync="mySelectDialog"></my-select>-->
-
+            <p class="tots" v-show="searchList.length <=0">没有相关工作室</p>
+        </div>
     </div>
 </template>
 
@@ -78,40 +95,57 @@
         },
         data() {
             return {
-                searchValue:'',
+                activeMens: 0,
+                searchValue: '',
                 value5: 3,
                 mySelectDialog: false,
-                registeredList:[]
+                registeredList: [],
+                doctorList: []
             }
         },
-        created(){
-            console.log(this.$route.query.id);
+        created() {
             this.getRegistered(this.$route.query.id)
         },
         methods: {
-
             goTo(id) {
-                this.$router.push({path: '/consult/registered/doctordetails',query:{id:id,department_class_id:this.$route.query.id}})
+                switch (this.activeMens) {
+                    case 0:
+                        this.$router.push({
+                            path: '/consult/registered/doctordetails',
+                            query: {id: id, department_class_id: this.$route.query.id}
+                        })
+                        break;
+                    case 1:
+                        this.$router.push({path: '/consult/registered/knowndoctor', query: {id: id}})
+                        break;
+                }
+
+
             },
-            getRegistered(nid = null){
-                console.log(nid)
-                this.$axios.get('Patient/departmentList',{department_class_id:nid}).then(res=>{
-                    console.log(res.data.data);
+            getRegistered(nid = null) {
+                this.$axios.get('Patient/departmentList', {
+                    department_class_id: nid,
+                    user_id: sessionStorage.user_id
+                }).then(res => {
+                    console.log(res);
                     this.registeredList = res.data.data
+                })
+                this.$axios.get('Patient/doctorList', {
+                    department_class_id: nid,
+                    user_id: sessionStorage.user_id
+                }).then(res => {
+                    console.log(res)
+                    this.doctorList = res.data.data
                 })
             }
         },
-        watch:{
-            // searchValue(){
-            //     console.log(this.searchValue)
-            // }
-        },
-        computed:{
-            searchList(){
+        watch: {},
+        computed: {
+            searchList() {
                 let list = [];
-                if (this.searchValue.length > 0){
-                    for (let item of this.registeredList){
-                        if (item.name.includes(this.searchValue)){
+                if (this.searchValue.length > 0) {
+                    for (let item of this.registeredList) {
+                        if (item.name.includes(this.searchValue)) {
                             list.push(item)
                         }
                     }
@@ -125,31 +159,94 @@
 </script>
 
 <style scoped lang="scss">
+    .doctors-title {
+        /*position: relative;*/
+        display: flex;
+        padding: .3rem;
+        background: white;
+        border-bottom: .1rem #f4f5f6 solid;
+        .doctors-n1{
+            /*display: block;*/
+            width: 1.8rem;
+            height: 1.8rem;
+            background: bisque;
+
+            img {
+                border-radius: .1rem;
+                width: 100%;
+                height: 100%;
+            }
+        }
+        .doctors-n2{
+            padding-left: .2rem;
+            line-height: .7rem;
+            .tag {
+                font-size: .25rem;
+                background: rgba(171, 220, 219, 0.4);
+                padding: .05rem .2rem;
+                border-radius: .3rem;
+                margin-right: .2rem;
+                color: #01bdb8;
+            }
+        }
+    }
+    .tots {
+        text-align: center;
+        padding-top: 2rem;
+        color: #96999e;
+        font-size: .6rem;
+    }
+
+    .active-header {
+        border-bottom: 2px #0FC4C0 solid;
+        color: #0FC4C0;
+    }
+
+    header {
+        background-color: #f4f4f4;
+        /*color: #afafaf;*/
+        display: flex;
+        line-height: 1rem;
+        font-size: .3rem;
+
+        span {
+            display: block;
+            text-align: center;
+            width: 100%;
+        }
+    }
+
     .fade-std-list-enter-active {
         transition: all .3s ease;
     }
+
     .fade-std-list-leave-active {
         transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
     }
+
     .fade-std-list-enter, .fade-std-list-leave-to
-        /* .slide-fade-leave-active for below version 2.1.8 */ {
+        /* .slide-fade-leave-active for below version 2.1.8 */
+    {
         transform: translateY(-10px);
         opacity: 0;
     }
 
-    h3{
+    h3 {
         font-weight: 400;
         color: #4c4c4c;
     }
-    .comment{
+
+    .comment {
         font-size: 0.3rem;
         color: #01bdbb;
-        p:nth-child(2){
+
+        p:nth-child(2) {
             padding-top: .05rem;
             color: #a7a8a8;
             font-size: .25rem;
         }
     }
+
     .my-rate {
         display: flex;
         align-items: center;
@@ -220,12 +317,13 @@
     }
 
     .registered {
-        >p{
+        > p {
             text-align: center;
             margin-top: 30%;
             font-size: .5rem;
             color: #a1a7a8;
         }
+
         position: absolute;
         top: 0;
         bottom: 0;
@@ -254,7 +352,7 @@
             height: 1.8rem;
             background: bisque;
 
-            img{
+            img {
                 border-radius: .1rem;
                 width: 100%;
                 height: 100%;

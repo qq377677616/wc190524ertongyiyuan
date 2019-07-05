@@ -20,21 +20,21 @@
 <script>
     export default {
         name: "articleList",
-        data(){
-            return{
-                articleList:[],
-                doctorInfo:this.$route.params
+        data() {
+            return {
+                articleList: [],
+                doctorInfo: this.$route.params
             }
         },
         created() {
             console.log(this.doctorInfo);
             this.getArticleAll()
         },
-        methods:{
-            articleDetailed(index){
-                this.$router.push({path:'/consult/registered/articledetails',query:{id:index}})
+        methods: {
+            articleDetailed(index) {
+                this.$router.push({path: '/consult/registered/articledetails', query: {id: index}})
             },
-            getArticleAll(){
+            getArticleAll() {
                 // data[
                 //     {'key':'value'},
                 //     {'key':'value'},
@@ -42,7 +42,7 @@
                 //     {'key':'value'},
                 //     {'key':'value'},
                 //     ]
-                this.$axios.get('Doctor/articleList',{doctor_id:1}).then(res=>{
+                this.$axios.get('Doctor/articleList', {doctor_id: 1}).then(res => {
                     console.log(res.data.data)
                     this.articleList = res.data.data;
                 })
@@ -55,7 +55,8 @@
     .article {
         /*width: 100%;*/
         padding: .3rem .3rem .5rem .3rem;
-        border-bottom:3px #eff1ef solid;
+        border-bottom: 3px #eff1ef solid;
+
         .title {
             font-size: .4rem;
             margin-bottom: .1rem;

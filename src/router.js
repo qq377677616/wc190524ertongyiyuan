@@ -4,6 +4,8 @@ import Index  from './views/Index.vue'
 
 //咨询相关路由
 import consult from './views/consult/index'
+import featured from './views/consult/featured'
+import featuredDetailed from './views/consult/featuredDetailed'
 import registered from './views/consult/registered'
 import advisory from './views/consult/advisory'
 import doctors from './views/consult/doctors'
@@ -33,6 +35,8 @@ import userDoctors from './views/consult/personal/doctors'
 import patientManagement from './views/consult/personal/patientManagement'
 import addPatient from './views/consult/personal/addPatient'
 import privateChat from './views/consult/personal/privateChat'
+import arrangement from './views/consult/personal/arrangement'
+import refund from './views/consult/personal/refund'
 
 //医生端
 import doctorPersonal from './views/doctor/personal'
@@ -63,6 +67,9 @@ import loginOne from './views/login/one'
 
 import one from './views/consult/knownDoctor'
 
+//聊天相关
+import messages from './views/imchat/messages'
+
 Vue.use(Router);
 
 export default new Router({
@@ -70,9 +77,24 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     {
+      path:'/messages',
+      name:'消息列表',
+      component:messages
+    },
+    {
       path:'/consult/queue',
       name:'挂号',
       component:queue
+    },
+    {
+      path:'/consult/featured',
+      name:'特色项目',
+      component:featured
+    },
+    {
+      path:'/consult/featured/detailed',
+      name:'特色项目详细',
+      component:featuredDetailed
     },
     {
       path:'/consult/queue/bespeak',
@@ -112,7 +134,7 @@ export default new Router({
       component:loginPatientSecond,
     },
     {
-      path:'/login/patient/One',
+      path:'/login/patient/one',
       name:'loginOne',
       component:loginOne,
     },
@@ -251,6 +273,16 @@ export default new Router({
       path:'/consult/personal/doctors',
       component:userDoctors,
       name:'我预约的医生'
+    },
+    {
+      path:'/consult/personal/arrangement',
+      component:arrangement,
+      name:'我的挂号'
+    },
+    {
+      path:'/consult/personal/refund',
+      component:refund,
+      name:'退款'
     },
     {
       path:'/consult/personal/patientmanagement',

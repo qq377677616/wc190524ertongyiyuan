@@ -1,33 +1,33 @@
 <template>
     <div class="public-view">
         <section class="select-dg">
-            <article @click="activeMenu = key"  v-for="(item,key) of ['未开始','咨询中','已完成']" :key="key">
+            <article @click="activeMenu = key" v-for="(item,key) of ['未开始','咨询中','已完成']" :key="key">
                 <span :class="{'active-sel':activeMenu === key}">{{item}}</span>
             </article>
         </section>
-<!--        <transition name="fade">-->
-<!--        <section v-show="show">-->
+        <!--        <transition name="fade">-->
+        <!--        <section v-show="show">-->
 
-            <article class="registered-title" v-for="(item,key) of doctorsList" :key="key" @click="goTo(item)">
-                <div class="title-n1">
-                    <img :src="item.avatar" alt="">
+        <article class="registered-title" v-for="(item,key) of doctorsList" :key="key" @click="goTo(item)">
+            <div class="title-n1">
+                <img :src="item.avatar" alt="">
+            </div>
+            <div class="title-n2">
+                <div>
+                    <span>{{item.real_name}}</span>
+                    <span> | {{item.level === '2'?'知名专家':'专家'}}</span>
+                    <p>
+                        <span class="tag" v-for="item of item.label">{{item}}</span>
+                    </p>
+                    <p>创建时间：{{item.create_time}}</p>
                 </div>
-                <div class="title-n2">
-                    <div>
-                        <span>{{item.real_name}}</span>
-                        <span> | {{item.level === '2'?'知名专家':'专家'}}</span>
-                        <p>
-                            <span class="tag" v-for="item of item.label">{{item}}</span>
-                        </p>
-                        <p>创建时间：{{item.create_time}}</p>
-                    </div>
-                </div>
+            </div>
 
-            </article>
+        </article>
 
 
-<!--        </section>-->
-<!--        </transition>-->
+        <!--        </section>-->
+        <!--        </transition>-->
     </div>
 </template>
 
@@ -37,17 +37,17 @@
         props: ['activeViewName'],
         name: "publicView",
         components: {},
-        data(){
-          return{
-              show:true,
-              activeMenu:0,
-              offStd:[],
-              onStd:[],
-              carryOut:[],
+        data() {
+            return {
+                show: true,
+                activeMenu: 0,
+                offStd: [],
+                onStd: [],
+                carryOut: [],
 
-          }
+            }
         },
-        created(){
+        created() {
             // console.log(sessMap)
             // for (let item of sessMap) {
             //     console.log(item)
@@ -59,13 +59,25 @@
             this.getDoctorsAll(0)
         },
         methods: {
-            getDoctorsAll(index){
+            getDoctorsAll(index) {
                 this.$axios.all([
-                    this.$axios.get('Patient/consultDoctorList',{openid:'oSx-51JbMrtfk5394YIx8IQ8JlRI',status:0}),
-                    this.$axios.get('Patient/consultDoctorList',{openid:'oSx-51JbMrtfk5394YIx8IQ8JlRI',status:1}),
-                    this.$axios.get('Patient/consultDoctorList',{openid:'oSx-51JbMrtfk5394YIx8IQ8JlRI',status:2}),
-                ]).then(this.$axios.spread((resOff,resOn,carryOut)=>{
-                    console.log(resOff,resOn,carryOut);
+                    this.$axios.get('Patient/consultDoctorList', {
+                        openid: sessionStorage.openid,
+                        status: 0,
+                        user_id: sessionStorage.user_id
+                    }),
+                    this.$axios.get('Patient/consultDoctorList', {
+                        openid: sessionStorage.openid,
+                        status: 1,
+                        user_id: sessionStorage.user_id
+                    }),
+                    this.$axios.get('Patient/consultDoctorList', {
+                        openid: sessionStorage.openid,
+                        status: 2,
+                        user_id: sessionStorage.user_id
+                    }),
+                ]).then(this.$axios.spread((resOff, resOn, carryOut) => {
+                    console.log(resOff, resOn, carryOut);
                     this.offStd = resOff.data.data;
                     this.onStd = resOn.data.data;
                     this.carryOut = carryOut.data.data;
@@ -74,15 +86,18 @@
             goBack() {
                 this.$emit('goBack')
             },
-            goTo(item){
-                if (this.activeMenu === 1){
-                    this.$router.push({path:'/consult/personal/privatechat',query:{id:item.to_id,avatar:item.avatar}})
+            goTo(item) {
+                if (this.activeMenu === 1) {
+                    this.$router.push({
+                        path: '/consult/personal/privatechat',
+                        query: {id: item.to_id, avatar: item.avatar}
+                    })
                 }
             }
         },
-        computed:{
-            doctorsList(){
-                let list=[];
+        computed: {
+            doctorsList() {
+                let list = [];
                 // console.log(this.show);
                 // this.show= false;
                 // setTimeout(res=>{
@@ -100,7 +115,7 @@
                         list = this.carryOut;
                         break;
                 }
-                if (list !== undefined){
+                if (list !== undefined) {
                     return list.reverse()
                 } else {
                     return []
@@ -112,26 +127,30 @@
 </script>
 
 <style scoped lang="scss">
-    .active-sel{
-        border-bottom:.03rem #01bdbb solid;
+    .active-sel {
+        border-bottom: .03rem #01bdbb solid;
     }
-    .select-dg{
+
+    .select-dg {
         display: flex;
-        border-bottom:1px #ecedee solid;
+        border-bottom: 1px #ecedee solid;
         /*background: #02bdb9;*/
 
-        :nth-child(1){
+        :nth-child(1) {
             /*border-radius: 20px 0 0 0;*/
         }
-        :nth-child(3){
+
+        :nth-child(3) {
             /*border-radius: 0 20px 0 0;*/
         }
-        article{
+
+        article {
             background: white;
             width: 100%;
             line-height: .8rem;
             text-align: center;
-            span{
+
+            span {
                 margin: 0 auto;
                 display: block;
                 width: 60%;
@@ -139,6 +158,7 @@
             }
         }
     }
+
     .registered-title {
         position: relative;
         display: flex;
@@ -146,11 +166,13 @@
         margin-bottom: 5px;
         background: white;
         border-bottom: .1rem #f4f5f6 solid;
+
         .title-n1 {
             width: 2rem;
             height: 2rem;
             background: bisque;
-            img{
+
+            img {
                 height: 100%;
                 width: 100%;
                 border-radius: .1rem;
@@ -160,15 +182,18 @@
         .title-n2 {
             height: 2rem;
             line-height: 0.6rem;
-            div{
+
+            div {
                 height: 80%;
                 /*margin-top: calc(50% - 45%);*/
                 margin-left: .2rem;
-                >span{
+
+                > span {
                     font-size: .35rem;
                     color: #4c4c4c;
                 }
-                >span:nth-child(2){
+
+                > span:nth-child(2) {
                     font-size: .3rem;
                     color: #a7a8a8;
 
@@ -180,8 +205,9 @@
                 font-size: 14px;
                 color: #b9babb;
             }
-            .tag{
-                background: rgba(171,220,219,0.4);
+
+            .tag {
+                background: rgba(171, 220, 219, 0.4);
                 padding: 3px 8px;
                 border-radius: 15px;
                 margin-right: 10px;

@@ -3,16 +3,16 @@
         <section class="visiting">
             <p>出诊地</p>
             <div>
-                <p>湘雅二医院</p>
-                <p>皮肤分泌学科</p>
+                <p>{{doctorInfo.hospital_name}}</p>
+                <p>{{doctorInfo.class_name}}</p>
             </div>
         </section>
-        <section class="schedule-info">
+        <section class="schedule-info" v-for="(item, key) of doctorInfo.pb_list" :key="key">
             <div>
-                <p>2019-05-19 周日 上午</p>
-                <span>专家 挂号费：100元</span>
+                <p>{{item.cbrq}}</p>
+                <span>{{item.type == 1?'普号':item.type == 2?'专家号':'特需号'}} 挂号费：{{item.price}}元</span>
             </div>
-            <span @click="goTo">挂号</span>
+            <span @click="goTo(key)" :class="{'full':item.isFull}">{{item.isFull?'约满':'挂号'}}</span>
         </section>
 
     </div>
@@ -20,19 +20,30 @@
 
 <script>
     export default {
+        props:['doctorInfo'],
         name: "patientInfo",
         data() {
-            return {}
+            return {
+                // doctorInfo:{}
+            }
+        },
+        created(){
+          // this.getDoctorGh()
         },
         methods: {
-            goTo() {
-                this.$router.push({path: '/consult/queue/visitingtime/outpatient'})
-            }
+            goTo(key) {
+                this.$router.push({path: '/consult/queue/visitingtime/outpatient',query:{index:key}})
+            },
+
         }
     }
 </script>
 
 <style scoped lang="scss">
+    .full{
+        background: #96999e !important;
+        color: white;
+    }
     .schedule-info {
         display: flex;
         justify-content: space-between;

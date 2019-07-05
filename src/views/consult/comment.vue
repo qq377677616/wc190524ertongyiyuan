@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="height: 100vh">
         <section>
             <article class="comment">
                 <p>为本次看病过程打分</p>

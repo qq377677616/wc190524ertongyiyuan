@@ -109,6 +109,7 @@
                 duration: 0
             });
             this.getUserSig();
+
             // console.log(this.$route.query)
         },
         mounted() {
@@ -144,9 +145,11 @@
                     options,
                     (resp) => {
                         console.log(resp);
+
                         let complete = resp.Complete; //是否还有历史消息可以拉取，1-表示没有，0-表示有
                         if (resp.MsgList.length === 0) {
                             webim.Log.warn("没有历史消息了:data=" + JSON.stringify(options));
+
                             return;
                         }
                         this.getPrePageC2CHistroyMsgInfoMap[selToID] = { //保留服务器返回的最近消息时间和消息Key,用于下次向前拉取历史消息
@@ -170,12 +173,12 @@
             getUserSig() {
                 this.$axios.get('Friend/getYunAccount', {
                     // user_id: sessionStorage.user_id,
-                    user_id: 12,
-                    to_id: this.$route.query.id
+                    user_id: 44,
+                    to_id: 22
                 }).then(res => {
                     console.log(res);
                     this.userID = res.data.data;
-                    // this.im.selToID = res.data.data.toName;
+                    this.im.selToID = res.data.data.toName;
                     this.im.loginInfo.identifier = res.data.data.identifier;
                     this.im.loginInfo.userSig = res.data.data.usersig;
 
@@ -214,6 +217,7 @@
                             this.$toast.clear();
                         }
                         if (resp.MsgList.length === 0) {
+                            this.$toast.clear()
                             console.log("没有历史消息了:data=" + JSON.stringify(options));
                             return;
                         }

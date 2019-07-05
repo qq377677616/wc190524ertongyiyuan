@@ -142,6 +142,7 @@
                         list = this.userInfoOffList;
                         break;
                 }
+                if (list === undefined) list = []
                 return list
             },
             getUserInfoListClass(){

@@ -14,36 +14,21 @@
                         </article>
                     </div>
                 </article>
-
-                <article class="text">
-                    <p style="display: flex;align-items: center;">推荐热度 (综合) ：{{studioInfo.star_rating}} <i
-                            class="el-icon-star-on"></i>
-                        (近两年患者推荐)
-                    </p>
-                    <span>在线服务满意度：100% </span>
-                    <span>一般等待时长：快</span>
-                    <p>近两周回复数: 99+</p>
-                </article>
-
                 <article class="dynamic-btn">
+                    <div class="tally">
+                        <span>关注数:29385</span>
+                    </div>
                     <div>
                         <span @click="attention" :class="{'isFollow':studioInfo.is_follow === 1}"><i
-                                class="el-icon-user"></i> {{this.studioInfo.is_follow ===1?'已关注':'关注'}}</span>
+                                class="el-icon-user"></i> {{this.studioInfo.is_follow ===1?'已订阅':'订阅'}}</span>
                     </div>
-                    <div>
-                        <span @click="chat"><i class="el-icon-chat-line-round"></i> 私信</span>
-                    </div>
-                    <article class="tally">
-
-                        <span>关注数:29385</span>
-                        <!--                    <span class="studio">工作室介绍</span>-->
-                    </article>
                 </article>
+                <span class="js">工作室介绍</span>
             </div>
         </section>
         <section class="listDate">
             <article class="listDate-title">
-                <span v-for="(item, index) in ['咨询','动态','科普','项目',]" :key="item" @click="selectPj(index)">
+                <span v-for="(item, index) in ['咨询','动态','科普']" :key="item" @click="selectPj(index)">
                     <span :class="{'active-title':index===activeIndex}">{{item}}</span>
                 </span>
             </article>
@@ -126,7 +111,7 @@
                 items: [
                     {name: '知名专家', icon: require('../../assets/advisorySelect/zhiming.png')},
                     {name: '专家', icon: require('../../assets/advisorySelect/zhuanjia.png')},
-                    {name: '专家团队', icon: require('../../assets/advisorySelect/tuandui.png')},
+                    {name: '骨干医生', icon: require('../../assets/advisorySelect/tuandui.png')},
                 ],
                 activeIndex: 0,
                 mySelectDialog: false,
@@ -165,7 +150,8 @@
             getArticleList(department_id = '', doctor_id = '') {
                 this.$axios.post('Patient/articleList', this.$Qs.stringify({
                     department_id: department_id,
-                    doctor_id: doctor_id
+                    doctor_id: doctor_id,
+                    user_id:sessionStorage.user_id
                 })).then(res => {
                     console.log(res)
                     this.articleList = res.data.articl_list;
@@ -177,7 +163,8 @@
                 // this.$axios
                 this.$axios.post('Patient/dynamicList', this.$Qs.stringify({
                     department_id: department_id,
-                    doctor_id: doctor_id
+                    doctor_id: doctor_id,
+                    user_id:sessionStorage.user_id
                 })).then(res => {
                     console.log(res)
                     this.dynamicList = res.data.dynamic_list
@@ -190,18 +177,18 @@
                     case '知名专家':
                         this.$router.push({
                             path: '/consult/registered/doctors',
-                            query: {id: '2', nid: this.studioInfo.id}
+                            query: {id: '2', studio: this.studioId}
                         });
                         break;
                     case '专家':
                         this.$router.push({
                             path: '/consult/registered/doctors',
-                            query: {id: '1', nid: this.studioInfo.id}
+                            query: {id: '1', studio: this.studioId}
                         });
                         break;
-                    case '专家团队':
+                    case '骨干医生':
                         this.$router.push({
-                            path: '/consult/registered/consultancy',
+                            path: '/consult/registered/doctors',
                             query: {studio: this.studioId, id: this.$route.query.id}
                         });
                         break;
@@ -318,19 +305,26 @@
     }
 
     .dynamic-btn {
-        /*text-align: center;*/
-        /*position: fixed;*/
         width: 100%;
         display: flex;
-        padding-top: .3rem;
-        align-content: center;
-
+        align-items: center;
+        padding: .3rem;
+        box-sizing: border-box;
+        .tally {
+            width: 100%;
+            text-align: left;
+            span {
+                padding-left: .35rem;
+                font-size: .3rem;
+                color: white;
+                background: url("../../assets/doctorDetails/guanzhu.png") no-repeat;
+                background-position-y: center;
+                background-size: .3rem;
+            }
+        }
         div {
-            text-align: center;
-            /*width: 40%;*/
-            margin-left: .2rem;
-
-
+            text-align: right;
+            width: 100%;
             span {
                 font-size: .3rem;
                 padding: .1rem .3rem;
@@ -448,12 +442,20 @@
 
     .doctors-info {
         width: 100%;
-        height: 4.8rem;
+        height: 3.8rem;
         background: url("../../assets/phoneserve/BG.png");
         background-size: cover;
         padding-top: .3rem;
 
         div {
+            .js{
+                margin-left:.3rem;
+                color: white;
+                padding: .1rem .3rem;
+                background-color: #40d6cc;
+                border-radius: .1rem;
+                font-size: .3rem;
+            }
             height: 100%;
 
             .avatar-info {
@@ -525,32 +527,7 @@
                 }
             }
 
-            .tally {
-                /*float: right;*/
-                /*width: 20%;*/
-                margin-right: 0.3rem;
-                /*margin-top: .3rem;*/
-                flex: 1;
-                text-align: right;
 
-
-                span {
-                    padding-left: .35rem;
-                    font-size: .3rem;
-                    color: white;
-                    background: url("../../assets/doctorDetails/guanzhu.png") no-repeat;
-                    background-position-y: center;
-                    background-size: .3rem;
-                }
-
-                .studio {
-                    margin-left: .3rem;
-                    display: inline-block;
-                    background: rgba(255, 255, 255, .4);
-                    padding: .15rem .3rem;
-                    border-radius: .1rem;
-                }
-            }
         }
     }
 
@@ -573,7 +550,7 @@
 
             span {
                 display: block;
-                width: calc(100% / 4);
+                width: calc(100% / 3);
 
                 span {
                     width: 50%;
