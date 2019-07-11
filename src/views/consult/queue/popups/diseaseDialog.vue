@@ -6,7 +6,7 @@
         </section>
         <section style="text-align: center;padding: .3rem">
             <label>
-                <textarea v-model="diseased" placeholder="请简要填写疾病信息"></textarea>
+                <textarea @blur="blur" @focus="focus" v-model="diseased" placeholder="请简要填写疾病信息"></textarea>
             </label>
         </section>
     </div>
@@ -17,10 +17,20 @@
         name: "diseaseDialog",
         data(){
             return{
+                scrollTop:0,
                 diseased:''
             }
         },
         methods:{
+            focus(){
+                this.scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+            },
+            blur(){
+                document.documentElement.scrollTop = 0
+                document.documentElement.scrollTop = this.scrollTop;
+                window.pageYOffset = this.scrollTop;
+                document.body.scrollTop = this.scrollTop;
+            },
             subInfo(){
                 this.$emit('subInfo',{std:3,obj:this.diseased})
             },

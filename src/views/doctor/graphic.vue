@@ -9,7 +9,6 @@
                     <p>此开关使用图文问诊的都快急死了地方</p>
                 </div>
             </article>
-            <zy-switch :bol.sync="isGraphic"></zy-switch>
         </section>
         <section class="patient-list">
             <article class="choice-menus">
@@ -29,14 +28,13 @@
                         <span>{{item.name}}</span>
                         <p><span>年龄：</span>{{item.age}}</p>
                         <span>{{item.sex === '1'?'男':'女'}}</span>
-                        <span v-show="item.status!=='2'">新消息</span>
                     </div>
                     <p><span>￥</span>{{item.money/100}}</p>
                 </article>
                 <article class="user-introduction">
                     <div>
-                        <p>用户信息：<span>{{item.user_describe}}</span></p>
-                        <p>诊断：<span>{{item.diagnose_describe}}</span></p>
+                        <p>病情描述：<span>{{item.user_describe}}</span></p>
+                        <p v-show="item.diagnose_describe">诊断：<span>{{item.diagnose_describe}}</span></p>
                     </div>
                     <button @click.stop="accept(
                     key,
@@ -52,22 +50,19 @@
                 </article>
                 <article class="user-timer">
                     <p>{{item.last_login_time}}</p>
-                    <span>在线</span>
                 </article>
             </div>
         </section>
+        <p class="toast" v-show="getUserInfoListClass.length === 0">暂无数据</p>
     </div>
 </template>
 
 <script>
 
-    import zySwitch from '../../components/zySwitch'
+
 
     export default {
         name: "graphic",
-        components: {
-            zySwitch
-        },
         data() {
             return {
                 inquiryClass: this.$route.query,
@@ -85,9 +80,10 @@
         methods: {
             goToChat(item) {
                 //已完成的订单不进行跳转
-                console.log(item);
-                if (item.status !== '2') {
-                    this.$router.push({path: '/consult/personal/privatechat',query:{avatar:item.avatar,id:item.to_id}})
+                console.log(item.pay_type);
+                if (item.status !== '2' && item.pay_type != 0 && item.status != 0) {
+                    console.log(item)
+                    this.$router.push({path: '/consult/personal/privatechat',query:{id:item.identifier}})
                 }
             },
 

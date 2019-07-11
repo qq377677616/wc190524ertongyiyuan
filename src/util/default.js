@@ -3,9 +3,9 @@ import Vue from 'vue'
 //VConsole配置
 import VConsole from 'vconsole'
 
-if (process.env.NODE_ENV != 'development') {
-    const vConsole = new VConsole()
-}
+// if (process.env.NODE_ENV != 'development') {
+//     const vConsole = new VConsole()
+// }
 // const vConsole = new VConsole()
 //腾讯统计
 var _mtac = {"performanceMonitor":1,"senseQuery":1};

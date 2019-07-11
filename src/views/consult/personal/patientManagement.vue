@@ -28,7 +28,7 @@
             </el-row>
         </section>
         <button
-                click="goTo"
+                @click="goTo"
                 type="button"
                 class="btn">
             <i class="el-icon-plus"></i>

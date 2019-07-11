@@ -2,14 +2,15 @@
     <div>
         <section class="personal">
             <article class="user-info">
-                <img @click="editing" :src="doctorInfo.avatar" alt="头像">
+<!--                @click="editing"-->
+                <img  :src="doctorInfo.avatar" alt="头像">
                 <div class="title">
                     <span>{{doctorInfo.real_name}} <span>{{doctorInfo.class_name}}</span></span>
                 </div>
             </article>
         </section>
         <section class="personal-box">
-            <div @click="goTo(item)" v-for="item in items" :key="item.title">
+            <div @click="goTo(key)" v-for="(item,key) in items" :key="item.title">
                 <span><img :src="item.icon" alt=""></span>
                 <p>{{item.title}}</p>
             </div>
@@ -24,10 +25,9 @@
             return {
                 doctorInfo: {},
                 items: [
-                    {title: '我的余额', icon: require('../../assets/mydoctor/yue.png')},
-                    {title: '回复我的', icon: require('../../assets/mydoctor/huifu.png'), url: '/doctors/reply'},
-                    {title: '我的患者', icon: require('../../assets/mydoctor/huanzhe.png'), url: '/doctors/graphic'},
-                    {title: '团队信息', icon: require('../../assets/mydoctor/temainfo.png'), url: '/doctors/temainfo'},
+                    {title: '我的咨询', icon: require('../../assets/mydoctor/huifu.png'), url: '/doctors/myorder'},
+                    {title: '我的挂号', icon: require('../../assets/mydoctor/huanzhe.png'), url: '/doctors/myorder'},
+                    {title: '工作室申请', icon: require('../../assets/mydoctor/temainfo.png'), url: '/doctors/temainfo'},
                 ]
             }
         },
@@ -39,25 +39,32 @@
                 this.$router.push({path:'/doctors/editing',query:{}})
             },
             getDoctorInfo() {
-                this.$axios.get('personinfo/myinfo', {openid: 'oSx-51JbMrtfk5394YIx8IQ8JlRI'}).then(res => {
+                this.$axios.get('personinfo/myinfo', {openid: sessionStorage.openid}).then(res => {
                     console.log(res);
                     this.doctorInfo = res.data.data[0]
                 })
             },
-            goTo(obj) {
-                if (obj.title === '我的患者') {
-                    console.log(111)
-                    this.$router.push({
-                        path: obj.url, query: {
-                            icon: obj.icon,
-                            name: this.doctorInfo.real_name,
-                            id:this.doctorInfo.id
-                        }
-                    })
-
-                } else {
-                    this.$router.push({path: obj.url,query:{id:this.doctorInfo.id}});
+            goTo(index) {
+                switch (index) {
+                    case 0:
+                        this.$router.push({path: this.items[index].url, query: {std:'zx'}})
+                        break;
+                    case 1:
+                        this.$router.push({path: this.items[index].url, query: {std:'gh'}})
+                        break;
+                    case 2:
+                        this.$router.push({path: this.items[index].url})
+                        break;
                 }
+                // if (obj.title === '我的咨询') {
+                //     this.$router.push({
+                //         path: obj.url, query: {std:'zx'}
+                //     })
+                //
+                // }
+                // else {
+                //     this.$router.push({path: obj.url,query:{id:this.doctorInfo.id}});
+                // }
 
             }
         }

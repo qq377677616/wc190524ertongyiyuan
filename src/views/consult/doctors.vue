@@ -29,7 +29,7 @@
         components: {},
         data() {
             return {
-                isShow:false,
+                isShow:null,
                 items: [
                     {name: '图文咨询', icon: require('../../assets/knownDoctor/tuweny.png')},
                     {name: '电话咨询', icon: require('../../assets/knownDoctor/dianhua.png')},
@@ -37,6 +37,9 @@
                 ],
                 doctorList: [],
             }
+        },
+        beforeCreate(){
+            this.isShow = false
         },
         created() {
             this.getDoctors();

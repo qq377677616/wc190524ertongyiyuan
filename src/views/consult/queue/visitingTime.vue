@@ -1,6 +1,6 @@
 <template>
     <div style="height: 100%">
-        <section class="doctor-info">
+        <section class="doctor-info" @click="goTo(doctorInfo.id)">
             <div id="left">
                 <div class="avatar" :style="`background-image:url(${doctorInfo.avatar})`"></div>
                 <div class="info">
@@ -28,11 +28,15 @@
             }
         },
         created() {
+
             this.getDoctorGh()
         },
         methods:{
+            goTo(id){
+                this.$router.push({path:'/consult/registered/knowndoctor',query:{id:id}})
+            },
             getDoctorGh(){
-                this.$axios.get('Consulting/getDoctorGh',{doctor_id:1,}).then(res=>{
+                this.$axios.get('Consulting/getDoctorGh',{doctor_id:this.$route.query.nid,}).then(res=>{
                     console.log(res.data.data)
                     this.doctorInfo = res.data.data
                 })

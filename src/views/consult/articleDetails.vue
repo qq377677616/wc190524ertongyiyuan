@@ -1,26 +1,20 @@
 <template>
 <!--    文章详细-->
-    <div style="height: 100%">
+    <div style="height: 100%" >
         <section class="article-details">
             <p class="title">{{articleDetails.title}}</p>
             <div class="author">
-                <img :src="articleDetails.doctor_avatar" alt="">
+                <div :style="`background-image:url(${articleDetails.doctor_avatar})`" ></div>
                 <p>
                     {{articleDetails.real_name}}
                     <span>&nbsp{{articleDetails.level==='2'?'知名专家':'专家'}} {{articleDetails.hospital_name}}</span>
                 </p>
             </div>
-            <p>时间：2019-04-19 · 1000人已读</p>
-
-            <p style="margin-top: .2rem">{{articleDetails.content}}</p>
-
+            <p>时间：{{articleDetails.create_time}} · {{articleDetails.hits}}人已读</p>
+            <div id="con">
+                <div v-html="articleDetails.content"></div>
+            </div>
         </section>
-<!--        <section class="ad-footer">-->
-<!--&lt;!&ndash;            <article>&ndash;&gt;-->
-<!--            <span>有帮助：249人</span>-->
-<!--                <button type="button">有 帮 助</button>-->
-<!--&lt;!&ndash;            </article>&ndash;&gt;-->
-<!--        </section>-->
     </div>
 </template>
 
@@ -33,21 +27,47 @@
             }
         },
         created() {
-            console.log(this.$route.query.id);
+            console.log(this.$route);
             this.getArticleDetails();
+        },
+        updated(){
+        //doctor
         },
         methods:{
             getArticleDetails(){
-                this.$axios.get('Patient/articleDetails',{article_id:this.$route.query.id}).then(res=>{
-                    console.log(res.data)
-                    this.articleDetails = res.data.article_details
-                })
+                if (this.$route.query.std === 'dc'){
+                    this.$axios.get('doctor/articleDetails',{
+                        article_id:this.$route.query.id,
+                        doctor_id:sessionStorage.doctor_id
+                    }).then(res=>{
+                        console.log(res.data)
+                        this.articleDetails = res.data.article_details
+                    })
+                } else {
+                    this.$axios.get('Patient/articleDetails',{
+                        article_id:this.$route.query.id,
+                        user_id:sessionStorage.user_id
+                    }).then(res=>{
+                        console.log(res.data)
+                        this.articleDetails = res.data.article_details
+                    })
+                }
+
             }
         }
     }
 </script>
 
+<style scoped>
+    #con{
+        padding-top: .2rem;
+    }
+    #con >>> img{
+        width: 100%;
+    }
+</style>
 <style scoped lang="scss">
+
     .article-details{
         padding: .3rem;
         .title{
@@ -66,11 +86,11 @@
             margin: .2rem 0 .2rem 0;
             display: flex;
             align-items: center;
-            img {
+            div {
                 margin-right: .2rem;
                 border-radius: 50%;
-                display: block;
                 background: #00b5bd;
+                background-size: cover;
                 width: .6rem;
                 height: .6rem;
                 font-size: .3rem;

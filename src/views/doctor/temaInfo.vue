@@ -10,12 +10,15 @@
             <div class="infoRight">
                 <div class="first_row">
                     <span class="useName">{{item.real_name}}</span>
-                    <span class="zhiwei">{{item.level === '1'?'专家':'知名专家'}}</span>
+                    <span class="zhiwei">{{item.level}}</span>
                     <button class="agree" @click="audit(key,item.id)">同意</button>
                 </div>
                 <div class="first_row tipBox">
                     <span class="tips">京都儿童医院</span>
                     <span class="tips">儿童牙科科室</span>
+                </div>
+                <div>
+                    申请时间:{{item.create_time}}
                 </div>
             </div>
         </div>
@@ -49,17 +52,16 @@
                 })
             },
             getNotAduitdoc(){
-                this.$axios.get('personinfo/notAduitDoc',{team_building:this.$route.query.id}).then(res=>{
+                this.$axios.get('Doctor/applyDepartmentList',{doctor_id:sessionStorage.doctor_id}).then(res=>{
                     console.log(res.data.data)
                     // console.log(this.notAduitdoc.length)
-                    if (this.notAduitdoc.length === 0){
+                    if (res.data.data === undefined || res.data.data.length == 0){
                         this.isShow = true
                     }else {
-                        this.notAduitdoc = res.data.data.res;
+                        console.log(1)
+                        this.notAduitdoc = res.data.data;
+                        console.log(this.notAduitdoc)
                     }
-
-
-
                 })
             }
         }
@@ -77,6 +79,7 @@
     .rowBox{
         width: 100%;
         display: flex;
+        align-items: center;
         padding:12px 15px;
         box-sizing: border-box;
         background-color: white;
@@ -95,17 +98,20 @@
         height: 100%;
         border-radius:8px;
     }
+    .infoRight{
+        line-height: .5rem;
+    }
     .rowBox .infoRight{
         flex: 1;
         padding-left: .2rem;
     }
     .useName{
-        font-size: .35rem;
+        font-size: .3rem;
         border-right: 1px solid #dedede;
         padding-right: .2rem;
     }
     .zhiwei{
-        font-size: .3rem;
+        font-size: .25rem;
         margin-left:.2rem;
         color: #999;
     }
@@ -113,21 +119,24 @@
         float: right;
         color: white;
         border:0;
-        background-color: #0FC4C0;
-        width: 1rem;
+        background-color: #40d6cc;
+        width: 1.2rem;
         line-height: .5rem;
         border-radius: .1rem;
         outline: none;
+        font-size: .3rem;
     }
     .tipBox{
         width: 100%;
-        padding-top: .3rem;
+    }
+    .tipBox + div {
+        font-size: .25rem;
     }
     .tipBox span{
-        font-size: .25rem;
+        font-size: .2rem;
         background-color:#E5F8F8;
         color: #00928F;
-        padding:.1rem .2rem;
+        padding:2px .2rem;
         border-radius: .5rem;
     }
     .tipBox>span:not(:first-child){

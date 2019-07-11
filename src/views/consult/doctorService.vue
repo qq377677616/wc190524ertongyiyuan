@@ -58,7 +58,7 @@
         name: "phoneservice",
         data() {
             return {
-                radio: false,
+                radio: true,
                 dataList: [
                     {title: '电话咨询', content: '提交手机号码，医生会联系您',},
                     {title: '视频咨询', content: '提交手机号码，医生会联系您',},
@@ -75,7 +75,7 @@
         methods: {
             getPrice() {
                 this.$axios.get('Consulting/getConsulting', {doctor_id: this.$route.query.id}).then(res => {
-                    // console.log(res.data.data)
+                    console.log(res.data.data)
                     this.activeMoney = res.data.data
                 });
                 this.$axios.get('Patient/doctorDetails',{doctor_id: this.$route.query.id,user_id: sessionStorage.user_id}).then(res => {
@@ -92,7 +92,7 @@
                 this.$router.push({path:'/consult/registered/existingdata',query:{
                         department_id:this.doctorInfo.department_id,
                         doctor_id:this.doctorInfo.id,
-                        user_id:this.doctorInfo.user_id,
+                        user_id:this.doctorInfo.identifier,
                         type:this.getMoney.id,
                         money:this.getMoney.money,
                         avatar:this.doctorInfo.avatar,

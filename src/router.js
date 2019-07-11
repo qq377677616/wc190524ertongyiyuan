@@ -6,6 +6,7 @@ import Index  from './views/Index.vue'
 import consult from './views/consult/index'
 import featured from './views/consult/featured'
 import featuredDetailed from './views/consult/featuredDetailed'
+import featuredReservation from './views/consult/featuredReservation'
 import registered from './views/consult/registered'
 import advisory from './views/consult/advisory'
 import doctors from './views/consult/doctors'
@@ -49,8 +50,12 @@ import editing from './views/doctor/editing'
 import studioId from './views/doctor/studioId'
 import release from './views/doctor/release'
 import upload from './views/doctor/articleUpload'
+import register from './views/doctor/register'
+import doctorMessage from './views/doctor/doctorMessage'
+import myorder from './views/doctor/myorder'
 // import temaInfo from './views/doctor/temaInfo'
 import temaInfo from './views/doctor/temaInfo'
+import studioGraphic from './views/doctor/studioGraphic'
 
 //挂号
 import queue from './views/consult/queue/index'
@@ -97,6 +102,11 @@ export default new Router({
       component:featuredDetailed
     },
     {
+      path:'/consult/featured/featuredreservation',
+      name:'特色项目预约',
+      component:featuredReservation
+    },
+    {
       path:'/consult/queue/bespeak',
       name:'医生预约',
       component:bespeak
@@ -112,14 +122,14 @@ export default new Router({
       component:visitingTime,
       children:[
         {
-          path:'/consult/queue/visitingtime/patientinfo',
+          path:'/consult/queue/visitingtime/',
           component:patientInfo
         },
         {
           path:'/consult/queue/visitingtime/outpatient',
           component:outpatient
         }
-      ],redirect:'/consult/queue/visitingtime/patientinfo'
+      ],
     },
     //  登陆
     //  医生
@@ -322,6 +332,12 @@ export default new Router({
       component:graphic
     },
     {
+      //团队订单
+      path:'/doctors/studiographic',
+      name:'studioGraphic',
+      component:studioGraphic
+    },
+    {
       //团队列表
       path:'/doctors/teamlist',
       component:TeamList
@@ -355,6 +371,21 @@ export default new Router({
       //团队信息
       path:'/doctors/temainfo',
       component:temaInfo
+    },
+    {
+      //挂号订单
+      path:'/doctors/register',
+      component:register
+    },
+    {
+      //挂号订单
+      path:'/doctors/doctormsg',
+      component:doctorMessage
+    },
+    {
+      //挂号订单
+      path:'/doctors/myorder',
+      component:myorder
     },
   ]
 })

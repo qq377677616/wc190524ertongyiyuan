@@ -3,8 +3,10 @@
         <section class="title">
 
 <!--            <span>选择就诊人</span>-->
-            选择就诊人
-            <span @click="subInfo">添加患者</span>
+<!--            选择就诊人-->
+            <span @click="goTo">添加患者</span>
+            <span @click="subInfo">确定</span>
+
 <!--            <span>确认</span>-->
         </section>
 <!--        <div>添加就诊人</div>-->
@@ -29,6 +31,7 @@
 
             </li>
         </ul>
+<!--        <p v-show="userInfoList === undefined?false:userInfoList.length === 0" @click="goTo()">添加患者</p>-->
     </div>
 </template>
 
@@ -47,6 +50,10 @@
         methods: {
             subInfo(){
                 // console.log(111)
+                if (this.activeUserInfo.name === undefined){
+                    this.$toast.fail({duration:500,message:'请选择'})
+                    return
+                }
               this.$emit('subInfo',{std:1,obj:this.activeUserInfo})
             },
             getUserInfoList() {
@@ -55,6 +62,9 @@
                     this.userInfoList = res.data.data
                 })
             },
+            goTo(){
+                this.$router.push({path:'/consult/registered/fillout'})
+            }
         }
     }
 </script>
@@ -82,14 +92,21 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        line-height: .9rem;
+        height: 1rem;
         padding: 0 .3rem;
         background: #4ae2df;
         color: white;
         text-align: center;
         font-size: .3rem;
-
-        :nth-child(2),:nth-child(1) {
+        :nth-child(1){
+            line-height: .5rem;
+            background-color: rgba(255,255,255,0.3);
+            color: white;
+            padding: 0 .2rem;
+            border-radius: .1rem;
+            /*box-shadow: ;*/
+        }
+        :nth-child(2){
             line-height: .6rem;
             background: linear-gradient(to bottom right, #4ae2df, #02bdb9);
             padding: 0 .2rem;

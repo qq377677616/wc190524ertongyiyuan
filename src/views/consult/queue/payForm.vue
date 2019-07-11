@@ -46,22 +46,54 @@
         },
         created(){
             console.log(this.$route.query)
+            console.log(this.dateList)
             // this.getDoctorGh()
         },
         methods:{
             payRegister(){
-                this.$axios.post('Consulting/register',{
+                const {dateList} = this
+                this.$axios.post('Consulting/register',this.$Qs.stringify({
+                    openid:sessionStorage.openid,
                     hospital_id:1,
-                    department_class_id:'',
-                    plan_id:'',
-                    doctor_id:'',
-                    record_id:'',
-                    register_time:'',
-                    jbxx:'',
-                    cfzbz:'',
-
+                    department_class_id:dateList.id,
+                    plan_id:dateList.ghid,
+                    doctor_id:dateList.nid,
+                    record_id:dateList.record_id,
+                    register_time:dateList.register_time,
+                    jbxx:dateList.diseased,
+                    cfzbz:dateList.radio,
+                })).then(res=>{
+                    console.log(res.data.data)
+                    if (typeof WeixinJSBridge == "undefined"){
+                        if( document.addEventListener ){
+                            document.addEventListener('WeixinJSBridgeReady', this.jsApiCall, false);
+                        }else if (document.attachEvent){
+                            document.attachEvent('WeixinJSBridgeReady', this.jsApiCall);
+                            document.attachEvent('onWeixinJSBridgeReady', this.jsApiCall);
+                        }
+                    }else{
+                        return this.jsApiCall(res.data.data);
+                    }
                 })
             },
+            jsApiCall(item) {
+                WeixinJSBridge.invoke(
+                    'getBrandWCPayRequest', item,
+                    (res)=>{
+                        WeixinJSBridge.log(res.err_msg);
+                        if(res.err_msg === "get_brand_wcpay_request:ok"){
+                            // alert("支付成功!");
+                            this.$router.push({path:'/consult/personal/arrangement',query:{std:'0'}})
+                            //window.location.href="http://m.blog.csdn.net/article/details?id=72765676";
+                        }else if(res.err_msg === "get_brand_wcpay_request:cancel"){
+                            alert("取消支付!");
+
+                        }else{
+                            alert("支付失败!");
+                        }
+                    }
+                );
+            }
             // getDoctorGh(){
             //     this.$axios.get('Consulting/getDoctorGh',{doctor_id:1,}).then(res=>{
             //         console.log(res.data.data)

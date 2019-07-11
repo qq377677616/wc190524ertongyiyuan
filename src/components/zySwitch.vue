@@ -2,28 +2,40 @@
     <label><input
             class="mui-switch mui-switch-animbg"
             type="checkbox"
-            v-model="value"
+            v-model="kfc"
             @click="updateBol"></label>
+
 </template>
 
 <script>
     export default {
-        props:['bol'],
+        props:['bol','std'],
         name: "zySwitch",
         data(){
             return{
-                value:this.bol
+                // value:this.kfc
             }
         },
         methods:{
             updateBol(){
-                this.$emit('update:bol',this.value)
+
+                this.$axios.post('doctor/zs_by_status',this.$Qs.stringify({
+                    doctor_id:this.std.id,
+                    status:this.std.zx_status === '2'?'1':'2'
+                })).then(res=>{
+
+                })
             }
         },
-        comments:{
-          // value(){
-          //     console.log(this.value)
-          // }
+        computed:{
+            kfc:{
+                get(){
+                    return this.bol
+                },
+                set(){
+                    this.$emit('updateBol',this.std.zx_status !== '2')
+                },
+          }
         }
     }
 </script>

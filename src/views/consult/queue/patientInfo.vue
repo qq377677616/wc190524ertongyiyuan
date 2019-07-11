@@ -10,7 +10,7 @@
         <section class="schedule-info" v-for="(item, key) of doctorInfo.pb_list" :key="key">
             <div>
                 <p>{{item.cbrq}}</p>
-                <span>{{item.type == 1?'普号':item.type == 2?'专家号':'特需号'}} 挂号费：{{item.price}}元</span>
+                <span>{{item.type == 1?'普号':item.type == 2?'专家号':'特需号'}} 挂号费：{{item.price /100}}元</span>
             </div>
             <span @click="goTo(key)" :class="{'full':item.isFull}">{{item.isFull?'约满':'挂号'}}</span>
         </section>
@@ -32,7 +32,12 @@
         },
         methods: {
             goTo(key) {
-                this.$router.push({path: '/consult/queue/visitingtime/outpatient',query:{index:key}})
+                this.$router.push({path: '/consult/queue/visitingtime/outpatient',query:{
+                    index:key,
+                        id:this.$route.query.id,
+                        nid:this.$route.query.nid,
+                        ghid:this.doctorInfo.pb_list[key].id
+                }})
             },
 
         }

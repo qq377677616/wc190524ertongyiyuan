@@ -11,15 +11,15 @@
                 </div>
             </article>
             <article class="user-content">
-                <div>
+                <div @click="$toast.fail('暂未开放')">
                     <p>{{userInfo.money}}元</p>
                     <span>余额</span>
                 </div>
-                <div>
+                <div @click="$toast.fail('暂未开放')">
                     <p>{{userInfo.score}}</p>
                     <span>积分</span>
                 </div>
-                <div>
+                <div @click="$toast.fail('暂未开放')">
                     <p>{{userInfo.discount_num}}张</p>
                     <span>优惠券</span>
                 </div>
@@ -74,7 +74,7 @@
                     {
                         title: '我的医生',
                         icon: require('../../../assets/personal/gerenxinxi.png'),
-
+                        url:'/consult/advisory'
                     },
                     {
                         title: '家庭联系人',

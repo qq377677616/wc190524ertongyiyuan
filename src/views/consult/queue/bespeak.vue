@@ -27,8 +27,8 @@
                      :key="key"
                      @click="goTo(item)">
                 <div class="doctors-info">
-                    <div class="title-n1">
-                        <img :src="item.doctor_avatar" alt="">
+                    <div class="title-n1" :style="`background-image:url(${item.doctor_avatar})`">
+<!--                        <img :src="item.doctor_avatar" alt="">-->
                     </div>
                     <div class="title-n2">
                         <div>
@@ -51,7 +51,7 @@
                         <i class="el-icon-star-on"></i>
                         {{item.doctor_star_rating}}
                     </span>
-                    <span class="btn" @click="goTo">挂号</span>
+                    <span class="btn" >挂号</span>
                 </div>
             </article>
         </section>
@@ -160,8 +160,9 @@
                     this.scheduling = res.data.data
                 })
             },
-            goTo() {
-                this.$router.push({path: '/consult/queue/visitingtime'})
+            goTo(item) {
+                // console.log(this.$route.query.id)
+                this.$router.push({path: '/consult/queue/visitingtime/',query:{id:this.$route.query.id,nid:item.doctor_id}})
             }
         },
         computed: {
@@ -302,12 +303,13 @@
             width: 1.8rem;
             height: 1.8rem;
             background: bisque;
-
-            img {
-                width: 100%;
-                height: 100%;
-                border-radius: .1rem;
-            }
+            border-radius: .1rem;
+            background-size: cover;
+            /*img {*/
+            /*    width: 100%;*/
+            /*    height: 100%;*/
+            /*    !*border-radius: .1rem;*!*/
+            /*}*/
 
         }
 

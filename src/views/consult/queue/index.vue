@@ -3,11 +3,11 @@
     <div>
         <section style="text-align: center">
             <label>
-                <input placeholder="搜索科室" type="text">
+                <input v-model="search" placeholder="搜索科室" type="text">
             </label>
         </section>
         <section class="consult-studio">
-            <div v-for="(item,key) of items" :key="key" @click="goTo(item.id)">
+            <div v-for="(item,key) of getItems" :key="key" @click="goTo(item.id)">
                     <span class="studio-bg">
                         <span>
                             <img :src="item.img_url" alt="icon">
@@ -25,6 +25,7 @@
         name: "index",
         data(){
             return{
+                search:'',
                 items:[], //科室列表
             }
         },
@@ -48,6 +49,22 @@
 
                 })
             },
+        },
+        computed:{
+            getItems(){
+                const {search, items} = this
+                let list = []
+                if (search !== ''){
+                    for (let item of items){
+                        if (item.name.includes(search)) {
+                            list.push(item)
+                        }
+                    }
+                }else {
+                    return items
+                }
+                return list
+            }
         }
     }
 </script>

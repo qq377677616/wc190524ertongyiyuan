@@ -36,8 +36,8 @@
             <span :class="{'activeTag':tagList.includes(item)}" @click="seTag(item)" v-for="item of tagInfo"
                   class="tag">{{item.name}}</span>
         </div>
-        <span @click="uploader"
-              style="font-size: .3rem;position: fixed;bottom: 1rem;display: block;width: 80%;line-height: .7rem;background: #00b5bd;color: white;left: calc(50% - 40%);text-align: center;border-radius: .1rem">上传</span>
+        <span class="upBtn" @click="uploader"
+              style="">上传</span>
     </div>
 </template>
 
@@ -65,7 +65,7 @@
 
             },
             getArtivleLabel() {
-                this.$axios.get('Doctor/getArticleLabel').then(res => {
+                this.$axios.get('Doctor/getArticleLabel', {doctor_id: sessionStorage.doctor_id}).then(res => {
                     console.log(res)
                     this.tagInfo = res.data.data
                 })
@@ -85,43 +85,49 @@
             uploader() {
                 let list = [];
                 let tagIdList = [];
-                for (let i of this.tagList){
+                for (let i of this.tagList) {
                     tagIdList.push(i.id)
                 }
                 for (let i of this.fileList) {
                     list.push(i.content)
                 }
-                if (this.title === ''){
+                if (this.title === '') {
                     this.$toast.fail('请填写标题');
                     return
                 }
-                if (this.content.length <11){
+                if (this.content.length < 11) {
                     this.$toast.fail('请多填写一些内容');
                     return;
                 }
-                if (tagIdList.length === 0){
+                if (tagIdList.length === 0) {
                     this.$toast.fail('请选择标签');
                     return;
                 }
-                if (list.length === 0){
+                if (list.length === 0) {
                     this.$toast.fail('请添加图片');
                     return;
                 }
                 console.log(list);
+                this.$toast.loading({
+                    mask: true,
+                    message: '上传中..',
+                    duration: 0
+                })
                 this.$axios.post('Doctor/createArticle', this.$Qs.stringify({
                     content: this.content,
-                    doctor_id: this.$route.query.id,
+                    doctor_id: sessionStorage.doctor_id,
                     type: 2,
                     title: this.title,
                     base64: list,
-                    label:tagIdList
+                    label: tagIdList
                 })).then(res => {
                     console.log(res)
-                    if (res.data.msg === 'success'){
+                    if (res.data.msg === 'success') {
+                        this.$toast.clear()
                         this.$toast.success('发表成功');
                         this.$router.go(-1)
                     }
-                }).catch(res=>{
+                }).catch(res => {
                     this.$toast.fail('服务器错误')
                 })
             },
@@ -147,6 +153,20 @@
 </script>
 
 <style scoped lang="scss">
+    .upBtn {
+        font-size: .3rem;
+        position: absolute;
+        bottom: 1rem;
+        display: block;
+        width: 80%;
+        line-height: .7rem;
+        background: #00b5bd;
+        color: white;
+        left: calc(50% - 40%);
+        text-align: center;
+        border-radius: .1rem
+    }
+
     .activeTag {
         /*color: #CFCFCF;*/
         /*border:2px #CFCFCF solid;*/

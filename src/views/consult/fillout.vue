@@ -1,6 +1,6 @@
 <template>
     <!--    资料填写-->
-    <div>
+    <div style="min-height: 100vh;padding-bottom: .6rem">
         <section class="prompt">
             <p><span>提示：</span>急重症患者不适合网上诊疗/咨询请即刻前往当地医院急诊</p>
 
@@ -10,7 +10,7 @@
             <article class="patient-form">
                 <label for="name">
                     <span>儿童姓名</span>
-                    <input @blur="blur"  type="text" name="name" v-model="userInfo.name" id="name" placeholder="请输入姓名">
+                    <input type="text" name="name" v-model="userInfo.name" id="name" placeholder="请输入姓名">
                 </label>
 
                 <div style="display: flex;font-size: 0.32rem">
@@ -36,7 +36,7 @@
 
                 <label for="description">
                     <span>病情描述</span>
-                    <textarea @blur="blur" v-model="userInfo.describe" placeholder="简单的介绍病情,限200字,选填" type="text" name="description"
+                    <textarea @blur="blur" @focus="focus"  maxlength="200" v-model="userInfo.describe" placeholder="简单的介绍病情,限200字,选填" type="text" name="description"
                               id="description"></textarea>
                 </label>
             </article>
@@ -44,20 +44,20 @@
             <article class="patient-form">
                 <label for="custody_name">
                     <span>监护人姓名</span>
-                    <input @blur="blur"  v-model="userInfo.custody_name" placeholder="" type="text" name="custody_name" id="custody_name">
+                    <input @blur="blur" @focus="focus"   v-model="userInfo.custody_name" placeholder="" type="text" name="custody_name" id="custody_name">
                 </label>
                 <label for="mobile">
                     <span>监护人电话</span>
-                    <input @blur="blur"  v-model="userInfo.mobile" placeholder="便于获取医生回复通知" type="number" name="mobile" id="mobile">
+                    <input  @blur="blur" @focus="focus"  @input="input(userInfo.mobile)"  v-model="userInfo.mobile" placeholder="便于获取医生回复通知" type="number" name="mobile" id="mobile">
                 </label>
                 <label for="custody_identity">
                     <span>身份证</span>
-                    <input @blur="blur"  v-model="userInfo.custody_identity" placeholder="" type="number" name="custody_identity" id="custody_identity">
+                    <input maxlength="18" @focus="focus"  @blur="blur"  v-model="userInfo.custody_identity" placeholder="" type="number" name="custody_identity" id="custody_identity">
                 </label>
             </article>
             <article class="spanBtn">
-                <p>了解您的性别年龄居住区域等基本信息，能版主医生更好的给您诊断建议，同时信息也将严格对外保密
-                    <span>（注：信息调教后无法修改或删除）</span></p>
+                <p>了解您的性别年龄居住区域等基本信息，能帮助医生更好的给您诊断建议，同时信息也将严格对外保密
+                    <span>（注：信息提交后无法修改或删除）</span></p>
                 <span @click="addFillout">{{queryId !== undefined?'修 改':'提交'}}</span>
             </article>
         </section>
@@ -108,6 +108,11 @@
 
         let myreg = /^[1][3,4,5,7,8,9][0-9]{9}$/;
         // console.log(myreg.test(obj.mobile))
+        let idcardReg = /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/;
+
+        if (!idcardReg.test(obj.custody_identity)){
+            return '身份证不合法'
+        }
         if (myreg.test(obj.mobile)) {
             return '1000'
         } else {
@@ -120,6 +125,7 @@
         data() {
 
             return {
+                scrollTop:0,
                 queryId:this.$route.query.id,
                 relations:[
                     {text:'本人',value:1},
@@ -143,12 +149,26 @@
             }
         },
         created(){
+            // window.document
+            // window.addEventListener("scroll", this.handleScroll);
             if (this.$route.query.id !== undefined){
                 this.edid()
             }
 
         },
         methods: {
+            handleScroll(){
+               this.scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+
+            },
+            input(e){
+              if (e.length >= 11){
+                  this.userInfo.mobile = e.substr(0, 11)
+              }
+            },
+            focus(){
+                this.handleScroll()
+            },
             edid(){
                 this.$axios.get('Consulting/getPatientInfo',{id:this.$route.query.id}).then(res=>{
 
@@ -173,8 +193,11 @@
                 })
             },
             blur(){
-                document.documentElement.scrollTop = 0;
-                document.body.scrollTop = 0;
+                console.log(this.scrollTop)
+                document.documentElement.scrollTop = 0
+                document.documentElement.scrollTop = this.scrollTop;
+                window.pageYOffset = this.scrollTop;
+                document.body.scrollTop = this.scrollTop;
             },
             getTime(date){
                 this.showAll=false
@@ -251,6 +274,9 @@
                 })
                 console.log(this.userInfo)
             }
+        },
+        watch:{
+
         }
     }
 </script>

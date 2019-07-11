@@ -2,7 +2,8 @@
     <div style="height: 100%">
         <section class="index-doctors">
             <article class="doctors-info">
-                <img @click="editing" :src="doctorInfo.avatar" alt="">
+<!--                @click="editing"-->
+                <img  :src="doctorInfo.avatar" alt="">
                 <div>
                     <h4>{{doctorInfo.real_name}}</h4>
                     <span>知名专家</span>
@@ -14,7 +15,7 @@
                     <span @click="message">消息</span>
                 </p>
                 <p id="swt">
-                    <zySwitch style="width: 40%" :bol.sync="value"></zySwitch>
+                    <zySwitch @updateBol="setValue" style="width: 40%" :bol="value" :std="doctorInfo"></zySwitch>
                     <span>开启我的诊室</span>
                 </p>
             </article>
@@ -69,7 +70,8 @@
                     {
                         name: '患者',
                         icon: require('../../assets/footer/geren.png'),
-                        activeIcon: require('../../assets/footer/ageren.png')
+                        activeIcon: require('../../assets/footer/ageren.png'),
+                        url:'/doctors/doctormsg'
                     },
                     {
                         name: '专家团队',
@@ -99,32 +101,46 @@
                     {type:'1',name: '图文咨询', icon: require('../../assets/knownDoctor/tuweny.png')},
                     {type:'2',name: '电话咨询', icon: require('../../assets/knownDoctor/dianhua.png')},
                     {type:'3',name: '视频咨询', icon: require('../../assets/knownDoctor/shiping.png')},
-                    {name: '团队咨询', icon: require('../../assets/knownDoctor/temainfo.png')},
+                    {name: '挂号订单', icon: require('../../assets/knownDoctor/icon_guahao.png')},
+                    {name: '团队订单', icon: require('../../assets/knownDoctor/temainfo.png')},
                 ]
 
             }
+        },
+        computed:{
+
         },
         created(){
           this.getDoctorInfo()
         },
         methods:{
+            setValue(e){
+                this.value = e
+            },
             goToMyStdio(){
               this.$router.push({path:'/doctors/studioid'})
             },
             message(){
-              this.$toast.fail('暂未开放')
+              // this.$toast.fail('暂未开放')
+                this.$router.push({path:'/doctors/doctormsg'})
             },
             getDoctorInfo(){
               this.$axios.get('personinfo/myinfo',{openid:sessionStorage.openid}).then(res=>{
                   console.log(res.data.data[0]);
                   this.doctorInfo = res.data.data[0];
+                  this.value = this.doctorInfo.zx_status !== '2'
+                  console.log(this.value)
               })
             },
             goToLi(url){
-                console.log(this.doctorInfo)
-              this.$router.push({path:url,query:{id:this.doctorInfo.id}})
+                // console.log(this.doctorInfo)
+              this.$router.push({path:url,query:{std:'dc'}})
             },
             goTo(index){
+                if (this.tabBar[index].url === undefined && index !== 0){
+                    this.$toast.fail({duration:500,message:'暂未开放'})
+                    return
+                }
                 this.activeTabBar = index
                 this.$router.push({path:this.tabBar[index].url,query:{id:this.doctorInfo.id}})
             },
@@ -132,8 +148,16 @@
               this.$router.push({path:'/doctors/editing',query:{}})
             },
             goToAdvisory(key){
-                this.inquiryAll[key].id = this.doctorInfo.id
-                this.$router.push({path:'/doctors/graphic',query:this.inquiryAll[key]})
+                if (key === 3){
+                    this.$router.push({path:'/doctors/register'})
+                } else {
+                    if (key ===4) {
+                        this.$router.push({path:'/doctors/studiographic',query:{id:this.doctorInfo.department_id}})
+                    }else {
+                        this.inquiryAll[key].id = this.doctorInfo.id
+                        this.$router.push({path:'/doctors/graphic',query:this.inquiryAll[key]})
+                    }
+                }
             }
         }
     }
@@ -148,6 +172,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        box-sizing: border-box;
 
         .doctors-info {
 
@@ -157,14 +182,18 @@
             font-size: .35rem;
             h4{
                 font-weight: 400;
+                overflow: hidden;
+                text-overflow:ellipsis;
+                white-space: nowrap;
+                width: 1.8rem;
             }
             span{
                 font-weight: 200;
             }
             img {
                 display: block;
-                width: 1.5rem;
-                height: 1.5rem;
+                width: 1.2rem;
+                height: 1.2rem;
                 background: #9b9c9d;
                 border-radius: 50%;
                 margin-right: .2rem;
@@ -172,6 +201,7 @@
         }
 
         .btn {
+
             #swt {
                 display: flex;
                 /*align-items: center;*/
@@ -218,13 +248,13 @@
             width: 100%;
             padding: .2rem .15rem;
             display: flex;
-            /*flex-wrap: wrap;*/
+            flex-wrap: wrap;
             box-sizing: border-box;
 
             div {
                 background: #f4f5f6;
-                margin: .1rem .15rem;
-                width: calc(50% - .6rem);
+                margin: .15rem .15rem;
+                width: calc(50% - .3rem);
                 height: 1.5rem;
                 border-radius: 5px;
                 text-align: center;

@@ -16,7 +16,7 @@
                 </article>
                 <article class="dynamic-btn">
                     <div class="tally">
-                        <span>关注数:29385</span>
+                        <span>关注数: {{studioInfo.follow_num}} 人</span>
                     </div>
                     <div>
                         <span @click="attention" :class="{'isFollow':studioInfo.is_follow === 1}"><i
@@ -67,7 +67,7 @@
                     <div v-for="item of articleList" class="article" @click="goToArticleDetails(item.id)">
                         <p>{{item.title}}</p>
                         <div>
-                            <span v-for="label of item.label">{{label.name}}</span>
+                            <span v-for="label of item.label">{{label}}</span>
                         </div>
                         <div class="user-info">
                             <img :src="item.doctor_avatar" alt="">
@@ -80,17 +80,16 @@
                         <p>{{item.comment}}条评价·{{item.hits}}人已读·{{item.utile}}人觉得有用</p>
                     </div>
                 </article>
-                <article class="pjt" v-show="activeIndex===3" :key="3">
-                    <span>暂无数据</span>
-                </article>
+<!--                <article class="pjt" v-show="activeIndex===3" :key="3">-->
+<!--                    <span>暂无数据</span>-->
+<!--                </article>-->
             </transition-group>
         </section>
 
         <!--        :studio=""-->
 
-            <my-select @replace="getRegistered" :show.sync="mySelectDialog" :studio="studioId"></my-select>
-
-
+        <my-select @replace="getRegistered" :show.sync="mySelectDialog" :studio="studioId"></my-select>
+        <p class="pjt">{{isDataList}}</p>
     </div>
 </template>
 
@@ -115,14 +114,13 @@
                 ],
                 activeIndex: 0,
                 mySelectDialog: false,
-                studioId: this.$route.query.department_class_id,
+                studioId: this.$route.query.id,
                 studioInfo: {},
                 dynamicList: [],
                 articleList: [],
             }
         },
         created() {
-            console.log(this.$route.query.department_class_id);
             this.getRegistered()
         },
         methods: {
@@ -132,7 +130,7 @@
             attention() {
                 //    关注
                 this.$axios.post('Patient/follow', this.$Qs.stringify({
-                    user_id: 12,
+                    user_id: sessionStorage.user_id,
                     to_id: this.studioInfo.id,
                     to_type: 4,
                     status: this.studioInfo.is_follow === 1 ? 2 : 1,
@@ -151,7 +149,7 @@
                 this.$axios.post('Patient/articleList', this.$Qs.stringify({
                     department_id: department_id,
                     doctor_id: doctor_id,
-                    user_id:sessionStorage.user_id
+                    user_id: sessionStorage.user_id
                 })).then(res => {
                     console.log(res)
                     this.articleList = res.data.articl_list;
@@ -164,7 +162,7 @@
                 this.$axios.post('Patient/dynamicList', this.$Qs.stringify({
                     department_id: department_id,
                     doctor_id: doctor_id,
-                    user_id:sessionStorage.user_id
+                    user_id: sessionStorage.user_id
                 })).then(res => {
                     console.log(res)
                     this.dynamicList = res.data.dynamic_list
@@ -189,35 +187,40 @@
                     case '骨干医生':
                         this.$router.push({
                             path: '/consult/registered/doctors',
-                            query: {studio: this.studioId, id: this.$route.query.id}
+                            query: {studio: this.studioId, id: '3'}
                         });
                         break;
                 }
             },
             getRegistered(index) {
-                // this.$axios.all([
-                //     this.$axios.get('Patient/depaDetails',{id:this.$route.query.id}),
-                //     this.$axios.get('Patient/dynamicList',{doctor_id:'',department_id:''})
-                // ]).then(this.$axios.spread((res,res_dynamic)=>{
-                //
-                //     console.log(res,res_dynamic)
-                // }));
                 let id = this.$route.query.id;
                 if (index !== undefined) {
                     id = index;
                 }
-                this.$axios.get('Patient/depaDetails', {id: id, user_id: 12}).then(res => {
+                this.$axios.get('Patient/depaDetails', {id: id, user_id: sessionStorage.user_id}).then(res => {
                     console.log(res)
                     this.studioInfo = res.data.data;
-                    this.getDynamic(this.studioInfo.department_class_id)
-                    this.getArticleList(this.studioInfo.department_class_id)
+                    this.getDynamic(this.studioInfo.id)
+                    this.getArticleList(this.studioInfo.id)
                 })
 
             },
             selectPj(index) {
                 this.activeIndex = index
             },
-
+        },
+        computed:{
+            isDataList(){
+                const {activeIndex, dynamicList, articleList} = this
+                switch (activeIndex) {
+                    case 1:
+                        if (dynamicList === undefined) return '暂无动态'
+                        break;
+                    case 2:
+                        if (articleList === undefined) return '暂无文章'
+                        break;
+                }
+            }
         }
     }
 </script>
@@ -225,13 +228,11 @@
 <style scoped lang="scss">
 
     .pjt {
-        span {
             margin-top: 1rem;
             display: block;
             font-size: .6rem;
             text-align: center;
             color: #a1a7a8;
-        }
     }
 
     .article {
@@ -310,9 +311,11 @@
         align-items: center;
         padding: .3rem;
         box-sizing: border-box;
+
         .tally {
             width: 100%;
             text-align: left;
+
             span {
                 padding-left: .35rem;
                 font-size: .3rem;
@@ -322,9 +325,11 @@
                 background-size: .3rem;
             }
         }
+
         div {
             text-align: right;
             width: 100%;
+
             span {
                 font-size: .3rem;
                 padding: .1rem .3rem;
@@ -448,14 +453,15 @@
         padding-top: .3rem;
 
         div {
-            .js{
-                margin-left:.3rem;
+            .js {
+                margin-left: .3rem;
                 color: white;
                 padding: .1rem .3rem;
                 background-color: #40d6cc;
                 border-radius: .1rem;
                 font-size: .3rem;
             }
+
             height: 100%;
 
             .avatar-info {

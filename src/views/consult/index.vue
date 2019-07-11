@@ -38,7 +38,7 @@
                 </div>
             </article>
         </section>
-        <section>
+        <section style="     padding-bottom: 2.6rem;">
             <article class="consult-studio">
                 <div v-for="(item,key) of items" :key="key" @click="goToRegistered(item.id)">
                     <span class="studio-bg">
@@ -50,9 +50,17 @@
                 </div>
             </article>
         </section>
-        <section class="btn" @click="customerService">
-            <span>导诊</span>
-        </section>
+        <transition enter-active-class="animated fadeInUpBig" appear>
+            <div class="btn" @click="dgShow = true">
+                <span >导诊</span>
+            </div>
+        </transition>
+        <transition name="fade">
+        <div class="dg" v-show="dgShow">
+            <i class="el-icon-back" @click="dgShow = false"></i>
+            <img src="" alt="">
+        </div>
+        </transition>
     </div>
 </template>
 
@@ -68,11 +76,13 @@
         },
         data() {
             return {
+                dgShow:false,
                 items: [],
                 //activeView 抽屉页弹窗显示依据 activeViewName 组件名称
                 activeView: false,
                 activeViewName: '',
                 swiperOption: {
+                    loop:true
                     // swiper参数配置
                     // ...
                 }
@@ -85,12 +95,12 @@
             goToService(){
               this.$router.push({path:'/consult/featured',})
             },
-            customerService() {
-                this.$toast.fail('暂未开发')
-            },
+            // customerService() {
+            //     this.$toast.fail('暂未开发')
+            // },
             getStudio() {
                 this.$axios.get('Patient/departmentClass',{user_id:sessionStorage.user_id}).then(res => {
-                    console.log(res.data.department_class);
+                    // console.log(res.data.department_class);
                     this.items = res.data.department_class
                 })
             },
@@ -105,8 +115,23 @@
 </script>
 
 <style scoped lang="scss">
+    .dg{
+        i{
+            position: absolute;
+            left: .3rem;
+            top: .25rem;
+            font-size: .7rem;
+            color: #96999e;
+        }
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+        background: white;
+        z-index: 3000;
+    }
     .consult{
-        height: 100vh;
+        min-height: 100vh;
         background-image: url("../../assets/reservation/BG.png");
         background-repeat: no-repeat;
         background-size: 100% 2rem;

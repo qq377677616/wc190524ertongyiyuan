@@ -6,7 +6,7 @@
             <p style="color: #00b5bd"><span>门诊时间：</span>{{doctorInfo.pb_list?doctorInfo.pb_list[dateIndex].cbrq:''}}</p>
             <p><span>门诊类型：</span>{{doctorInfo.class_name}} {{doctorInfo.level ==
                 1?'专家':doctorInfo.level==2?'知名专家':'骨干'}}门诊</p>
-            <p><span>挂号费：</span>{{doctorInfo.pb_list?doctorInfo.pb_list[dateIndex].price:''}}元</p>
+            <p><span>挂号费：</span>{{doctorInfo.pb_list?doctorInfo.pb_list[dateIndex].price / 100:''}}元</p>
         </section>
         <section>
             <div class="form-sub" @click="isShow('patientDialog')">
@@ -36,7 +36,7 @@
         <transition name="fade-up">
             <section class="popup-show" v-show="show">
                 <div>
-                    <div :identifier="doctorInfo.id" @subInfo="addInfo" :is="showComp"></div>
+                    <div :identifier="$route.query.ghid" @subInfo="addInfo" :is="showComp"></div>
                 </div>
             </section>
         </transition>
@@ -101,6 +101,20 @@
             },
             goTo() {
                 const {doctorInfo, dateIndex, userInfo} = this
+
+                if (userInfo.name.name === '请选择') {
+                    this.$toast.fail({duration:500,message:'请选择就诊人'})
+                    return
+                }
+                if (userInfo.timer === '请选择') {
+                    this.$toast.fail({duration:500,message:'请选择时间'})
+                    return
+                }
+                if (userInfo.diseased === '请填写疾病信息') {
+                    this.$toast.fail({duration:500,message:'请填写疾病信息'})
+                    return
+                }
+
                 let obj = {
                     hospital: doctorInfo.hospital_name,
                     doctorName: doctorInfo.real_name,
@@ -125,7 +139,13 @@
                         card: userInfo.name.custody_identity,
                         timer: JSON.stringify(userInfo.timer),
                         diseased:userInfo.diseased,
-                        radio:userInfo.radio
+                        radio:userInfo.radio,
+                        id:this.$route.query.id,
+                        nid:this.$route.query.nid,
+                        ghid:this.$route.query.ghid,
+                        record_id:userInfo.name.id,
+                        register_time:userInfo.timer.sjc,
+                        cfzbz:userInfo.radio,
                     }
                 })
             },
@@ -159,20 +179,7 @@
         background: rgba(75, 75, 75, .6);
     }
 
-    .fade-up-enter-active, .fade-up-leave-active {
-        transition: all .4s ease;
-    }
 
-    .fade-up-enter {
-        /*//进入时的动画*/
-        transform: translateY(100%);
-
-    }
-
-    .fade-up-leave-active {
-        /*//离开时的动画*/
-        transform: translateY(100%);
-    }
 
     .bottom-btn {
         position: fixed;

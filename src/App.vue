@@ -18,6 +18,7 @@
     </div>
 </template>
 <script>
+
     const homeUrl = [
         '/index',
         '/consult/personal/personal',
@@ -59,8 +60,9 @@
             }
         },
         created() {
-            // sessionStorage.user_id = 16; //本地测试userID
+            // sessionStorage.user_id = 12; //本地测试userID
             // sessionStorage.openid='oSx-51JbMrtfk5394YIx8IQ8JlRI' //本地测试openId
+            // sessionStorage.doctor_id='7' //doctor_id
 
             this.isBack = homeUrl.includes(this.$route.path);
 
@@ -71,6 +73,10 @@
         methods: {
             goTo(index) {
                 //tabBar路由跳转
+                if ([1,2].includes(index)) {
+                    this.$toast.fail({duration:500,message:"暂未开放"})
+                    return
+                }
                 this.activeTabBar = index;
                 this.$router.push({path: this.tabBar[index].path});
             },
@@ -86,6 +92,11 @@
         watch: {
             $route(aUrl, bUrl) {
                 //获取之前的url，和判断当前url 是否需要footer
+                for (let i = 0;i < this.tabBar.length; i++){
+                    if (this.tabBar[i].path === aUrl.path) {
+                        this.activeTabBar = i
+                    }
+                }
                 this.title = this.$route.name;
                 this.isBack = aUrl.path !== '/' ? homeUrl.includes(aUrl.path) : true
             }
@@ -93,6 +104,27 @@
     }
 </script>
 <style lang="scss">
+    .toast{
+        margin-top: 1.5rem;
+        font-size: .6rem;
+        color: #96999e;
+        text-align: center;
+    }
+    .fade-up-enter-active, .fade-up-leave-active {
+        transition: all .4s ease;
+    }
+
+    .fade-up-enter {
+        /*//进入时的动画*/
+        transform: translateY(100%);
+
+    }
+
+    .fade-up-leave-active {
+        /*//离开时的动画*/
+        transform: translateY(100%);
+    }
+
     .van-picker__cancel, .van-picker__confirm {
         color: white !important;
         font-size: .3rem !important;
@@ -137,7 +169,9 @@
     }
     main {
         height: 100vh;
-        overflow-x: hidden;
+        /*overflow-x: hidden;*/
+        /*overflow-y: hidden;*/
+        /*padding-bottom: 1.4rem;*/
     }
 
     footer {

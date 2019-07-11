@@ -104,12 +104,11 @@
                         money:this.order.money,
                         register_time:'1999-12-23'
                     })).then(res=>{
-
+                        console.log(res)
                         if (res.data.msg === 'ok') {
                             // callPay(res.data);
                             this.callPay(res.data.data);
                             // alert(std);
-
                         }else {
                             this.$toast.fail('请稍后重试');
                         }
@@ -124,6 +123,8 @@
             callPay(data)
             //    调起支付
             {
+                // console.log(this.order.doctor_id)
+                // this.$router.push({path: '/consult/personal/privatechat', query: {id:this.order.user_id,avatar:this.order.avatar}})
                 if (typeof WeixinJSBridge == "undefined"){
                     if( document.addEventListener ){
                         document.addEventListener('WeixinJSBridgeReady', jsApiCall, false);
@@ -148,13 +149,18 @@
                         if(res.err_msg === "get_brand_wcpay_request:ok"){
                             // alert('hello');
                             // alert("支付成功!");
-
+                            if (this.order.doctor_id !== undefined){
                                 if (this.order.title !== '图文咨询') {
                                     this.$toast.success('申请成功');
                                     this.$router.go(-2);
                                     return
                                 }
                                 this.$router.push({path: '/consult/personal/privatechat', query: {id:this.order.user_id,avatar:this.order.avatar}})
+                            } else {
+                                this.$toast.success('申请成功');
+                                this.$router.go(-2);
+                            }
+
                             //window.location.href="http://m.blog.csdn.net/article/details?id=72765676";
                         }else if(res.err_msg === "get_brand_wcpay_request:cancel"){
                             // alert('xxxx')

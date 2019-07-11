@@ -5,13 +5,15 @@
             <p class="title">{{item.title}}</p>
             <span v-for="ret in item.label">{{ret}}</span>
             <div class="author">
-                <img :src="doctorInfo.avatar" alt="">
+                <img :src="item.avatar" alt="">
                 <p>
-                    {{doctorInfo.real_name}}
-                    <span>&nbsp{{doctorInfo.class_name}}{{item.level === '1'?'专家':'知名专家'}} {{doctorInfo.work_unit}}{{doctorInfo.class_name}}</span>
+                    {{item.real_name}}
+                    <span>&nbsp{{item.class_name}}{{item.level === '1'?'专家':'知名专家'}} {{item.work_unit}}{{item.class_name}}</span>
                 </p>
             </div>
-            <p class="detailed">{{item.content}}</p>
+            <p class="detailed">
+                <span v-html="item.content"></span>
+            </p>
             <p>{{item.comment}}条评论 · {{item.hits}}人已读 · {{item.utile}}人觉得有用</p>
         </article>
     </div>
@@ -32,7 +34,7 @@
         },
         methods: {
             articleDetailed(index) {
-                this.$router.push({path: '/consult/registered/articledetails', query: {id: index}})
+                this.$router.push({path: '/consult/registered/articledetails', query: {id: index,std:this.$route.query.std}})
             },
             getArticleAll() {
                 // data[
@@ -42,7 +44,7 @@
                 //     {'key':'value'},
                 //     {'key':'value'},
                 //     ]
-                this.$axios.get('Doctor/articleList', {doctor_id: 1}).then(res => {
+                this.$axios.get('Doctor/articleList', {doctor_id: sessionStorage.doctor_id}).then(res => {
                     console.log(res.data.data)
                     this.articleList = res.data.data;
                 })
@@ -60,6 +62,9 @@
         .title {
             font-size: .4rem;
             margin-bottom: .1rem;
+            overflow: hidden;
+            text-overflow:ellipsis;
+            white-space: nowrap;
         }
 
         > span {

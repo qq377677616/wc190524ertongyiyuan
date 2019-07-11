@@ -52,6 +52,8 @@
             <article class="detailed-text">
                 <div style="display: flex;align-items: center">
                     <input
+                            :value="1"
+                            v-model="radio"
                             type="radio"
                             id="female"
                             name="sex"/>
@@ -78,7 +80,7 @@
         name: "phoneservice",
         data() {
             return {
-                radio: false,
+                radio: 1,
                 // consulting:JSON.parse(),
                 dataList:[
                     {title:'电话咨询',content:'提交手机号码，医生会联系您',},

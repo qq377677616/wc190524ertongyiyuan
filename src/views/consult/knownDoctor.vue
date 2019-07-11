@@ -3,7 +3,7 @@
         <section class="doctors-info">
             <div>
                 <article class="avatar-info">
-                    <img :src="doctorInfo.avatar" alt="头像">
+                    <span :style="`background-image:url(${doctorInfo.avatar})`" ></span>
                     <div>
                         <span>{{doctorInfo.real_name}} <span id="zj">| 知名专家</span></span><br>
                         <article class="tag">
@@ -12,33 +12,34 @@
                     </div>
                 </article>
 
-<!--                <article class="text">-->
-<!--                    <p style="display: flex;align-items: center;">推荐热度 (综合) ：5.0 <i class="el-icon-star-on"></i>-->
-<!--                        (近两年患者推荐)-->
-<!--                    </p>-->
-<!--                    <span>在线服务满意度：100% </span>-->
-<!--                    <span>一般等待时长：快</span>-->
-<!--                    <p>近两周回复数: 99+</p>-->
+                <!--                <article class="text">-->
+                <!--                    <p style="display: flex;align-items: center;">推荐热度 (综合) ：5.0 <i class="el-icon-star-on"></i>-->
+                <!--                        (近两年患者推荐)-->
+                <!--                    </p>-->
+                <!--                    <span>在线服务满意度：100% </span>-->
+                <!--                    <span>一般等待时长：快</span>-->
+                <!--                    <p>近两周回复数: 99+</p>-->
 
-<!--                </article>-->
+                <!--                </article>-->
                 <article class="dynamic-btn">
                     <article class="tally">
 
-                        <span>关注数:29385</span>
+                        <span>关注数: {{doctorInfo.follow_num}} 人</span>
                         <!--                    <span class="studio">工作室介绍</span>-->
                     </article>
                     <div>
-                        <span @click="attention" :class="{'isFollow':doctorInfo.is_follow === 1}"><i class="el-icon-user"></i> {{this.doctorInfo.is_follow ===1?'已关注':'关注'}}</span>
+                        <span @click="attention" :class="{'isFollow':doctorInfo.is_follow === 1}"><i
+                                class="el-icon-user"></i> {{doctorInfo.is_follow ===1?'已关注':'关注'}}</span>
                     </div>
-<!--                    <div>-->
-<!--&lt;!&ndash;                        <span @click="chat"><i class="el-icon-chat-line-round"></i> 私信</span>&ndash;&gt;-->
-<!--                    </div>-->
+                    <!--                    <div>-->
+                    <!--&lt;!&ndash;                        <span @click="chat"><i class="el-icon-chat-line-round"></i> 私信</span>&ndash;&gt;-->
+                    <!--                    </div>-->
 
                 </article>
 
-<!--                <article class="tally">-->
-<!--                    <span>关注数:29385</span>-->
-<!--                </article>-->
+                <!--                <article class="tally">-->
+                <!--                    <span>关注数:29385</span>-->
+                <!--                </article>-->
             </div>
 
         </section>
@@ -49,12 +50,13 @@
                 </span>
             </article>
         </section>
-<!--        :class="item.name===activeBox?'active-box':''"-->
+        <!--        :class="item.name===activeBox?'active-box':''"-->
         <section>
             <transition-group enter-active-class="animated fadeIn">
                 <article v-show="activeIndex===0" :key="0">
-                    <div class="advisory-select">
-                        <div @click="selectIndex(item.name)" class=" box" v-for="item in items" :key="item.name">
+                    <p class="toast" v-if="doctorInfo.zx_status == 2">暂时关闭</p>
+                    <div class="advisory-select" v-if="doctorInfo.zx_status != 2">
+                        <div @click="selectIndex(item.name)" class="box " v-for="item in items" :key="item.name">
                             <span class="icon"><img :src="item.icon" alt=""></span>
                             <p>{{item.name}}</p>
                         </div>
@@ -69,9 +71,9 @@
                         <div>
                             <p>{{item.content}}</p>
                         </div>
-<!--                        <div style="text-align: right;padding-right: .15rem;font-size: .3rem">-->
-<!--                            <span style="color: #09aba7">全文</span>-->
-<!--                        </div>-->
+                        <!--                        <div style="text-align: right;padding-right: .15rem;font-size: .3rem">-->
+                        <!--                            <span style="color: #09aba7">全文</span>-->
+                        <!--                        </div>-->
                         <div class="photos">
                             <img v-for="img of item.photo" :src="img" alt="">
                         </div>
@@ -82,7 +84,7 @@
                     <div v-for="item of articleList" class="article" @click="goToArticleDetails(item.id)">
                         <p>{{item.title}}</p>
                         <div>
-                            <span v-for="label of item.label">{{label.name}}</span>
+                            <span v-for="label of item.label">{{label}}</span>
                         </div>
                         <div class="user-info">
                             <img :src="item.doctor_avatar" alt="">
@@ -95,11 +97,8 @@
                         <p>{{item.comment}}条评价·{{item.hits}}人已读·{{item.utile}}人觉得有用</p>
                     </div>
                 </article>
-                <article class="pjt" v-show="activeIndex===3" :key="3">
-                    <span>暂无数据</span>
-                </article>
             </transition-group>
-
+            <p class="pjt" >{{isDataList}}</p>
         </section>
     </div>
 </template>
@@ -111,7 +110,7 @@
         name: "knownDoctor",
         data() {
             return {
-                kfc:false,
+                kfc: false,
                 radio: false,
                 dataList: [
                     {title: '电话咨询', content: '提交手机号码，医生会联系您',},
@@ -133,19 +132,26 @@
             }
         },
         created() {
-            this.$axios.get('Patient/doctorDetails', {doctor_id: this.$route.query.id,user_id:sessionStorage.user_id}).then(res => {
-                console.log(res.data.data)
+            this.$axios.get('Patient/doctorDetails', {
+                doctor_id: this.$route.query.id,
+                user_id: sessionStorage.user_id
+            }).then(res => {
+                console.log(res.data)
                 this.doctorInfo = res.data.data
-                this.getDynamic('',this.doctorInfo.id);
-                this.getArticleList('',this.doctorInfo.id);
+                this.getDynamic('', this.doctorInfo.id);
+                this.getArticleList('', this.doctorInfo.id);
             })
         },
         methods: {
-            chat(){
-              this.$toast.fail('暂未开放')
+            goToArticleDetails(id){
+                this.$router.push({path: '/consult/registered/articledetails', query: {id: id}})
+            },
+            chat() {
+                this.$toast.fail('暂未开放')
             },
             getArticleList(department_id = '', doctor_id = '') {
                 this.$axios.post('Patient/articleList', this.$Qs.stringify({
+                    user_id: sessionStorage.user_id,
                     department_id: department_id,
                     doctor_id: doctor_id
                 })).then(res => {
@@ -158,50 +164,51 @@
             getDynamic(department_id = '', doctor_id = '') {
                 // this.$axios
                 this.$axios.post('Patient/dynamicList', this.$Qs.stringify({
+                    user_id: sessionStorage.user_id,
                     department_id: department_id,
                     doctor_id: doctor_id
                 })).then(res => {
                     console.log(res)
                     this.dynamicList = res.data.dynamic_list
-                    // console.log(this.dynamicList)
                 })
             },
-            attention(){
+            attention() {
                 //    关注
-                this.$axios.post('Patient/follow',this.$Qs.stringify({
-                    user_id:12,
-                    to_id:this.doctorInfo.id,
+                this.$axios.post('Patient/follow', this.$Qs.stringify({
+                    user_id: sessionStorage.user_id,
+                    to_id: this.doctorInfo.id,
                     to_type: 2,
-                    status:this.doctorInfo.is_follow === 1?2:1,
-                })).then(res=>{
+                    status: this.doctorInfo.is_follow === 1 ? 2 : 1,
+                })).then(res => {
                     console.log(res.data.msg)
-                    if (res.data.msg === 'ok'){
-                        this.doctorInfo.is_follow = this.doctorInfo.is_follow === 1?0:1
+                    if (res.data.msg === 'ok') {
+                        this.doctorInfo.is_follow = this.doctorInfo.is_follow === 1 ? 0 : 1
                     }
                 })
             },
             selectIndex(item) {
-                // console.log(item)
-                // this.activeIndex = 9;
                 this.activeBox = item;
-                this.$router.push({path: '/consult/registered/doctorservice', query: {title: item,id:this.doctorInfo.id}});
-                // switch (item) {
-                //
-                //     case '图文咨询':
-                //         this.$router.push({path:'/consult/registered/fillout',query:{title:item}});
-                //         break;
-                //     case '电话咨询':
-                //         break;
-                //     case '视频咨询':
-                //
-                //         break;
-                // }
+                this.$router.push({
+                    path: '/consult/registered/doctorservice',
+                    query: {title: item, id: this.doctorInfo.id, user_id: this.doctorInfo.identifier}
+                });
             },
             selectPj(index) {
                 this.activeIndex = index
             }
         },
         computed: {
+            isDataList(){
+                const {activeIndex, dynamicList, articleList} = this
+                switch (activeIndex) {
+                    case 1:
+                        if (dynamicList === undefined) return '暂无动态'
+                        break;
+                    case 2:
+                        if (articleList === undefined) return '暂无文章'
+                        break;
+                }
+            },
             dtl() {
                 let item = this.$route.query.title;
                 for (let i of this.dataList) {
@@ -230,6 +237,10 @@
 </script>
 
 <style scoped lang="scss">
+    /*.shut-down{*/
+    /*    background: #f4f4f4 !important;*/
+    /*    color: #666666 !important;*/
+    /*}*/
     .dynamic {
         padding: .15rem;
         border-bottom: .1rem #f4f5f6 solid;
@@ -284,6 +295,7 @@
         }
 
     }
+
     .article {
         border-bottom: .1rem #ecedee solid;
         padding: .3rem;
@@ -347,20 +359,21 @@
         }
 
     }
+
     .pjt {
-        span {
-            margin-top: 1rem;
-            display: block;
-            font-size: .6rem;
-            text-align: center;
-            color: #a1a7a8;
-        }
+        margin-top: 1rem;
+        display: block;
+        font-size: .6rem;
+        text-align: center;
+        color: #a1a7a8;
     }
-    .isFollow{
+
+    .isFollow {
         background: white !important;
         color: #00b5bd !important;
-        box-shadow:0 0 3px 2px rgba(1,189,187,0.3);
+        box-shadow: 0 0 3px 2px rgba(1, 189, 187, 0.3);
     }
+
     .dynamic-btn {
         padding: 0 .3rem;
         position: absolute;
@@ -369,11 +382,13 @@
         display: flex;
         box-sizing: border-box;
         align-content: center;
+
         div {
             /*text-align: center;*/
             text-align: right;
             width: 100%;
             margin-left: .2rem;
+
             span {
                 font-size: .3rem;
                 padding: .1rem .3rem;
@@ -383,6 +398,7 @@
             }
         }
     }
+
     .active-title {
         border-bottom: 2px #01bdb8 solid;
         color: #01bdb8;
@@ -398,8 +414,10 @@
         height: 3.5rem;
         background: url("../../assets/phoneserve/BG.png");
         background-size: cover;
+
         .tally {
             width: 100%;
+
             span {
                 padding-left: .35rem;
                 font-size: .3rem;
@@ -417,19 +435,22 @@
                 border-radius: .1rem;
             }
         }
+
         div {
             height: 100%;
             position: relative;
+
             .avatar-info {
                 line-height: 0.4rem;
                 margin-left: 0.3rem;
 
-                img {
+                >span {
+                    display: block;
                     margin-right: 0.3rem;
                     float: left;
                     width: 1.45rem;
                     height: 1.45rem;
-                    background: #9b9c9d;
+                    background-color: #f4f4f4;
                     background-size: cover;
                     border-radius: 50%;
                 }
@@ -606,6 +627,7 @@
                 bottom: 0;
                 left: calc(50% - 1.25rem);
             }
+
             position: absolute;
             left: 0;
             right: 0;

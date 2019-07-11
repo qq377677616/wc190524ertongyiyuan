@@ -1,16 +1,16 @@
 <template>
-<!--    其他专家详情-->
+    <!--    其他专家详情-->
     <div>
         <section class="introduction">
             <article id="top">
                 <div class="info">
-                    <img src="" alt="">
+                    <img :src="stdInfo.avatar" alt="">
                     <div>
-                        <p>湘雅牙科团队</p>
-                        <span>领衔专家:张建国</span>
+                        <p>{{stdInfo.name}}</p>
+                        <span>领衔专家:{{stdInfo.real_name}}</span>
                     </div>
                 </div>
-                <button @click="joinTeam" type="submit">加入团队</button>
+                <button @click="joinTeam" type="submit" v-show="isMyTm">{{isMyTm}}</button>
             </article>
             <article id="bottom">
                 <span>团队介绍:</span>
@@ -21,45 +21,45 @@
             <article class="team-list">
                 <p class="title">团队领衔专家</p>
                 <div class="info">
-                    <img src="" alt="">
+                    <img :src="stdInfo.doctor_avatar" alt="">
                     <div>
-                        <p class="username">张讲过 <span>| 知名专家</span></p>
+                        <p class="username">{{stdInfo.real_name}} <span>| {{stdInfo.level}}</span></p>
                         <p class="tag">
                             <span>
-                                长沙湘雅医院
+                                {{stdInfo.work_unit}}
                             </span>
                             <span>
-                                长沙湘雅医院
+                                {{stdInfo.position}}
                             </span>
                         </p>
                     </div>
                 </div>
             </article>
             <article class="team-list">
-                <p class="title">团队其他成员（3人）</p>
-                <div class="info">
-                    <img src="" alt="">
-                    <div >
-                        <p class="username">张讲过 <span>| 知名专家</span></p>
+                <p class="title">团队其他成员（{{peopleArr.length}}人）</p>
+                <div class="info" v-for="item of peopleArr">
+                    <img :src="item.doctor_avatar" alt="">
+                    <div>
+                        <p class="username">{{item.real_name}} <span>| {{item.level}}</span></p>
                         <p class="tag">
                             <span>
-                                长沙湘雅医院
+                                {{item.work_unit}}
                             </span>
                             <span>
-                                长沙湘雅医院
+                                {{item.position}}
                             </span>
                         </p>
                     </div>
                 </div>
             </article>
-            <article class="team-advisory">
-                <p>专家团队咨询 <span>（次数：50）</span></p>
-                <span>查看全部 ></span>
-            </article>
-            <article class="team-advisory-list">
-                <h4>标题标题标题标题标题标题标题标题标题标题</h4>
-                <p>疾病：<span>深刻的解放路口设计的福利</span></p>
-            </article>
+            <!--            <article class="team-advisory">-->
+            <!--                <p>专家团队咨询 <span>（次数：50）</span></p>-->
+            <!--                <span>查看全部 ></span>-->
+            <!--            </article>-->
+            <!--            <article class="team-advisory-list">-->
+            <!--                <h4>标题标题标题标题标题标题标题标题标题标题</h4>-->
+            <!--                <p>疾病：<span>深刻的解放路口设计的福利</span></p>-->
+            <!--            </article>-->
         </section>
     </div>
 </template>
@@ -67,61 +67,83 @@
 <script>
     export default {
         name: "otherExperts",
-        data(){
-            return{
-
+        data() {
+            return {
+                stdInfo: {},
+                peopleArr: [],
             }
         },
-        created(){
-          this.getTeamInfo()
+        created() {
+            this.getTeamInfo()
         },
-        methods:{
-            joinTeam(){
-                this.$axios.post('team/joinTeam',{team_building:'',doctor_id:''}).then(res=>{
-                    console.log(res)
+        methods: {
+            joinTeam() {
+                this.$axios.post('Doctor/applyDepartment', this.$Qs.stringify({
+                    department_id: this.$route.query.id,
+                    doctor_id: sessionStorage.doctor_id
+                })).then(res => {
+                    this.$toast.success(res.data.msg)
                 })
             },
-            getTeamInfo(){
-                this.$axios.get('Team/myTeam',{team_building:'1'}).then(res=>{
-                    console.log(res)
+            getTeamInfo() {
+                this.$axios.get('Doctor/myDepartmentEdit', {
+                    doctor_id: sessionStorage.doctor_id,
+                    department_id: this.$route.query.id
+                }).then(res => {
+                    console.log(res.data)
+                    this.stdInfo = res.data.data.department
+                    this.peopleArr = res.data.data.people_arr
                 })
+            }
+        },
+        computed: {
+            isMyTm() {
+                return this.stdInfo.doctor_id === sessionStorage.doctor_id ? false : '加入团队'
             }
         }
     }
 </script>
 
 <style scoped lang="scss">
-    .introduction{
+    .introduction {
         padding: .3rem;
     }
-    .introduction{
+
+    .introduction {
         color: white;
         height: 4rem;
         background-image: url("../../assets/phoneserve/BG.png");
         background-repeat: no-repeat;
         background-size: cover;
-        #top, #bottom{
+
+        #top, #bottom {
             display: flex;
         }
-        #top{
+
+        #top {
             justify-content: space-between;
             align-items: center;
             margin-bottom: .4rem;
-            .info{
+
+            .info {
                 display: flex;
                 align-items: center;
-                div{
-                    p{
+
+                div {
+                    p {
                         font-size: .35rem;
                     }
-                    span{
+
+                    span {
                         font-size: .25rem;
                         font-weight: 200;
                     }
+
                     margin-left: .2rem;
                 }
             }
-            button{
+
+            button {
                 color: white;
                 border-radius: 5px;
                 border: none;
@@ -131,19 +153,22 @@
             }
 
         }
-        #bottom{
-            span{
+
+        #bottom {
+            span {
                 font-size: .3rem;
                 display: block;
                 width: 20%;
             }
-            p{
+
+            p {
                 font-size: .3rem;
                 flex: 1;
                 font-weight: 200;
             }
         }
-        img{
+
+        img {
             display: block;
             height: 1.5rem;
             width: 1.5rem;
@@ -151,19 +176,22 @@
             border-radius: 5px;
         }
     }
-    .team-detail{
+
+    .team-detail {
         background-color: white;
         border-radius: 20px 20px 0 0;
         margin-top: -.7rem;
 
-        .title{
+        .title {
             color: #2accb4;
             line-height: .8rem;
         }
-        .team-list{
-            padding:0 .3rem .3rem .3rem;
-            border-bottom:3px #ecedee solid;
-            img{
+
+        .team-list {
+            padding: 0 .3rem .3rem .3rem;
+            border-bottom: 3px #ecedee solid;
+
+            img {
                 height: 1.6rem;
                 width: 1.6rem;
                 display: block;
@@ -171,25 +199,29 @@
                 border-radius: 5px;
             }
 
-            .info{
+            .info {
                 display: flex;
                 /*align-items: center;*/
-                div{
+                div {
                     flex: 1;
                     margin-left: .2rem;
-                    .username{
+
+                    .username {
                         font-size: .35rem;
                         color: #4c4c4c;
-                        span{
+
+                        span {
                             font-size: .28rem;
                             font-weight: 200;
                             color: #a7a8a8;
                         }
                     }
                 }
-                .tag{
+
+                .tag {
                     line-height: .8rem;
-                    span{
+
+                    span {
                         background: #e5f8f8;
                         font-weight: 200;
                         font-size: .25rem;
@@ -201,30 +233,37 @@
                 }
             }
         }
-        .team-advisory{
+
+        .team-advisory {
             line-height: .8rem;
             padding: 0 .3rem;
-            border-bottom:3px #ecedee solid;
+            border-bottom: 3px #ecedee solid;
             display: flex;
             justify-content: space-between;
-            p{
+
+            p {
                 font-size: .3rem;
-                span{
+
+                span {
                     font-weight: 200;
                 }
             }
-            >span{
+
+            > span {
                 color: #219e9d;
                 font-size: .25rem;
             }
         }
-        .team-advisory-list{
+
+        .team-advisory-list {
             padding: .3rem;
-            h4{
+
+            h4 {
                 font-weight: 400;
                 font-size: .3rem;
             }
-            p{
+
+            p {
                 font-weight: 200;
                 font-size: .25rem;
             }
