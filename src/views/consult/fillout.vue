@@ -12,7 +12,6 @@
                     <span>儿童姓名</span>
                     <input type="text" name="name" v-model="userInfo.name" id="name" placeholder="请输入姓名">
                 </label>
-
                 <div style="display: flex;font-size: 0.32rem">
                     <span style="width: 25%;color:#a9aaab;">儿童选择</span>
                     <input type="radio" :value="1" v-model="userInfo.sex" id="female" name="gender"/>
@@ -54,6 +53,13 @@
                     <span>身份证</span>
                     <input maxlength="18" @focus="focus"  @blur="blur"  v-model="userInfo.custody_identity" placeholder="" type="number" name="custody_identity" id="custody_identity">
                 </label>
+                <div style="display: flex;font-size: 0.32rem" v-show="userInfo.name && userInfo.mobile && userInfo.custody_identity">
+                    <span style="width: 25%;color:#a9aaab;">会员绑定</span>
+                    <input type="radio" :value="1" v-model="userInfo.vip" id="female2" name="vip"/>
+                    <label for="female2" style="margin-left: 0.2rem" @click="showAll=false">非会员</label>
+                    <input type="radio" :value="2" v-model="userInfo.vip" id="female3" name="vip"/>
+                    <label for="female3" style="margin-left: 1rem" @click="selectVip">会员</label>
+                </div>
             </article>
             <article class="spanBtn">
                 <p>了解您的性别年龄居住区域等基本信息，能帮助医生更好的给您诊断建议，同时信息也将严格对外保密
@@ -63,7 +69,6 @@
         </section>
         <!--        <van-picker :columns="columns" @change="onChange"></van-picker>-->
         <transition-group name="fade-f">
-
         <div v-show="showAll === 1" style="position: fixed;bottom: 0;width: 100%" :key="1">
             <van-datetime-picker
                     @cancel="showAll=false"
@@ -73,28 +78,38 @@
                     :min-date="minDate"
             ></van-datetime-picker>
         </div>
-            <div v-show="showAll === 2" style="position: fixed;bottom: 0;width: 100%" :key="2">
-                <van-area @cancel="showAll=false" :area-list="areaList" @confirm="getArea" />
+        <div v-show="showAll === 2" style="position: fixed;bottom: 0;width: 100%" :key="2">
+          <van-area @cancel="showAll=false" :area-list="areaList" @confirm="getArea" />
         </div>
-            <div v-show="showAll === 3" style="position: fixed;bottom: 0;width: 100%" :key="3">
-                <van-picker
-                        show-toolbar
-                        title="选择关系"
-                        :columns="relations"
-                        @cancel="showAll = false"
-                        @confirm="getRelations"
+        <div v-show="showAll === 3" style="position: fixed;bottom: 0;width: 100%" :key="3">
+            <van-picker
+                    show-toolbar
+                    title="选择关系"
+                    :columns="relations"
+                    @cancel="showAll = false"
+                    @confirm="getRelations"
 
-                />
-            </div>
-
+            />
+        </div>
+        <div v-show="showAll === 4" style="position: fixed;bottom: 0;width: 100%" :key="4">
+          <van-picker
+            show-toolbar
+            :columns="columns"
+            @cancel="showAll = false"
+            @confirm="onConfirm"
+          />
+        </div>
         </transition-group>
+        <!-- <div v-show="showAll === 4"  :key="3">
+          <van-picker @cancel="showAll=false" @confirm="getTime" :columns="columns" @change="onChange" />
+        </div> -->
 
     </div>
 </template>
 
 <script>
     import areaList from '../../util/area'
-
+    import { Picker } from 'vant'
     function verification(obj){
         // console.log(obj.name)
         if (obj.name === undefined || obj.name.length < 0){
@@ -140,12 +155,16 @@
                 currentDate: new Date(2000, 0, 1),
                 show: true,
                 userInfo: {
+                    vip: 1,
                     area:[
                         '',
                         '',
                         '',
                     ]
                 },
+                vipList: '',
+                columns: [],
+                selectVipIndex: ''
             }
         },
         created(){
@@ -157,6 +176,53 @@
 
         },
         methods: {
+            selectVip() {
+                let myreg = /^[1][3,4,5,7,8,9][0-9]{9}$/;
+                let idcardReg = /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/;
+                if (!myreg.test(this.userInfo.mobile)){
+                    this.$toast('请填写正确的手机号码')
+                    setTimeout(() => {
+                      this.userInfo.vip = 1
+                    }, 50)
+                    this.userInfo.mobile = ''
+                    return
+                }
+                if (!idcardReg.test(this.userInfo.custody_identity)){
+                    this.userInfo.custody_identity = ''
+                    this.$toast('身份证不合法')
+                    setTimeout(() => {
+                      this.userInfo.vip = 1
+                    }, 50)
+                    return
+                }
+                let _data = {
+                    name: this.userInfo.name,
+                    mobile: this.userInfo.mobile,
+                    custody_identity: this.userInfo.custody_identity
+                }
+                this.$axios.get('external_api/vip_info',_data).then(res=>{
+                    console.log(res)
+                    if (res.data.errcode == 0) {
+                        this.vipList = res.data.data
+                        this.columns = []
+                        for (let i = 0; i < this.vipList.length; i++) {
+                          this.columns.push(`${this.vipList[i].CustomerName}(${this.vipList[i].LevelName.split("（")[0]})`)
+                        }
+                        this.showAll = 4
+                        console.log("this.columns", this.columns)
+                    } else {
+                        this.$toast(res.data.msg)
+                        setTimeout(() => {
+                          this.userInfo.vip = 1
+                        }, 50)
+                    }
+                })
+            },
+            onConfirm(item, index) {
+                console.log(item, index)
+                this.selectVipIndex = index
+                this.showAll = false
+            },
             handleScroll(){
                this.scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
 
@@ -181,6 +247,7 @@
                     this.$set(this.userInfo,'mobile',item.mobile)
                     this.$set(this.userInfo,'custody_identity',item.custody_identity)
                     this.$set(this.userInfo,'describe',item.describe)
+                    if (item.card_name) this.userInfo.vip = 2
                     // this.userInfo.date_of_birth = item.date_of_birth
                     // for (let item of this.relations){
                     //     if (item.value == item.relations){
@@ -235,7 +302,10 @@
                         custody_name:this.userInfo.custody_name,
                         mobile:this.userInfo.mobile,
                         describe:this.userInfo.describe,
-                        custody_identity:this.userInfo.custody_identity
+                        custody_identity:this.userInfo.custody_identity,
+                        card_name: (this.userInfo.vip == 2 && this.vipList[this.selectVipIndex]).LevelName || '',
+                        card_no: (this.userInfo.vip == 2 && this.vipList[this.selectVipIndex]).CardNo || '',
+                        blh: (this.userInfo.vip == 2 && this.vipList[this.selectVipIndex]).BLH || ''
                     })).then(res=>{
                         console.log(res)
                         if (res.data.msg === 'ok'){
@@ -257,7 +327,10 @@
                     custody_name:this.userInfo.custody_name,
                     mobile:this.userInfo.mobile,
                     describe:this.userInfo.describe,
-                    custody_identity:this.userInfo.custody_identity
+                    custody_identity:this.userInfo.custody_identity,
+                    card_name: (this.userInfo.vip == 2 && this.vipList[this.selectVipIndex].LevelName) || '',
+                    card_no: (this.userInfo.vip == 2 && this.vipList[this.selectVipIndex].CardNo) || '',
+                    blh: (this.userInfo.vip == 2 && this.vipList[this.selectVipIndex].BLH) || ''
                 })).then(res=>{
                     if (res.data.msg === 'ok'){
                         // if (this.$route.query.title ==='图文咨询'){
@@ -300,7 +373,7 @@
     }
 
     .prompt {
-        background: url("../../assets/reservation/BG.png");
+        background: url("../../assets/reservation/newTopBg.png");
         background-size: cover;
         padding: .3rem;
 
@@ -325,7 +398,7 @@
             padding: 0 .3rem;
 
             p {
-                color: #02bdb9;
+                color: #4d8fec;
                 font-size: .3rem;
                 font-weight: 200;
 
@@ -341,7 +414,7 @@
                 margin: .5rem auto;
                 width: 2.5rem;
                 line-height: .75rem;
-                background: linear-gradient(321deg, rgb(2, 189, 185) 0%, rgb(74, 226, 223) 100%);
+                background: linear-gradient(321deg, #4d8fec 0%, #4d8fec 100%);
                 color: white;
                 border-radius: .1rem;
                 box-shadow: 0 3px 5px rgba(1, 189, 186, 0.5);
@@ -416,16 +489,15 @@
             vertical-align: middle;
             width: 0.3rem;
             height: 0.3rem;
-            margin-bottom: 0.07rem;
             margin-left: .2rem;
             border-radius: 50%;
-            border: #01bdb8 solid .02rem;
+            border: #4d8fec solid .02rem;
         }
 
         input[type='radio']:checked + label::after {
             width: .18rem;
             height: .18rem;
-            background-color: #01bdb8;
+            background-color: #4d8fec;
             background-clip: content-box;
             padding: .06rem;
         }

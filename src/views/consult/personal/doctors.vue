@@ -19,7 +19,8 @@
                     <p>
                         <span class="tag" v-for="item of item.label">{{item}}</span>
                     </p>
-                    <p>订单金额：<span class="ml">￥{{item.money / 100}}</span></p>
+                    <p>订单金额：<span class="ml">￥{{item.money / 100}}</span> </p>
+                    <span class="pl" v-show="activeMenu === 2 " @click="comment(item)">{{item.is_comment == 0?'评论':'已评论'}}</span>
                 </div>
             </div>
 <!--            /consult/personal/refund-->
@@ -48,9 +49,20 @@
             }
         },
         created() {
+            if (sessionStorage.getItem('activeMenu')){
+                this.activeMenu = Number(sessionStorage.getItem('activeMenu'))
+                sessionStorage.removeItem('activeMenu')
+            }
             this.getDoctorsAll(0)
         },
         methods: {
+            comment(item){
+                if (item.is_comment == 1) {
+                    this.$toast.fail({duration:700,message:'已评论过'})
+                    return
+                }
+                this.$router.push({path: '/consult/registered/comment',query:{order_number:item.order_number,doctor_id:item.doctor_id,type:'1'}})
+            },
             refundCompleted(order_number){
               this.$router.push({path:'/consult/personal/refund',query:{order_number:order_number}})
             },
@@ -82,13 +94,27 @@
                 this.$emit('goBack')
             },
             goTo(item) {
+                console.log(item)
                 if (this.activeMenu === 1) {
-                    this.$router.push({
-                        path: '/consult/personal/privatechat',
-                        query: {id: item.identifier, avatar: item.avatar}
-                    })
+                    if (item.type == 1){
+                        this.$router.push({
+                            path: '/consult/personal/privatechat',
+                            query: {id: item.identifier, avatar: item.avatar}
+                        })
+                    }else {
+                        this.$toast.fail({duration:1000,message:'请耐心等待医生联系您'})
+                    }
                 }
             }
+        },
+        beforeDestroy(){
+
+        },
+        beforeRouteLeave (to, from , next) {
+            if (to.name === '对话'){
+                sessionStorage.setItem('activeMenu',this.activeMenu)
+            }
+            next()
         },
         computed: {
             doctorsList() {
@@ -117,19 +143,29 @@
 </script>
 
 <style scoped lang="scss">
+    .pl{
+        position: absolute;
+        right: .3rem;
+        bottom: .3rem;
+        background: linear-gradient( 321deg, rgb(2,189,185) 0%, #4d8fec 100%);
+        color: white !important;
+        font-size: .3rem !important;
+        padding: 0 .4rem;
+        border-radius: .1rem;
+    }
     .refund-completed{
         background: white !important;
-        color: #0FC4C0 !important;
+        color: #4d8fec !important;
     }
     .active-sel {
-        border-bottom: .03rem #01bdbb solid;
+        border-bottom: .03rem #4d8fec solid;
     }
 
     .select-dg {
         display: flex;
         border-bottom: 1px #ecedee solid;
         font-size: .3rem;
-        /*background: #02bdb9;*/
+        /*background: #4d8fec;*/
 
         :nth-child(1) {
             /*border-radius: 20px 0 0 0;*/
@@ -159,7 +195,7 @@
             position: absolute;
             bottom: .3rem;
             right: .3rem;
-            background:linear-gradient( 321deg, rgb(2,189,185) 0%, rgb(74,226,223) 100%);
+            background:linear-gradient( 321deg, rgb(2,189,185) 0%, #4d8fec 100%);
             color: white;
             padding: .1rem .2rem;
             border-radius: .1rem;
@@ -206,7 +242,7 @@
                 font-size: .27rem;
                 color: #b9babb;
                 .ml{
-                    color: #0FC4C0;
+                    color: #4d8fec;
                     font-size: .35rem;
                 }
             }
@@ -216,7 +252,7 @@
                 padding: 2px .2rem;
                 border-radius: 15px;
                 margin-right: 10px;
-                color: #01bdb8;
+                color: #4d8fec;
             }
         }
 

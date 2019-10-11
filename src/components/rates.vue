@@ -50,7 +50,7 @@
         color: #e1e2e3;
     }
     .active {
-        color: #01bdbb;
+        color: #4d8fec;
         /*transform: scale(1.25);*/
     }
 </style>

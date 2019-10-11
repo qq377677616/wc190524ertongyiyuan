@@ -68,6 +68,7 @@
                 }
                 this.$emit('replace',this.jumpId);
                 this.$emit('update:show',false);
+                document.body.classList.remove('modal-open')
             },
             goTo(index){
                 console.log(index);
@@ -75,6 +76,7 @@
             },
             isShow(){
                 this.$emit('update:show',false);
+                document.body.classList.remove('modal-open')
             },
 
             getRegistered(){
@@ -98,7 +100,7 @@
     }
 
     .active-std{
-        border-right:.1rem #00b5bd solid;
+        border-right:.1rem #4d8fec solid;
     }
     .registered-box {
         padding: .3rem .3rem .3rem .3rem;
@@ -151,7 +153,7 @@
             position: absolute;
             right: 0;
             top: .1rem;
-            background: linear-gradient(to bottom right, #93dddc, #00b5bd);
+            background: linear-gradient(to bottom right, #93dddc, #4d8fec);
             box-shadow: 0 5px 4px rgba(106, 188, 186, 0.2);
             padding: 0.1rem;
             width: 1.2rem;
@@ -167,7 +169,7 @@
 /*}*/
     .btn {
         /*border-top: 1px rgba(1,189,186,.5) solid;*/
-        box-shadow:0 -2px 9px 1px rgba(1,189,186,.2);
+        box-shadow:0 -2px 9px 1px rgba(77, 143, 236,.2);
         background-color: white;
         height: 1.2rem;
         align-items: center;
@@ -177,27 +179,27 @@
         display: flex;
 
         span {
-            height: .8rem;
-            line-height: .8rem;
+            height: .7rem;
+            line-height: .7rem;
             text-align: center;
-            margin:0 .5rem;
+            margin:0 .8rem;
             display: block;
             width: 50%;
             border-radius: 5px;
-            font-size: 0.35rem;
+            font-size: 0.3rem;
             /*box-shadow: 0 5px 5px rgba(1, 189, 184, 0.2);*/
         }
         .btn-off {
-            border: 1px #00b5bd solid;
+            border: 1px #4d8fec solid;
             background: white;
-            color: #00b5bd;
+            color: #4d8fec;
 
         }
 
         .btn-on {
             border: none;
             color: white;
-            background: linear-gradient(to bottom right, #93dddc, #00b5bd);
+            background: linear-gradient(to bottom right, #93dddc, #4d8fec);
         }
     }
     .active-st{
@@ -207,10 +209,10 @@
     .consult-studio-box{
         position: absolute;
         background: white;
-        top: 0;
+        top: .8rem;
         width: 100%;
         padding-top: .2rem;
-        height: 50vh;
+        height: 70vh;
 
     }
     .consult-studio {
@@ -219,6 +221,7 @@
         top: 0;
         bottom: 1.2rem;
         width: 100%;
+        -webkit-overflow-scrolling: touch;
         /*padding-top: .2rem;*/
         div {
             display: inline-block;

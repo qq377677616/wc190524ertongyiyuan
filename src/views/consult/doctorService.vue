@@ -14,7 +14,8 @@
                     <span v-for="item of doctorInfo.label">{{item}}</span>
                 </article>
                 <article class="text">
-                    <p style="display: flex;align-items: center;">推荐热度 (综合) ：{{doctorInfo.star_rating}} <i style=" color: #fdf178;font-size: 0.4rem;" class="el-icon-star-on"></i>(近两年患者推荐)</p>
+                    <p style="display: flex;align-items: center;">推荐热度 (综合) ：{{doctorInfo.star_rating}} <i
+                            style=" color: #fdf178;font-size: 0.4rem;" class="el-icon-star-on"></i>(近两年患者推荐)</p>
                     <p>在线服务满意度：100%</p>
                     <p>一般等待时长：快</p>
                 </article>
@@ -27,6 +28,11 @@
                 <span><img src="../../assets/phoneserve/wei.png" alt="">未使用随时可退</span>
                 <span><img src="../../assets/phoneserve/bu.png" alt="">不满意可申诉</span>
             </article>
+            <article class="time-select">
+                <p @click="isShowTime = true">预约时间:
+                    <span :class="{'active-select-time':acTime !== ''}">{{`${acTime.date.plan_time} ${acTime.time.sjd}`}}</span>
+                </p>
+            </article>
             <article class="detailed-text">
                 <div style="display: flex;align-items: center">
                     <input
@@ -37,7 +43,7 @@
                             name="service"/>
                     <label
                             for="female"
-                            style="font-size: 0.32rem">{{dtl.title}} {{getMoney.money / 100}}元</label><br>
+                            style="font-size: 0.32rem">{{dtl.title}} {{activeTimeMoney / 100 || ''}}元</label><br>
                     <span>6575人好评 · 256选择</span>
                 </div>
                 <ul>
@@ -50,75 +56,116 @@
         <section class="btn">
             <button @click="goTo" type="button">立即申请</button>
         </section>
+        <transition name="fade-f">
+            <timer-select v-show="isShowTime" :timer="activeMoney.pb_list" @select="selectTime"></timer-select>
+        </transition>
     </div>
 </template>
-
+ 
 <script>
+    import timerSelect from './timerSelect'
+
     export default {
+        components: {
+            timerSelect
+        },
         name: "phoneservice",
         data() {
             return {
+                moneyList: [],
+                acTime: {date:{plan_time:"请选择时间"},time:{sjd:''}},
+                isShowTime: false,
                 radio: true,
                 dataList: [
-                    {title: '电话咨询', content: '提交手机号码，医生会联系您',},
-                    {title: '视频咨询', content: '提交手机号码，医生会联系您',},
+                    {title: '电话咨询', content: '提交手机号码、补充完善信息 ( 医生会在下单后30分钟内主动与您联系确认 )',},
+                    {title: '视频咨询', content: '提交手机号码、补充完善信息 ( 医生会在下单后30分钟内主动与您联系确认 )',},
                     {title: '图文咨询', content: '医生问诊不限交流次数',},
                 ],
-                activeMoney: {},
-                doctorInfo:{},
+                activeMoney: {pb_list:[]},
+                doctorInfo: {},
             }
         },
         mounted() {
             this.getPrice();
-            console.log(this.$route.query)
+
+            // if (sessionStorage.getItem('acTime')) {
+            //     this.acTime = JSON.parse(sessionStorage.getItem('acTime'))
+            //     sessionStorage.removeItem('acTime')
+            // }
+
+
         },
         methods: {
+            selectTime(item) {
+                console.log(item.data)
+                item.std === 1 ? this.acTime = item.data:''
+
+                this.isShowTime = false
+            },
             getPrice() {
                 this.$axios.get('Consulting/getConsulting', {doctor_id: this.$route.query.id}).then(res => {
                     console.log(res.data.data)
-                    this.activeMoney = res.data.data
+                    // this.activeMoney = res.data.data
+                    let _activeMoney = res.data.data
+                    console.log("_activeMoney", _activeMoney)
+                    this.moneyList = {
+                      msg_money: _activeMoney.msg_money,     
+                      video_money: _activeMoney.video_money,    
+                      phone_money: _activeMoney.phone_money     
+                    }
+
+                    let _pb_list = []
+                    for (let i = 1; i <= 7; i++) {
+                        console.log(this.getDay(i))
+                        _pb_list.push({ plan_time: this.getDay(i) })
+                    }
+                    _activeMoney.pb_list = _pb_list
+                    this.activeMoney = _activeMoney
                 });
-                this.$axios.get('Patient/doctorDetails',{doctor_id: this.$route.query.id,user_id: sessionStorage.user_id}).then(res => {
+                this.$axios.get('Patient/doctorDetails', {
+                    doctor_id: this.$route.query.id,
+                    user_id: sessionStorage.user_id
+                }).then(res => {
                     this.doctorInfo = res.data.data
                 })
             },
+            getDay(day){
+              var today = new Date();
+              var targetday_milliseconds=today.getTime() + 1000*60*60*24*day;
+              today.setTime(targetday_milliseconds); //注意，这行是关键代码
+              var tYear = today.getFullYear();
+              var tMonth = today.getMonth();
+              var tDate = today.getDate();
+              tMonth = doHandleMonth(tMonth + 1);
+              tDate = doHandleMonth(tDate);
+              return tYear+"-"+tMonth+"-"+tDate;
+              function doHandleMonth(month){
+                  var m = month;
+                  if(month.toString().length == 1){
+                   m = "0" + month;
+                  }
+                  return m;
+              }
+            },
             goTo() {
-                // console.log(this.radio)
-                if (!this.radio){
-                    this.$toast.fail('请先选取');
+                console.log(this.acTime)
+                if (this.acTime.date.plan_time === '请选择时间') {
+                    this.$toast.fail('请选择时间');
                     return
                 }
-                console.log(this.doctorInfo);
-                this.$router.push({path:'/consult/registered/existingdata',query:{
-                        department_id:this.doctorInfo.department_id,
-                        doctor_id:this.doctorInfo.id,
-                        user_id:this.doctorInfo.identifier,
-                        type:this.getMoney.id,
-                        money:this.getMoney.money,
-                        avatar:this.doctorInfo.avatar,
-                        title:this.$route.query.title,
-                    }})
-                // let title = this.$route.query.title;
-                // this.$axios.post('Chatorder/addOrder',this.$Qs.stringify({
-                //     openid:'oSx-51JbMrtfk5394YIx8IQ8JlRI',
-                //     department_id:this.doctorInfo.department_id,
-                //     doctor_id:this.doctorInfo.id,
-                //     record_id:12,
-                //     type:this.getMoney.id,
-                //     money:this.getMoney.money,
-                // })).then(res=>{
-                //     if (res.data.msg === 'ok') {
-                //         if (title !== '图文咨询') {
-                //             this.$toast.success('申请成功');
-                //             return
-                //         }
-                //         this.$router.push({path: '/consult/registered/fillout', query: {title: title}})
-                //     }else {
-                //         this.$toast.fail('请稍后重试');
-                //     }
-                // });
-                //
-
+                sessionStorage.setItem('acTime',JSON.stringify(this.acTime))
+                this.$router.push({
+                    path: '/consult/registered/existingdata', query: {
+                        department_id: this.doctorInfo.department_id,
+                        doctor_id: this.doctorInfo.id,
+                        user_id: this.doctorInfo.identifier,
+                        type: this.getMoney.id,
+                        money: this.getMoney.money,
+                        avatar: this.doctorInfo.avatar,
+                        title: this.$route.query.title,
+                        acTime:JSON.stringify(this.acTime)
+                    }
+                })
             }
         },
         computed: {
@@ -131,10 +178,10 @@
                 }
             },
             getMoney() {
-                let i={};
+                let i = {};
                 switch (this.$route.query.title) {
                     case '图文咨询':
-                        i.money = this.activeMoney.msg_money;
+                        i.money = this.moneyList.msg_money;
                         i.id = 1;
                         break;
                     case '视频咨询':
@@ -147,86 +194,51 @@
                         break;
                 }
                 return i
+            },
+            activeTimeMoney(){
+                switch (this.$route.query.title) {
+                    case '图文咨询':
+                        return this.moneyList.msg_money
+                    case '视频咨询':
+                        return this.moneyList.video_money
+                    case '电话咨询':
+                        return this.moneyList.phone_money
+                }
             }
         }
     }
 </script>
 
 <style scoped lang="scss">
-    /*.doctors-info {*/
-    /*    !*width: 100%;*!*/
-    /*    height: 2.8rem;*/
-    /*    background: url("../../assets/phoneserve/BG.png");*/
-    /*    background-size: cover;*/
-    /*    !*padding-bottom: .3rem;*!*/
-    /*    border-bottom: 1px white solid;*/
+    .active-select-time {
+        color: #686868 !important;
+    }
 
-    /*    .avatar-info {*/
-    /*        line-height: 0.4rem;*/
-    /*        padding:0 .3rem;*/
+    .time-select {
 
-    /*        img {*/
-    /*            margin-right: 0.2rem;*/
-    /*            float: left;*/
-    /*            width: 1.45rem;*/
-    /*            height: 1.45rem;*/
-    /*            background: #9b9c9d;*/
-    /*            background-size: cover;*/
-    /*        }*/
+        padding: .3rem .3rem 0 .5rem;
+        line-height: .7rem;
 
-    /*        .title {*/
-    /*            font-size: 0.4rem;*/
-    /*            font-weight: 600;*/
-    /*            padding-top: 0.25rem;*/
-    /*            color: white;*/
+        p {
+            border: 1px #ebe8e4 solid;
+            border-radius: .1rem;
+            padding-left: .2rem;
+            font-size: .3rem;
 
-    /*            .info-li {*/
-    /*                font-size: .28rem;*/
-    /*                font-weight: 200;*/
-    /*                margin-top: .1rem;*/
-    /*                #li-ii{*/
-    /*                    float: right;*/
-    /*                }*/
-    /*            }*/
-
-    /*            #zj {*/
-    /*                font-weight: 200;*/
-    /*            }*/
-
-    /*            .ic {*/
-    /*                font-size: 0.25rem;*/
-    /*                font-weight: 300;*/
-    /*            }*/
-    /*        }*/
-    /*    }*/
-
-    /*    .tag {*/
-    /*        margin-top: 0.5rem;*/
-    /*        display: flex;*/
-
-    /*        #tag-li{*/
-    /*            font-weight: 400;*/
-    /*            width: 28%;*/
-    /*        }*/
-    /*        span {*/
-    /*            color: white;*/
-    /*            font-size: 0.3rem;*/
-    /*            border-radius: 20px;*/
-    /*            font-weight: 300;*/
-    /*            margin-right: 0.1rem;*/
-    /*        }*/
-    /*    }*/
-    /*}*/
-
-
+            span {
+                color: #a2a5ad;
+            }
+        }
+    }
     .phone-service {
 
         height: 100%;
     }
 
     .btn {
-        position: fixed;
-        bottom: 1.3rem;
+        /*position: fixed;*/
+        /*bottom: 1.3rem;*/
+        padding: 1rem 0;
         width: 100%;
         text-align: center;
 
@@ -236,13 +248,13 @@
             border-radius: 5px;
             border: none;
             color: white;
-            background: linear-gradient(to bottom right, #4ae2df, #02bdb9);
+            background: linear-gradient(to bottom right, #4d8fec, #4d8fec);
             font-size: 0.3rem;
         }
     }
 
     .doctors-info {
-        padding-top: .3rem;
+        padding-top: .1rem;
         width: 100%;
         height: 5rem;
         background: url("../../assets/phoneserve/BG.png");
@@ -305,7 +317,7 @@
     }
 
     .detailed {
-        margin-top: -0.7rem;
+        margin-top: -0.9rem;
         border-radius: 20px 20px 0 0;
         background: white;
         position: relative;
@@ -332,9 +344,6 @@
         }
 
         .detailed-text {
-            position: absolute;
-            left: 0;
-            right: 0;
             height: 3rem;
             padding: .3rem;
 
@@ -345,7 +354,7 @@
                 span {
                     margin-left: 0.2rem;
                     font-size: 0.2rem;
-                    color: #01bdb8;
+                    color: #4d8fec;
                 }
             }
 
@@ -355,7 +364,7 @@
                 line-height: 0.6rem;
 
                 li {
-                    color: #01bdb8;
+                    color: #4d8fec;
 
                     span {
                         font-size: 0.3rem;
@@ -381,13 +390,13 @@
         margin-bottom: 0.07rem;
         margin-right: .2rem;
         border-radius: 50%;
-        border: #01bdb8 solid .02rem;
+        border: #4d8fec solid .02rem;
     }
 
     input[type='radio']:checked + label::before {
         width: .18rem;
         height: .18rem;
-        background-color: #01bdb8;
+        background-color: #4d8fec;
         background-clip: content-box;
         padding: .06rem;
     }

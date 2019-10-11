@@ -9,10 +9,12 @@
         <section class="consult-studio">
             <div v-for="(item,key) of getItems" :key="key" @click="goTo(item.id)">
                     <span class="studio-bg">
-                        <span>
+                        <!-- <img :src="item.img_url" alt="icon"> -->
+                        <!-- <span>
                             <img :src="item.img_url" alt="icon">
-                        </span>
-                        {{item.name}}
+                        </span> -->
+                        <img :src="newImage[key]" alt="icon">
+                        <p>{{item.name}}</p>
                     </span>
             </div>
         </section>
@@ -27,10 +29,19 @@
             return{
                 search:'',
                 items:[], //科室列表
+                newImage:[
+                    'bloodSpecialty','cardiology','respiratory','digestive',
+                    'healthSection','dermatological','neurology','stomatology',
+                    'otolaryngology','internalMedicine','surgery','ophthalmic',
+                    'chineseMedicine','pediatrics','infectiousPatients','emergencyDepartment'
+                ]
             }
         },
         created(){
           this.getStudio();
+          this.newImage=this.newImage.map(function(item){
+                return require(`../../../assets/newDepartmentsIcon/${item}.png`);
+            })
         },
         methods:{
             goTo(id){
@@ -89,7 +100,7 @@
             display: inline-block;
             text-align: center;
             min-width: calc(100% / 3);
-            height: 1.7rem;
+            height: 2rem;
             position: relative;
 
             .studio-bg {
@@ -103,22 +114,10 @@
                 right: .15rem;
                 top: .15rem;
                 bottom: .15rem;
-
-                span {
-                    border-radius: 50%;
-                    display: block;
-                    background-color: rgba(255, 255, 255, 0.4);
-                    height: 0.6rem;
-                    width: 0.6rem;
-                    margin-left: calc(50% - 0.3rem);
-                    margin-top: 10%;
-
-                    img {
-                        width: 0.4rem;
-                        height: 0.35rem;
-                        margin-top: calc(50% - 0.175rem);
+                padding-top:.2rem;
+                img {
+                        width: .8rem;
                     }
-                }
             }
         }
     }

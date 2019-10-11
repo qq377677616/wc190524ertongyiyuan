@@ -1,5 +1,9 @@
 <template>
     <div id="app">
+        <div class="herder">
+            <i v-show="isBackBtn" class="el-icon-arrow-left" @click="goBack"></i>
+            {{$route.name}}
+        </div>
         <main :class="isBack?'':'btm'">
             <transition name="fade" mode="out-in">
                 <router-view></router-view>
@@ -7,63 +11,94 @@
         </main>
         <transition name="fade-footer" mode="out-in">
             <footer v-show="isBack">
-                <div @click="goTo(index)"
+                <div @click="goTo(item,index)"
                      v-for="(item,index) in tabBar"
                      :key="item.name">
-                    <img :src="activeTabBar==index?item.activeIcon:item.icon" alt="">
+                    <!-- <img :src="activeTabBar==index?item.activeIcon:item.icon" alt=""> -->
+                    <img :src="item.icon" alt="">
                     <p>{{item.name}}</p>
                 </div>
             </footer>
         </transition>
     </div>
 </template>
-<script>
+<script> 
 
     const homeUrl = [
         '/index',
         '/consult/personal/personal',
-        '/consult',
+        // '/doctors/index'
+        // '/consult',
     ];
+    const backUrl = [
+        '/index',
+        '/consult/personal/personal',
+        '/doctors/index'
+    ]
 
     export default {
         name: "app",
         data() {
             return {
+                isBackBtn:!backUrl.includes(this.$route.path),
                 isShowTab: true,
                 title: '',
                 isBack: !this.$route.path.includes('registered'),
                 activeTabBar: 0,
+                // tabBar: [
+                //     {
+                //         name: '首页',
+                //         icon: require('./assets/footer/shouye.png'),
+                //         activeIcon: require('./assets/footer/ashouye.png'),
+                //         path: '/index'
+                //     },
+                //     {
+                //         name: '社区',
+                //         icon: require('./assets/footer/shequ.png'),
+                //         activeIcon: require('./assets/footer/ashequ.png')
+                //     },
+                //     {
+                //         name: '商城',
+                //         icon: require('./assets/footer/shancheng.png'),
+                //         activeIcon: require('./assets/footer/ashangcheng.png')
+                //     },
+                //     {
+                //         name: '个人',
+                //         icon: require('./assets/footer/geren.png'),
+                //         activeIcon: require('./assets/footer/ageren.png'),
+                //         path: '/consult/personal/personal'
+                //     },
+                // ]
                 tabBar: [
                     {
-                        name: '首页',
-                        icon: require('./assets/footer/shouye.png'),
-                        activeIcon: require('./assets/footer/ashouye.png'),
+                        name: '医疗服务',
+                        icon: require('./assets/footer/logo.png'),
                         path: '/index'
                     },
                     {
-                        name: '社区',
-                        icon: require('./assets/footer/shequ.png'),
-                        activeIcon: require('./assets/footer/ashequ.png')
-                    },
-                    {
                         name: '商城',
-                        icon: require('./assets/footer/shancheng.png'),
-                        activeIcon: require('./assets/footer/ashangcheng.png')
+                        icon: require('./assets/footer/mallsIcon.png'),
                     },
                     {
-                        name: '个人',
-                        icon: require('./assets/footer/geren.png'),
-                        activeIcon: require('./assets/footer/ageren.png'),
+                        name: '消息',
+                        icon: require('./assets/footer/newsIcon.png'),
+                        path: '/messages'
+                    },
+                    {
+                        name: '我的',
+                        icon: require('./assets/footer/myIcon.png'),
                         path: '/consult/personal/personal'
                     },
                 ]
             }
         },
         created() {
-            // sessionStorage.user_id = 12; //本地测试userID
-            // sessionStorage.openid='oSx-51JbMrtfk5394YIx8IQ8JlRI' //本地测试openId
-            // sessionStorage.doctor_id='7' //doctor_id
-
+            //本地开发模式下固定数据 
+            if (process.env.NODE_ENV == 'development') {
+              sessionStorage.user_id = 12; //本地测试userID
+              sessionStorage.openid = 'oSx-51JbMrtfk5394YIx8IQ8JlRI' //本地测试openId
+              sessionStorage.doctor_id = '58' //doctor_id
+            }
             this.isBack = homeUrl.includes(this.$route.path);
 
             this.title = this.$route.name;
@@ -71,14 +106,17 @@
             this.tabBarIndex()
         },
         methods: {
-            goTo(index) {
+            goBack(){
+              this.$router.go(-1)
+            },
+            goTo(i,index) {
                 //tabBar路由跳转
-                if ([1,2].includes(index)) {
+                if (!i.path) {
                     this.$toast.fail({duration:500,message:"暂未开放"})
                     return
                 }
                 this.activeTabBar = index;
-                this.$router.push({path: this.tabBar[index].path});
+                this.$router.push({path: i.path});
             },
             tabBarIndex() {
                 //保存tabBar状态
@@ -98,12 +136,36 @@
                     }
                 }
                 this.title = this.$route.name;
+                this.isBackBtn=!backUrl.includes(this.$route.path)
                 this.isBack = aUrl.path !== '/' ? homeUrl.includes(aUrl.path) : true
             }
         }
     }
 </script>
 <style lang="scss">
+    .herder{
+        text-align: center;
+        position: fixed;
+        width: 100vw;
+        line-height:.8rem;
+        height: .8rem;
+        color: white;
+        font-size: .35rem;
+        z-index: 2001;
+        background-color: #4d8fec;
+        /*background-image: url("./assets/reservation/BG.png");*/
+        /*background-repeat: no-repeat;*/
+        /*background-size: cover;*/
+        i{
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: .5rem;
+            padding-left: .2rem;
+            color: white;
+        }
+    }
     .toast{
         margin-top: 1.5rem;
         font-size: .6rem;
@@ -159,7 +221,7 @@
     }
 
     .el-progress-bar__inner {
-        background-color: #01bdb8 !important;
+        background-color: #4d8fec !important;
     }
 
     footer {
@@ -168,7 +230,10 @@
         z-index: 2000;
     }
     main {
-        height: 100vh;
+        border-top: 1px solid #fff;
+        padding-top: .8rem;
+        position: relative;
+        height: calc(100vh - .8rem);
         /*overflow-x: hidden;*/
         /*overflow-y: hidden;*/
         /*padding-bottom: 1.4rem;*/
@@ -196,18 +261,33 @@
                 height: 0.37rem;
             }
         }
+        >div:first-of-type{
+            img{
+                transform-origin: 50% bottom;
+                transform: scale(1.8);
+            }
+            p{
+                background-image: -webkit-linear-gradient(top,#1da0e3,#1c58bf); 
+                background-clip: text; 
+                -webkit-text-fill-color: transparent; 
+            }
+        }
     }
-
+    .fades-enter-active, .fades-leave-active {
+        transition: all .4s ease;
+    }
+    .fades-enter, .fades-leave-active {
+        opacity: 0
+    }
     .fade-enter-active, .fade-leave-active {
         transition: all .4s ease;
     }
 
     .fade-enter {
         /*//进入时的动画*/
-        transform: translateX(80%);
+        transform: translateX(100%);
         opacity: 0;
     }
-
     .fade-leave-active {
         /*//离开时的动画*/
         transform: translateX(-30%);

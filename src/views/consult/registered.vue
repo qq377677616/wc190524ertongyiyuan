@@ -2,18 +2,17 @@
     <div class="registered">
         <header>
             <span :class="{'active-header':activeMens === key}" @click="activeMens = key"
-                  v-for="(item, key) of ['工作室列表','医生列表']" :key="key">{{item}}</span>
+                  v-for="(item, key) of ['医生列表', '工作室列表']" :key="key">{{item}}</span>
         </header>
-        <div style="margin-top: 1rem">
-            <div v-show="activeMens === 1">
+        <div>
+            <div v-show="activeMens === 0">
                 <article @click="goTo(item.id)" class="doctors-title" v-for="(item,key) of doctorList" :key="key">
                     <div class="doctors-n1" :style="`background-image:url(${item.avatar})`">
-
                     </div>
                     <div class="doctors-n2">
                         <div>
                             <span>{{item.real_name}}</span>
-                            <span style="color:#b9babb "> | {{item.level==='1'?'专家':'知名专家'}}</span>
+                            <span style="color:#b9babb "> | {{item.level==='1'?'专家': (item.level==='2' ? '知名专家' : '骨干医生')}}</span>
                             <p>
                                 <span v-for="(tag,key) of item.label" :key="key" class="tag">{{tag}}</span>
                             </p>
@@ -21,7 +20,7 @@
                     </div>
                 </article>
             </div>
-            <div v-show="activeMens === 0">
+            <div v-show="activeMens === 1">
                 <section class="search">
                     <!-- 搜索框 -->
                     <label>
@@ -106,35 +105,50 @@
         created() {
             this.getRegistered(this.$route.query.id)
         },
+        mounted() {
+          this.$nextTick(() => {
+            this.scrollTop() 
+          })
+        },
+        beforeRouteEnter(to, from, next) { //回退 医生OR工作室
+            next(vm=>{
+                if ( from.path.includes('doctordetails')){
+                    vm.activeMens = 1
+                }
+            })
+        },
         methods: {
+            scrollTop() {
+              document.body.scrollTop = 0
+              document.documentElement.scrollTop = 0
+            },
             goTo(id) {
                 switch (this.activeMens) {
-                    case 0:
+                    case 1:
                         this.$router.push({
                             path: '/consult/registered/doctordetails',
                             query: {id: id, department_class_id: this.$route.query.id}
                         })
                         break;
-                    case 1:
+                    case 0:
                         this.$router.push({path: '/consult/registered/knowndoctor', query: {id: id}})
+                        sessionStorage.setItem('knowndoctor','1')
                         break;
                 }
-
-
             },
             getRegistered(nid = null) {
                 this.$axios.get('Patient/departmentList', {
                     department_class_id: nid,
                     user_id: sessionStorage.user_id
                 }).then(res => {
-                    console.log(res);
+                    // console.log(res);
                     this.registeredList = res.data.data
                 })
                 this.$axios.get('Patient/doctorList', {
                     department_class_id: nid,
                     user_id: sessionStorage.user_id
                 }).then(res => {
-                    console.log(res)
+                    // console.log(res)
                     this.doctorList = res.data.data
                 })
             }
@@ -173,6 +187,7 @@
             background-color: #f4f4f4;
             border-radius: .1rem;
             background-size: cover;
+            background-position:center;
         }
 
         .doctors-n2 {
@@ -185,7 +200,7 @@
                 padding: .05rem .2rem;
                 border-radius: .3rem;
                 margin-right: .2rem;
-                color: #01bdb8;
+                color: #4d8fec;
             }
         }
     }
@@ -198,19 +213,24 @@
     }
 
     .active-header {
-        border-bottom: 2px #0FC4C0 solid;
-        color: #0FC4C0;
+        border-bottom: 2px #4d8fec solid;
+        color: #4d8fec;
     }
 
     header {
         background-color: #f4f4f4;
-        z-index: 1;
-        position: fixed;
-        top: 0;
-        width: 100%;
+        /*z-index: 1;*/
+        /*position: fixed;*/
+        /*top: 0;*/
+        /*width: 100%;*/
         display: flex;
         line-height: 1rem;
         font-size: .3rem;
+        position: fixed;
+        left: 0;
+        width: 100%;
+        top: .8rem;
+        z-index: 100;
 
         span {
             display: block;
@@ -241,7 +261,7 @@
 
     .comment {
         font-size: 0.3rem;
-        color: #01bdbb;
+        color: #4d8fec;
 
         p:nth-child(2) {
             padding-top: .05rem;
@@ -311,7 +331,7 @@
     /*    width: 1.3rem;*/
     /*    position: fixed;*/
     /*    margin: 0 auto;*/
-    /*    background: linear-gradient(to bottom right, #93dddc, #00b5bd);*/
+    /*    background: linear-gradient(to bottom right, #93dddc, #4d8fec);*/
     /*    box-shadow: 0 4px 8px rgba(106, 188, 186, 0.6);*/
     /*    bottom: 0.5rem;*/
     /*    border-radius: 50%;*/
@@ -329,15 +349,14 @@
             color: #a1a7a8;
         }
 
-        position: absolute;
-        top: 0;
-        bottom: 0;
+        /*position: absolute;*/
+        /*top: 0;*/
+        /*bottom: 0;*/
         width: 100%;
         /*width: 100%;*/
-        -webkit-overflow-scrolling: touch;
-        overflow: auto;
         height: 100%;
         /*position: relative;*/
+        padding-top:.8rem;
     }
 
     .registered-box {
@@ -391,7 +410,7 @@
             position: absolute;
             right: 0;
             top: .1rem;
-            background: linear-gradient(to bottom right, #93dddc, #00b5bd);
+            background: linear-gradient(to bottom right, #93dddc, #4d8fec);
             box-shadow: 0 5px 4px rgba(106, 188, 186, 0.2);
             padding: 0.1rem;
             width: 1.2rem;

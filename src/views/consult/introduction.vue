@@ -56,8 +56,8 @@
 
 <style scoped lang="scss">
     .active-title {
-        border-bottom: 2px #01bdb8 solid;
-        color: #01bdb8;
+        border-bottom: 2px #4d8fec solid;
+        color: #4d8fec;
     }
     .doctors-info {
 

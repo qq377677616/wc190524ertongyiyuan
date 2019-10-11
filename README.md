@@ -24,6 +24,6 @@ npm run test
 ```
 npm run lint
 ```
-
+###http://localhost:8081/#/doctors/index
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).

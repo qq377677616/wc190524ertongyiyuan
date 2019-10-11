@@ -81,7 +81,7 @@ section{
         div{
             span{
                 background-color: #dbf1f0;
-                color: #0FC4C0;
+                color: #4d8fec;
                 padding: 0 .2rem;
                 font-size: .25rem;
                 border-radius: .3rem;

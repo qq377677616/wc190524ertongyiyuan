@@ -45,14 +45,14 @@
         justify-content: space-between;
         line-height: .9rem;
         padding: 0 .3rem;
-        background: #4ae2df;
+        background: #4d8fec;
         color: white;
         text-align: center;
         font-size: .3rem;
 
         :nth-child(2),:nth-child(1) {
             line-height: .6rem;
-            background: linear-gradient(to bottom right, #4ae2df, #02bdb9);
+            background: linear-gradient(to bottom right, #4d8fec, #4d8fec);
             padding: 0 .2rem;
             border-radius: .1rem;
             box-shadow: 0 0 5px 2px rgba(75, 75, 75, 0.1);

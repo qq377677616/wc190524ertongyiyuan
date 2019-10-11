@@ -1,9 +1,9 @@
 <template>
-    <div style="position: absolute;top: 2rem;bottom: 0;width: 100%">
+    <div style="height: calc(100% - 2rem)">
         <section class="form-info">
             <p><span>就诊医院：</span>{{doctorInfo.hospital_name}}</p>
             <p><span>预约医生：</span>{{doctorInfo.real_name}}</p>
-            <p style="color: #00b5bd"><span>门诊时间：</span>{{doctorInfo.pb_list?doctorInfo.pb_list[dateIndex].cbrq:''}}</p>
+            <p style="color: #4d8fec"><span>门诊时间：</span>{{doctorInfo.pb_list?doctorInfo.pb_list[dateIndex].cbrq:''}}</p>
             <p><span>门诊类型：</span>{{doctorInfo.class_name}} {{doctorInfo.level ==
                 1?'专家':doctorInfo.level==2?'知名专家':'骨干'}}门诊</p>
             <p><span>挂号费：</span>{{doctorInfo.pb_list?doctorInfo.pb_list[dateIndex].price / 100:''}}元</p>
@@ -18,12 +18,12 @@
                 <p>{{userInfo.timer.sjd}} <i class="el-icon-arrow-right"></i></p>
             </div>
             <div class="form-sub">
-                <span>初/复诊</span>
+                <span>预约挂号</span>
                 <div>
                     <input type="radio" value="0" id="female" name="sex" v-model="userInfo.radio"/>
-                    <label for="female" style="margin-right: .2rem">初诊</label>
+                    <label for="female" style="margin-right: .2rem">初诊患者</label>
                     <input type="radio" value="1" id="female1" name="sex" v-model="userInfo.radio"/>
-                    <label for="female1">复诊</label>
+                    <label for="female1">复诊患者</label>
                     <i class="el-icon-arrow-right"></i>
                 </div>
             </div>
@@ -71,7 +71,7 @@
                 },
                 userInfo: {
                     name: {name: '请选择'},
-                    timer: '请选择',
+                    timer: {sjd:'请选择'},
                     diseased: '请填写疾病信息',
                     radio:0
                 }
@@ -86,6 +86,7 @@
         methods: {
             addInfo(item) {
                 console.log(item.obj)
+                console.log(item.std)
                 switch (item.std) {
                     case 1:
                         this.userInfo.name = item.obj;
@@ -125,7 +126,7 @@
                     phone: userInfo.name.mobile,
                     card: userInfo.name.custody_identity
                 }
-                console.log(obj)
+                console.log("userInfo", userInfo)
                 sessionStorage.setItem('userInfo',JSON.stringify(userInfo))
                 this.$router.push({
                     path: '/consult/queue/payForm', query: {
@@ -146,6 +147,7 @@
                         record_id:userInfo.name.id,
                         register_time:userInfo.timer.sjc,
                         cfzbz:userInfo.radio,
+                        is_vip: userInfo.name.is_vip
                     }
                 })
             },
@@ -182,13 +184,14 @@
 
 
     .bottom-btn {
-        position: fixed;
-        bottom: 1rem;
+        /*position: absolute;*/
+        /*bottom: 1rem;*/
+        padding: 1rem 0;
         width: 100%;
         text-align: center;
 
         span {
-            background: linear-gradient(to bottom right, #4ae2df, #02bdb9);
+            background: linear-gradient(to bottom right, #4d8fec, #4d8fec);
             border-radius: .1rem;
             padding: .15rem .7rem;
             color: white;
@@ -212,13 +215,6 @@
             background: white;
             width: 100%;
 
-            /*> div {*/
-            /*    top: .9rem;*/
-            /*    width: 100%;*/
-            /*    position: absolute;*/
-            /*    bottom: 0;*/
-            /*    !*overflow: auto;*!*/
-            /*}*/
 
             .title {
                 display: flex;
@@ -226,14 +222,14 @@
                 justify-content: space-between;
                 line-height: .9rem;
                 padding: 0 .3rem;
-                background: #4ae2df;
+                background: #4d8fec;
                 color: white;
                 text-align: center;
                 font-size: .3rem;
 
                 :nth-child(2) {
                     line-height: .6rem;
-                    background: linear-gradient(to bottom right, #4ae2df, #02bdb9);
+                    background: linear-gradient(to bottom right, #4d8fec, #4d8fec);
                     padding: 0 .2rem;
                     border-radius: .1rem;
                     box-shadow: 0 0 5px 2px rgba(75, 75, 75, 0.1);
@@ -305,13 +301,13 @@
         margin-bottom: 0.07rem;
         margin-left: .1rem;
         border-radius: 50%;
-        border: #01bdb8 solid .02rem;
+        border: #4d8fec solid .02rem;
     }
 
     input[type='radio']:checked + label::after {
         width: .18rem;
         height: .18rem;
-        background-color: #01bdb8;
+        background-color: #4d8fec;
         background-clip: content-box;
         padding: .06rem;
     }

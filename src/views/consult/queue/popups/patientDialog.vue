@@ -25,8 +25,8 @@
                         <span>{{item.age}}岁</span>
                         <i class="el-icon-edit"></i>
                     </div>
-                    <p>电话:1511111111</p>
-                    <p>身份证:4123123123123123131333</p>
+                    <p>电话: {{item.mobile}}</p>
+                    <p>身份证: {{item.custody_identity}}</p>
                 </div>
 
             </li>
@@ -58,7 +58,7 @@
             },
             getUserInfoList() {
                 this.$axios.get('Consulting/getPatientList', {user_id: sessionStorage.user_id}).then(res => {
-                    console.log(res);
+                    console.log( res.data.data);
                     this.userInfoList = res.data.data
                 })
             },
@@ -72,17 +72,17 @@
 <style scoped lang="scss">
     .active-patient-info{
         background: white !important;
-        box-shadow: 0 0 5px 2px rgba(1,189,186,0.3);
+        box-shadow: 0 0 5px 2px rgba(77, 143, 236,0.3);
         .active-user{
-            background-color: rgba(1,189,186,0.1) !important;
+            background-color: rgba(77, 143, 236,0.1) !important;
             background-image: url("../../../../assets/existingData/userac.png") !important;
         }
         i{
-            color: #00b5bd !important;
+            color: #4d8fec !important;
         }
     }
     .title + div{
-        text-align: center;background: #00b5bd;color: white;line-height: .7rem;
+        text-align: center;background: #4d8fec;color: white;line-height: .7rem;
         position: absolute;
         bottom: 0;
         width: 100%;
@@ -94,7 +94,7 @@
         justify-content: space-between;
         height: 1rem;
         padding: 0 .3rem;
-        background: #4ae2df;
+        background: #4d8fec;
         color: white;
         text-align: center;
         font-size: .3rem;
@@ -108,7 +108,7 @@
         }
         :nth-child(2){
             line-height: .6rem;
-            background: linear-gradient(to bottom right, #4ae2df, #02bdb9);
+            background: linear-gradient(to bottom right, #4d8fec, #4d8fec);
             padding: 0 .2rem;
             border-radius: .1rem;
             box-shadow: 0 0 5px 2px rgba(75, 75, 75, 0.1);

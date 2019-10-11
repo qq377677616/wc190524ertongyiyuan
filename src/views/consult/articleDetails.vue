@@ -15,6 +15,24 @@
                 <div v-html="articleDetails.content"></div>
             </div>
         </section>
+        <section class="article-menu">
+            <span>大家说说</span>
+        </section>
+        <section class="article-comment">
+            <div class="comment-user-info" v-for="item of commentList">
+                <img :src="item.avatar" alt="">
+                <div class="comment-content">
+                    <span>{{item.nickname}}</span>
+                    <p>{{item.content}}</p>
+                    <div class="comment-footer">
+                        <span>{{item.create_time}}</span>
+                        <div>
+                            <!--                            <i class="el-icon-thumb"></i>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 </template>
 
@@ -23,17 +41,25 @@
         name: "articleDetails",
         data(){
             return{
-                articleDetails:{}
+                articleDetails:{},
+                commentList:[],
             }
         },
         created() {
             console.log(this.$route);
             this.getArticleDetails();
+            this.getCommentList()
         },
         updated(){
         //doctor
         },
         methods:{
+            getCommentList(){
+              this.$axios.get('Patient/sel_article_comment',{user_id:sessionStorage.user_id,id:this.$route.query.id}).then(res=>{
+                  console.log(res.data.data)
+                  this.commentList = res.data.data
+              })
+            },
             getArticleDetails(){
                 if (this.$route.query.std === 'dc'){
                     this.$axios.get('doctor/articleDetails',{
@@ -89,7 +115,7 @@
             div {
                 margin-right: .2rem;
                 border-radius: 50%;
-                background: #00b5bd;
+                background: #4d8fec;
                 background-size: cover;
                 width: .6rem;
                 height: .6rem;
@@ -128,11 +154,67 @@
             width: 1.7rem;
             /*margin-top: calc(50% - .25rem);*/
             /*height: 0.5rem;*/
-            background: linear-gradient(to bottom right, #4ae2df, #02bdb9);
+            background: linear-gradient(to bottom right, #4d8fec, #4d8fec);
             color: white;
             border-radius: 5px;
             font-size: 0.3rem;
         }
         /*}*/
+    }
+    .article-menu{
+        background-color: #f5f5f5;
+        span{
+            margin-left: .3rem;
+            text-align: center;
+            width: 1.1rem;
+            display: block;
+            font-size: .25rem;
+            line-height: .7rem;
+            border-bottom:.05rem #4d8fec solid;
+            color: #4d8fec;
+        }
+    }
+    .article-comment{
+        .comment-user-info{
+            padding: .3rem;
+            box-sizing: border-box;
+            display: flex;
+            >img{
+                width: .6rem;
+                height: .6rem;
+                background-color: #f5f5f5;
+                display: block;
+                border-radius: 50%;
+            }
+            .comment-content{
+                border-bottom:1px #f5f5f5 solid;
+                width: 100%;
+                span, p{
+                    font-size: .3rem;
+                    padding-left: .15rem;
+                }
+                p{
+                    font-weight: 200;
+                    color: #434445;
+                }
+            }
+            .comment-footer{
+                padding:.1rem 0;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                color: #a1a1a1;
+                span{
+                    font-size: .25rem;
+
+                }
+                i{
+                    font-size: .3rem;
+                    padding-right: .1rem;
+                }
+            }
+
+        }
     }
 </style>

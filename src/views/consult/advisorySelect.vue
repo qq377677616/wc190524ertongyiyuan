@@ -44,7 +44,7 @@
 
 <style scoped lang="scss">
     .active-box {
-        background: linear-gradient(to bottom right, #4ae2df, #02bdb9) !important;
+        background: linear-gradient(to bottom right, #4d8fec, #4d8fec) !important;
         box-shadow: 0 5px 5px rgba(1, 189, 184, 0.2);
         color: white !important;
     }

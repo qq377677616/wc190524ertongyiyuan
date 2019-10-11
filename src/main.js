@@ -22,7 +22,9 @@ import axios from 'axios'
 import Qs from 'qs'
 
 import moment from 'moment'
-import "./util/imchat"
+// import "./util/imchat"
+import "./util/wxConfig"
+
 
 
 

@@ -8,9 +8,21 @@ export default new Vuex.Store({
     conversationList:[],
     loginStd:false,
     historical:[],
-    newMessage:{}
+    newMessage:{},
+    images:{},
+    myAvatar:'',
+    userIdentifier:'',
   },
   mutations: {
+    setUserIdentifier(state, id){
+      state.userIdentifier = id
+    },
+    setSendImage(state,img){
+      state.images = img
+    },
+    setMyAvatar(state, imgUrl){
+      state.myAvatar = imgUrl
+    },
     getConversationList(state, list){
       //储存对话列表 list
       state.conversationList = list

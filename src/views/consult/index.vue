@@ -1,6 +1,6 @@
 <template>
     <div style="" class="consult">
-        <!--        <div style="position: fixed;width: 100%;height: 2rem;background-color: #02bdb9;top: 0"></div>-->
+        <!--        <div style="position: fixed;width: 100%;height: 2rem;background-color: #4d8fec;top: 0"></div>-->
         <section>
 
         </section>
@@ -23,7 +23,7 @@
                     </span>
                     <span class="text">
                         <span>咨询</span><br>
-                        <span>22万+医生</span>
+                        <span>专业服务</span>
                     </span>
                 </div>
                 <span></span>
@@ -33,7 +33,7 @@
                     </span>
                     <span class="text">
                         <span>特色服务</span><br>
-                        <span>全国6839家医院</span>
+                        <span>快捷 省时</span>
                     </span>
                 </div>
             </article>
@@ -43,7 +43,8 @@
                 <div v-for="(item,key) of items" :key="key" @click="goToRegistered(item.id)">
                     <span class="studio-bg">
                         <span>
-                            <img :src="item.img_url" alt="icon">
+                            <!-- <img :src="item.img_url" alt="icon"> -->
+                            <img :src="newImage[key]" alt="icon">
                         </span>
                         {{item.name}}
                     </span>
@@ -85,27 +86,39 @@
                     loop:true
                     // swiper参数配置
                     // ...
-                }
+                },
+                newImage:[
+                    'bloodSpecialty','cardiology','respiratory','digestive',
+                    'healthSection','dermatological','neurology','stomatology',
+                    'otolaryngology','internalMedicine','surgery','ophthalmic',
+                    'chineseMedicine','pediatrics','infectiousPatients','emergencyDepartment'
+                ]
             }
         },
         created() {
             this.getStudio();
+            this.newImage=this.newImage.map(function(item){
+                return require(`../../assets/newDepartmentsIcon/${item}.png`);
+            })
         },
         methods: {
             goToService(){
               this.$router.push({path:'/consult/featured',})
+
             },
             // customerService() {
             //     this.$toast.fail('暂未开发')
             // },
+
             getStudio() {
                 this.$axios.get('Patient/departmentClass',{user_id:sessionStorage.user_id}).then(res => {
-                    // console.log(res.data.department_class);
+                    console.log(res.data.department_class);
                     this.items = res.data.department_class
                 })
             },
             goToRegistered(el) {
                 this.$router.push({path: '/consult/registered', query: {id: el}})
+
             },
             callback() {
 
@@ -132,9 +145,9 @@
     }
     .consult{
         min-height: 100vh;
-        background-image: url("../../assets/reservation/BG.png");
+        background-image: url("../../assets/reservation/newTopBg.png");
         background-repeat: no-repeat;
-        background-size: 100% 2rem;
+        background-size: 100% 4rem;
         background-position: top;
     }
     .swiper-box {
@@ -144,9 +157,9 @@
 
     .btn {
         position: fixed;
-        line-height: .8rem;
-        background: #00b5bd;
-        bottom: 1.3rem;
+        line-height: 1rem;
+        background: #4d8fec;
+        bottom: 0;
         left: 0;
         right: 0;
         text-align: center;
@@ -174,7 +187,7 @@
         height: 2rem;
         margin: .3rem;
         border-radius: .1rem;
-        background: url("../../assets/consult/BG.png");
+        background: url("../../assets/reservation/newTopBg.png");
         background-size: cover;
 
         > span {
@@ -234,7 +247,7 @@
             display: inline-block;
             text-align: center;
             min-width: calc(100% / 3);
-            height: 1.7rem;
+            height: 1.8rem;
             position: relative;
 
             .studio-bg {
@@ -253,15 +266,14 @@
                     border-radius: 50%;
                     display: block;
                     background-color: rgba(255, 255, 255, 0.4);
-                    height: 0.6rem;
-                    width: 0.6rem;
-                    margin-left: calc(50% - 0.3rem);
+                    height: 0.8rem;
+                    width: 0.8rem;
+                    margin-left: calc(50% - 0.4rem);
                     margin-top: 10%;
-
+                    margin-bottom: .08rem;
+                    
                     img {
-                        width: 0.4rem;
-                        height: 0.35rem;
-                        margin-top: calc(50% - 0.175rem);
+                        width: 0.8rem;
                     }
                 }
             }

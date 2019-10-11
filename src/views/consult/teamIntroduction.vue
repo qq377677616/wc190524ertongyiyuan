@@ -137,7 +137,7 @@
 
         .listDate-title {
             margin-left: .3rem;
-            color: #00b5bd;
+            color: #4d8fec;
             line-height: 1rem;
             font-size: 0.4rem;
             width: 100%;
@@ -165,7 +165,7 @@
 
             }
             .star{
-                color: #01bdbb;
+                color: #4d8fec;
                 font-size: .3rem;
                 font-weight: 200;
                 display: flex;
@@ -190,7 +190,7 @@
         .title-ii{
             margin-top: .2rem;
             padding:0 .3rem;
-            color: #02bdb9;
+            color: #4d8fec;
             font-size: .4rem;
         }
         .doctors-list{

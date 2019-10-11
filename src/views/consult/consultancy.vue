@@ -49,7 +49,7 @@
             margin: .6rem auto;
             width: 90%;
             padding: .25rem 0;
-            background: linear-gradient(to bottom right, #4ae2df, #02bdb9);
+            background: linear-gradient(to bottom right, #4d8fec, #4d8fec);
             text-align: center;
             border-radius: 5px;
             color: white;

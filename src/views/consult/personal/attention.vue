@@ -26,7 +26,7 @@
                 <span class="hh" @click.stop="attentionStd(item.id,key)">取消关注</span>
             </article>
         </section>
-<!--        <p v-show="atStd.length">暂无数据</p>-->
+        <p class="toast" v-show="isShowToast">暂无关注</p>
     </div>
 </template>
 
@@ -39,6 +39,15 @@
                 atStd: [],
                 activeMenu: 1,
             }
+        },
+        computed:{
+          isShowToast(){
+              const {activeMenu,atDoctors,atStd} = this
+              switch (activeMenu) {
+                  case 1:return atDoctors.length === 0
+                  case 2:return atStd.length === 0
+              }
+          }
         },
         created() {
             this.getAtDoctors()
@@ -122,7 +131,7 @@
     }
 
     .active-menu {
-        border-bottom: 3px #00b5bd solid;
+        border-bottom: 3px #4d8fec solid;
     }
 
     .attention {
@@ -138,7 +147,7 @@
             color: #858585;
 
             i {
-                color: #02bdb9;
+                color: #4d8fec;
                 font-size: .45rem
             }
         }
@@ -176,9 +185,9 @@
             .hh {
                 background: white;
                 font-size: .3rem;
-                color: #00b5bd;
+                color: #4d8fec;
                 padding: 0 .4rem;
-                box-shadow: 0 0 3px 3px rgba(1, 189, 186, 0.3);
+                box-shadow: 0 0 3px 3px rgba(77, 143, 236, 0.3);
                 border-radius: .1rem;
                 float: right;
             }

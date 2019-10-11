@@ -72,7 +72,7 @@
             font-weight: 200;
             font-size: .25rem;
             background: #e3f9f8;
-            color: #01bdb8;
+            color: #4d8fec;
             padding: .08rem .25rem;
             border-radius: 20px;
         }
@@ -94,7 +94,7 @@
                 margin-right: .2rem;
                 border-radius: 50%;
                 display: block;
-                background: #00b5bd;
+                background: #4d8fec;
                 width: .4rem;
                 height: .4rem;
                 font-size: .3rem;

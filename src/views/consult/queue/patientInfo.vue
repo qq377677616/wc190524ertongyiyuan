@@ -69,7 +69,7 @@
 
         > span {
             padding: .05rem .2rem;
-            background: linear-gradient(to bottom right, #4ae2df, #02bdb9);
+            background: linear-gradient(to bottom right, #4d8fec, #4d8fec);
             color: white;
             border-radius: .1rem
         }
@@ -84,7 +84,7 @@
         > p {
             width: .4rem;
             margin-right: .2rem;
-            color: #01bdbb;
+            color: #4d8fec;
             font-size: .3rem
         }
 

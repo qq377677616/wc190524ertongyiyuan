@@ -4,93 +4,109 @@
         <global-search v-show="isShowSearch" @goBack="isShowSearch = false"></global-search>
         </transition>
         <section class="search">
+            <h1>京都线上服务平台</h1>
             <!-- 搜索框 -->
             <label @click.stop="isShowSearch = true">
                 <input type="text" placeholder="请输入医生" readonly="readonly">
             </label>
-            <i class="el-icon-chat-dot-round" @click="$router.push({path:'/messages'})"></i>
+            <!-- <i class="el-icon-chat-dot-round" @click="$router.push({path:'/messages'})"></i> -->
         </section>
-        <section style="width: 90%;margin: 0 auto;    border-radius: 10px">
+        <section class="bannerBox">
             <swiper :options="swiperOption" ref="mySwiper" @someSwiperEvent="callback">
                 <!-- slides -->
-                <swiper-slide><img
-                        src="http://flynew.oss-cn-hangzhou.aliyuncs.com/hospital/feed87e430e7570602b1c698a67aaad.png"
-                        alt=""></swiper-slide>
-                <swiper-slide><img
-                        src="http://flynew.oss-cn-hangzhou.aliyuncs.com/hospital/d1236a4e49ed482091bc36552190885.png"
+                <swiper-slide  v-for="item of banner" :key="item.title"><img
+                        @click="gotoBanner(item)"
+                        :src="item.photo"
                         alt=""></swiper-slide>
             </swiper>
         </section>
-
+        <section>
+            <article style=" text-align: center;">
+                <img style="width: 90%;" @click="onlineService" src="../assets/index/onlineService.png" />
+            </article>
+            <article class="consultList">
+                <div>
+                    <img src="../assets/index/doctorIcon.png" />
+                    <div>
+                        <p>在线咨询</p>
+                        <button><img src="../assets/index/consultBut.png" @click="goto(0)" /></button>
+                    </div>
+                </div>
+                <div>
+                    <img src="../assets/index/yaopingIcon.png" />
+                    <div>
+                        <p>用药引导</p>
+                        <button><img src="../assets/index/pharmacist.png" @click="medicationGuidance" /></button>
+                    </div>
+                </div>
+            </article>
+        </section>
         <section class="items">
-            <!-- 项目选择 -->
-            <!--            style="display: block;width: 1rem;height: 1rem;border-radius: 50%;background: #00b5bd"-->
-            <article @click="goto(index)" v-for="(item, index) in items" :key="item.name">
-                <span class="option">
+            <template v-for="(item, index) in items">
+                <div @click="goto(index+1)" class="option" :key="item.name">
                     <img :src="item.icon" alt="">
-                </span>
-                {{item.name}}
+                    <p>{{item.name}}</p>
+                </div>
+            </template>
+        </section>
+        <section class="bg_fff">
+            <header class="sectionTitle">
+                <p><strong>专家团队</strong>便民就医 省时省力<span @click="moreExperts">更多</span></p>
+            </header>
+            <article class="expertTeam">
+                <template v-for="item in expertTeam">
+                    <div :key="item.name" @click="clickExperts">
+                        <img :src="item.img" />
+                        <p class="exceeded"><strong>{{item.name}}</strong></p>
+                        <span>{{item.speciality}}</span>
+                    </div>
+                </template>
             </article>
         </section>
-        <section class="content">
-            <article class="title">
-                <span v-for="(item, key) in itemList">
-                    <span @click="getIndexArticle(isShow = key+1)" :class="{'active-t':key+1 == isShow}">{{item}}</span>
-                </span>
-            </article>
-<!--            <transition-group name="fade"  mode="out-in">-->
-
-            <article class="recommend" v-show="isShow=='1'" :key="1" >
-                <div v-for="item of dataList.one" @click="goToRecommend(item.id)">
-                    <div class="bg" :style="`background-image:url(${item.picture})`"></div>
-                    <p>{{item.title}}</p>
-                </div>
-            </article>
-            <article class="detailed" v-show="isShow=='2'" :key="2" >
-                <div v-for="item of dataList.two" @click="goToRecommend(item.id)">
-                    <div class="detailed-avatar" :style="`background-image:url(${item.picture})`"></div>
-                    <div class="detailed-content">
-                        <p class="detailed-title">{{item.title}}</p>
-                        <p>{{item.summary}}</p>
-                        <div class="detailed-user-info">
-                            <div :style="`background-image:url(${item.avatar})`"></div>
-                            <span>{{item.real_name}}</span>
-                        </div>
-                        <div class="detailed-tag">
-<!--                            <span>1200</span>-->
-                            <span>{{item.hits}}</span>
+        <section class="bannerBox theSecondBannerBox">
+            <swiper :options="swiperOption" ref="mySwiper" @someSwiperEvent="callback">
+                <!-- slides -->
+                <swiper-slide  v-for="item of theSecondBanner" :key="item.photo"><img
+                        @click="gotoBanner(item)"
+                        :src="item.photo"
+                        alt=""></swiper-slide>
+            </swiper>
+        </section>
+        <section class="bg_fff">
+            <header class="sectionTitle">
+                <p><strong>优秀文章</strong><span @click="moreArticle">更多</span></p>
+            </header>
+            <article class="articleList">
+                <template v-for="item in articleList">
+                    <div :key="item.id" @click="goToRecommend(item.id)">
+                        <img :src="item.picture" />
+                        <div>
+                            <p class="exceeded"><strong>{{item.title}}</strong></p>
+                            <p>{{item.summary}}</p>
+                            <!-- <span>2019-09-01</span> -->
                         </div>
                     </div>
-                </div>
-            </article>
-            <article class="video" v-show="isShow=='3'" :key="3" >
-                <div v-for="item of dataList.three">
-                    <div :style="`background-image:url(${item.picture})`"><video  :src="item.video_link" controls="controls"></video></div>
-                    <p>{{item.title}}</p>
-                </div>
-            </article>
-<!--            <p v-show="isShowList" class="toast">暂无数据</p>-->
-<!--            </transition-group>-->
-            <article class="detailed" v-show="isShow=='5'" :key="5" >
-                <div v-for="item of dataList.fives" @click="goToRecommend(item.id)">
-                    <div class="detailed-avatar" :style="`background-image:url(${item.picture})`"></div>
-                    <div class="detailed-content">
-                        <p class="detailed-title">{{item.title}}</p>
-                        <p>{{item.summary}}</p>
-                        <div class="detailed-user-info">
-                            <div :style="`background-image:url(${item.avatar})`"></div>
-                            <span>{{item.real_name}}</span>
-                        </div>
-                        <div class="detailed-tag">
-<!--                            <span>1200</span>-->
-                            <span>{{item.hits}}</span>
-                        </div>
-                    </div>
-                </div>
+                </template>
             </article>
         </section>
-        <!--        <div style="position: fixed;width: 100%;height: 2.5rem;background-color: #02bdb9;top: 0"></div>-->
-
+        <section class="bg_fff">
+            <header class="sectionTitle">
+                <p><strong>优秀视频</strong><span @click="moreVideo">更多</span></p>
+            </header>
+            <article class="videoList">
+                <template v-for="item in videoList">
+                    <div :key="item.id">
+                        <video :poster="item.picture"
+                               :src="item.video_link" :controls="item.controls" preload="meta"
+                               @click="playVideo(item,$event)"></video>
+                        <div>
+                            <p class="exceeded"><strong>{{item.title}}</strong></p>
+                            <!-- <span>2019-09-01</span> -->
+                        </div>
+                    </div>
+                </template>
+            </article>
+        </section>
     </div>
 </template>
 
@@ -104,17 +120,33 @@
         },
         data() {
             return {
-                isShow:'1',
                 isShowSearch:false,
                 input23: '',
-                itemList: ['推荐', '图文', '视频', '音频', '我的订阅'],
+                itemList: ['推荐', '图文', '视频', '音频', '订阅'],
                 items: [
-                    //4个大选项名称
-                    //...
-                    {name: '咨询', icon: require('../assets/index/zixun.png')},
-                    {name: '挂号', icon: require('../assets/index/guahao.png')},
-                    {name: '工具', icon: require('../assets/index/gongju.png')},
-                    {name: '活动', icon: require('../assets/index/huodong.png')},
+                    {name: '预约挂号', icon: require('../assets/index/register.png')},
+                    {name: '诊间交费', icon: require('../assets/index/zhenJIanPay.png')},
+                    {name: '报告查询', icon: require('../assets/index/baoGaoQuery.png')},
+                    {name: '发育自测', icon: require('../assets/index/auxeZiCe.png')},
+                    {name: '宝宝血型', icon: require('../assets/index/BabyXieXing.png')},
+                    {name: '检查解读', icon: require('../assets/index/inspectJieDu.png')},
+                ],
+                expertTeam: [
+                    {   
+                        name: "孙媛团队",
+                        speciality: "血液肿瘤科",
+                        img: require('../assets/index/expertTeamImg_1.jpg')
+                    },
+                    {
+                        name: "徐樨巍团队",
+                        speciality: "消化科",
+                        img: require('../assets/index/expertTeamImg_2.jpg')
+                        },
+                    {
+                        name: "孙绪丁团队",
+                        speciality: "中医科",
+                        img: require('../assets/index/expertTeamImg_3.jpg')
+                    },
                 ],
                 swiperOption: {
                     loop:true
@@ -127,33 +159,63 @@
                     three:[],
                     four:[],
                     fives:[]
-                }
+                },
+                articleList: [],
+                videoList: [],
+                banner:[],
+                theSecondBanner: [
+                    {
+                        photo: require('../assets/index/theSecondBanner_img_1.png'),
+                        synopsis_photo: "",
+                        url: "",
+                    }
+                ],
             }
         },
         mounted() {
+            window.addEventListener('scroll', this.handleScroll);
             // current swiper instance
             // 然后你就可以使用当前上下文内的swiper对象去做你想做的事了
             // this.swiper.slideTo(3, 1000, false)
-            this.getIndexArticle(1)
+            //获取图文列表
+            this.getIndexArticle(1);
+            //获取视频列表
+            this.getIndexArticle(3);
+            this.getBanner();
         },
         methods: {
+            gotoBanner(item){
+                window.location.href = `${item.url}?photo=${item.synopsis_photo}`
+            },
             goToRecommend(id){
                 this.$router.push({path:'/consult/registered/articledetails',query:{id:id}})
             },
+            getBanner(){
+                this.$axios.get('Patient/showBanner',{user_id:sessionStorage.user_id,type:1}).then(res=>{
+                    // console.log('轮播图',res)
+                    this.banner = res.data.data
+                })
+            },
             getIndexArticle(status){
               this.$axios.get('Patient/indexArticle',{status:status,user_id:sessionStorage.user_id}).then(res=>{
-                  console.log(res.data)
+                //   console.log("文章",res.data)
                   switch (Number(status)) {
                       case 1:
-                          this.dataList.one = res.data.data
+                        //   this.dataList.one = res.data.data
+                        this.articleList=res.data.data.slice(0,3);
                           break;
                       case 2:
                           this.dataList.two = res.data.data
                           break;
                       case 3:
-                          this.dataList.three = res.data.data
+                        //   this.dataList.three = res.data.data
+                        this.videoList=res.data.data.slice(0,4).map(function(i){
+                            i.controls=false;
+                            return i;
+                        })
                           break;
                       case 4:
+                          this.$toast.fail({duration:500,message:"暂未开放"})
                           break;
                       case 5:
                           this.dataList.fives = res.data.data
@@ -172,129 +234,73 @@
                         //挂号
                         this.$router.push({path: '/consult/queue'});
                         break;
-                    case 2:
-                        //工具
-                        this.$toast.fail({duration:500,message:"暂未开放"})
-                        break;
-                    case 3:
-                        this.$toast.fail({duration:500,message:"暂未开放"})
-                        //活动
-                        break;
+                    default:
+                        this._notYetOpen();
+                    
                 }
             },
             callback() {
 
-            }
+            },
+            onlineService(){
+                this._notYetOpen();
+            },
+            medicationGuidance(){
+                this._notYetOpen();
+            },
+            moreExperts(){
+                this._notYetOpen();
+            },
+            clickExperts(){
+                this._notYetOpen();
+            },
+            moreArticle(){
+                this.$router.push({
+                    path: '/consult/registered/articleAndVideoList',
+                    query: {
+                        type: 2,
+                    }
+                });
+            },
+            moreVideo(){
+                this.$router.push({
+                    path: '/consult/registered/articleAndVideoList',
+                    query: {
+                        type: 3,
+                    }
+                });
+            },
+            playVideo(item,e){
+                item.controls=true;
+                e.target.play();
+            },
+            _notYetOpen(){
+                this.$toast.fail({duration:1000,message:"暂未开放"});
+            },
         },
+
         computed:{
             swiper() {
                 return this.$refs.mySwiper.swiper
             },
-          isShowList(){
-              const {isShow,dataList} = this
-              switch (isShow) {
-                  case 1:
-                      return dataList.one.length === 0
-                      break;
-                  case 2:
-                      return dataList.two.length === 0
-                      break;
-                  case 3:
-                      return dataList.three.length === 0
-                      break;
-                  case 4:
-                      return dataList.four.length === 0
-                      break;
-                  case 5:
-                      return dataList.fives.length === 0
-                      break
-              }
-          }
         },
         watch:{
             isShowSearch(e){
                 if (e) {
                     document.body.classList.add('modal-open')
-                    console.log(1)
                 }else {
                     document.body.classList.remove('modal-open')
-                    console.log(2)
                 }
             }
-        }
+        },
     }
 </script>
 
 <style scoped lang="scss">
-
-    .detailed{
-        padding: .3rem;
-
-        >div{
-            margin-bottom: .3rem;
-            display: flex;
-            align-items: center;
-            .detailed-avatar{
-                flex-shrink: 0;
-                width: 2rem;
-                height: 2rem;
-                border-radius: .1rem;
-                background-color: #f4f4f4;
-                background-size: cover;
-            }
-            .detailed-content{
-                overflow: hidden;
-                .detailed-title{
-                    font-size: .3rem;
-                    overflow: hidden;
-                    text-overflow:ellipsis;
-                    white-space: nowrap;
-                }
-                .detailed-title + p{
-                    font-size: .25rem;
-                    color: #afafaf;
-                    overflow: hidden;
-                    text-overflow:ellipsis;
-                    white-space: nowrap;
-                }
-                line-height: .5rem;
-                padding-left: .3rem;
-                .detailed-user-info{
-                    display: flex;
-                    align-items: center;
-                    >div{
-                        width: .4rem;
-                        height: .4rem;
-                        background-color: #f4f4f4;
-                        border-radius: 50%;
-                        background-size: cover;
-                    }
-                    span{
-                        padding-left: .2rem;
-                        font-size: .25rem;
-                    }
-                }
-            }
-            .detailed-tag{
-                font-size:.3rem;
-                :nth-child(1){
-                    margin-right: .4rem;
-                    padding-left: .5rem;
-                    background-image: url("../assets/kan.png");
-                    background-size: .4rem;
-                    background-position: left;
-                    background-repeat: no-repeat;
-                }
-                :nth-child(2){
-                    padding-left: .4rem;
-                    background-image: url("../assets/godd.png");
-                    background-size: .3rem;
-                    background-position: left;
-                    background-repeat: no-repeat;
-                }
-            }
-        }
-
+    video{
+        /*width:100%;*/
+        /*height:100%;*/
+        object-fit:fill;
     }
     .fade-search-leave-active,.fade-search-enter-active {
         transition: all .3s ease;
@@ -303,9 +309,9 @@
         opacity: 0;
     }
     .index {
-        background-image: url("../assets/reservation/BG.png");
-        background-size: 100% 1.7rem;
-        background-repeat: no-repeat;
+        padding-bottom: 1.3rem;
+        // background-image: url("../assets/reservation/BG.png");
+        background: url("../assets/reservation/newTopBg.png") no-repeat center top/100% 8.5rem #e1e1e1;
     }
 
     .swiper-container {
@@ -323,38 +329,41 @@
         }
     }
 
-    input::-webkit-input-placeholder {
-
-        color: rgba(255, 255, 255, .8);
-    }
-
     .search {
-        line-height: 1.2rem;
-        margin: 0 auto;
+        margin: 0 auto 0.3rem;
         width: 90%;
-        display: flex;
-        align-items: center;
-        /*padding-bottom: .1rem;*/
+        overflow: hidden;
+        h1{
+            margin: 0.6rem 0 0.3rem;
+            text-align: center;
+            font-size: 0.4rem;
+            line-height: 1;
+            color: #fff;
+        }
         label {
             flex: 1;
         }
 
         input {
+            box-sizing: border-box;
             padding-left: .6rem;
-            width: calc(100% - .6rem);
-            flex: 1;
+            width: 100%;
+            // flex: 1;
             line-height: .6rem;
             border-radius: .4rem;
             border: none;
             background-color: rgba(255, 255, 255, 0.4);
             background-image: url("../assets/search-w.png");
             background-repeat: no-repeat;
-            background-position: left .2rem center;
+            background-position: right .4rem center;
             background-size: .3rem;
+            background-color: #d2d2d2;
             font-size: .3rem;
-            color: white;
+            color: #333;
         }
-
+        input::-webkit-input-placeholder {
+            color: #777;
+        }
         i {
             color: white;
             font-size: .6rem;
@@ -363,119 +372,190 @@
             padding-left: .2rem;
         }
     }
-
-    .items {
-        color: #5b5b5b;
-        font-size: 0.2rem;
-        height: 1.5rem;
+    .bannerBox{
+        width: 90%;
+        margin: 0 auto;
+        border-radius: 10px;
+        box-shadow: 0 0 20px 0 rgba(0,0,0,0.4);
+    }
+    .consultList{
+        margin: 10px auto 0;
         display: flex;
-
-        article {
-            text-align: center;
-            width: 100%;
-
-            span {
-                margin: 5px auto;
-
+        justify-content: space-between;
+        width: 90%;
+        >div{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-sizing: border-box;
+            padding: 0 0.2rem 0 0.5rem;
+            width: 47%;
+            height: 1.6rem;
+            background: url('../assets/index/consultBg.png') no-repeat center/100% 100%;
+            >img{
+                width: .8rem;
+            }
+            div{
+                color: #fff;
+                font-size: 0.32rem;
+                button{
+                    margin-top: 0.2rem;
+                    width: 1.42rem;
+                    height: 0.5rem;
+                    font-size: 0;
+                    background-color: transparent;
+                    border: none;
+                }
+                img{
+                    width: 100%;
+                    height: 100%;
+                }
             }
         }
-
+    }
+    .items {
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        color: #5b5b5b;
+        font-size: 0.25rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        background-color: #fff;
         .option {
             display: block;
             border-radius: 50%;
-            background-image: -moz-linear-gradient(123deg, rgba(0, 209, 182, 0.1) 0%, rgba(141, 255, 240, 0.1) 100%);
-            background-image: -webkit-linear-gradient(123deg, rgba(0, 209, 182, 0.1) 0%, rgba(141, 255, 240, 0.1) 100%);
-            background: -ms-linear-gradient(123deg, rgba(0, 209, 182, 0.1) 0%, rgba(141, 255, 240, 0.1) 100%);
-            /*opacity: 0.102;*/
-            width: 0.9rem;
-            height: 0.9rem;
-            /*z-index: 146;*/
+            margin-bottom: 0.7rem;
             img {
-                width: 50%;
-                height: 45%;
-                margin-top: calc(50% - 22.5%);
+                margin-bottom: 0.1rem;
+                width: 0.9rem;
+                height: 0.9rem;
             }
         }
+        .option:not(:nth-of-type(3n)){
+            margin-right: 1.34rem;
+        }
     }
-
-    .active-t {
-        border-bottom: 2px #00b5bd solid;
+    .sectionTitle{
+        padding: 0 5%;
+        line-height: 1rem;
+        font-size: 0.2rem;
+        p{
+            position: relative;
+        }
+        strong{
+            margin-right: 10px;
+            font-size: 0.34rem;
+            color: #393939;
+        }
+        span{
+            padding-left: 0.4rem;
+            position: absolute;
+            right: 0;
+            font-size: 0.26rem;
+            color: #747474;
+            background: url('../assets/index/moreIcon.png') no-repeat left center/0.3rem;
+        }
     }
-
-    .content {
-        margin-top: 10px;
-        padding-bottom: 1.3rem;
-        .title {
-            background: #f5f5f5;
-            color: #909399;
-            font-size: .25rem;
-            display: flex;
+    .expertTeam{
+        display: flex;
+        justify-content: space-between;
+        padding: 0 5%;
+        div{
+            margin: .4rem 0;
+            width: 2rem;
+            color: #393939;
             text-align: center;
-
-            span {
-                line-height: 0.6rem;
-                width: 100%;
-
-                span {
-                    display: block;
-                    width: 70%;
-                    margin: 0 auto;
-
-                }
-            }
         }
-        .video{
-            padding:.3rem;
-
-            >div {
-                background-color: #f4f4f4;
-                margin-bottom: .3rem;
-                border-radius: .2rem;
-                /*height: 3.4rem;*/
-                /*width: 100%;*/
-                /*background: url("../assets/ac.png") no-repeat;*/
-                /*background-size: cover;*/
-                p{
-                    font-size: .3rem;
-                    padding: .2rem .3rem;
-                    overflow: hidden;
-                    text-overflow:ellipsis;
-                    white-space: nowrap;
-                }
-                div{
-                    video{
-                        width: 100%;
-                        height: 2.57rem;
-                    }
-                }
-
-            }
+        img{
+            width: 100%;
+            height: 3.2rem;
+            box-shadow: 0 0 20px 0 rgba(0,0,0,0.1);
+            border-radius: .1rem;
+            object-fit: cover;
         }
-        .recommend {
-            >div{
-                margin-bottom: .3rem;
-                background-color: #f4f4f4;
-                border-radius: .2rem;
-                overflow: hidden;
-                p{
-                    font-size: .3rem;
-                    padding: .2rem .3rem;
-                    overflow: hidden;
-                    text-overflow:ellipsis;
-                    white-space: nowrap;
-                }
-            }
-            padding:.3rem;
-
-            .bg{
-                /*border-radius: .1rem;*/
-
-                width: 100%;
-                height: 2.5rem;
-                background-size: 100%;
-                background-repeat: no-repeat;
-            }
+        strong{
+            margin: .24rem 0 .17rem;
+            font-size: 0.3rem;
+        }
+        span{
+            text-indent: 2em;
+            font-size: 0.24rem;
         }
     }
-
+    .theSecondBannerBox{
+        margin: .13rem auto 0;
+        box-shadow: none;
+        .swiper-container{
+            margin: 0;
+        }
+    }
+    .articleList{
+        padding: 0 5%;
+        >div{
+            display: flex;
+            padding: 10px 0;
+            height: 2rem;
+            font-size: 0.3rem;
+            color: #393939;
+            div{
+                width: calc(100% - 2.26rem);
+            }
+        }
+        >div:not(:last-of-type){
+            border-bottom: 1px solid #bfbfbf;
+        }
+        img{
+            margin-right: 0.26rem;
+            width: 2rem;
+            height: 2rem;
+            object-fit: cover;
+            border-radius: 0.1rem;
+        }
+        p:last-of-type{
+            margin-top: .25rem;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+        }
+    }
+    .videoList{
+        padding: 0 5%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        >div{
+            margin-bottom: 0.5rem;
+            width: 3.3rem;
+            div{
+                width: 100%;
+                font-size: .28rem;
+                color: #393939;
+            }
+            // p{
+            //     display: inline-block;
+            //     width: calc(100% - 1.7rem);
+            //     vertical-align: bottom;
+            // }
+        }
+        video{
+            width: 100%;
+            height: 1.7rem;
+            border-radius: .1rem;
+        }
+    }
+    .active-t {
+        border-bottom: 2px #5ddcd3 solid;
+        color: #5ddcd3;
+    }
+    .bg_fff{
+        margin-top: .15rem;
+        background-color: #fff;
+    }
+    .exceeded{
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+    }
 </style>

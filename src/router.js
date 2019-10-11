@@ -4,9 +4,11 @@ import Index  from './views/Index.vue'
 
 //咨询相关路由
 import consult from './views/consult/index'
+import banner from './views/doctor/banner'
 import featured from './views/consult/featured'
 import featuredDetailed from './views/consult/featuredDetailed'
 import featuredReservation from './views/consult/featuredReservation'
+import dynamicdetails from './views/consult/dynamicdetails'
 import registered from './views/consult/registered'
 import advisory from './views/consult/advisory'
 import doctors from './views/consult/doctors'
@@ -23,6 +25,7 @@ import doctorDetails from './views/consult/doctorDetails'
 import advisorySelect from './views/consult/advisorySelect'
 import articleList from './views/consult/articleList'
 import articleDetails from './views/consult/articleDetails'
+import articleAndVideoList from './views/consult/articleAndVideoList'
 import introduction from './views/consult/introduction'
 import teamIntroduction from './views/consult/teamIntroduction'
 import attention from './views/consult/personal/attention'
@@ -37,10 +40,12 @@ import patientManagement from './views/consult/personal/patientManagement'
 import addPatient from './views/consult/personal/addPatient'
 import privateChat from './views/consult/personal/privateChat'
 import arrangement from './views/consult/personal/arrangement'
+import specialService from './views/consult/personal/specialService'
 import refund from './views/consult/personal/refund'
 
 //医生端
 import doctorPersonal from './views/doctor/personal'
+import doctorExpert from './views/doctor/expert'
 import reply from './views/doctor/reply'
 import otherExperts from './views/doctor/otherExperts'
 import graphic from './views/doctor/graphic'
@@ -53,6 +58,7 @@ import upload from './views/doctor/articleUpload'
 import register from './views/doctor/register'
 import doctorMessage from './views/doctor/doctorMessage'
 import myorder from './views/doctor/myorder'
+import advisoryOrder from './views/doctor/advisoryOrder'
 // import temaInfo from './views/doctor/temaInfo'
 import temaInfo from './views/doctor/temaInfo'
 import studioGraphic from './views/doctor/studioGraphic'
@@ -87,6 +93,11 @@ export default new Router({
       component:messages
     },
     {
+      path:'/consult/banner',
+      name:'详细',
+      component:banner
+    },
+    {
       path:'/consult/queue',
       name:'挂号',
       component:queue
@@ -95,6 +106,11 @@ export default new Router({
       path:'/consult/featured',
       name:'特色项目',
       component:featured
+    },
+    {
+      path:'/consult/dynamicdetails',
+      name:'动态详情',
+      component:dynamicdetails
     },
     {
       path:'/consult/featured/detailed',
@@ -113,7 +129,7 @@ export default new Router({
     },
     {
       path:'/consult/queue/payForm',
-      name:'支付',
+      name:'支付订单',
       component:payForm
     },
     {
@@ -123,10 +139,12 @@ export default new Router({
       children:[
         {
           path:'/consult/queue/visitingtime/',
-          component:patientInfo
+          component:patientInfo,
+          name:'预约医生详情'
         },
         {
           path:'/consult/queue/visitingtime/outpatient',
+          name:'预约资料填写',
           component:outpatient
         }
       ],
@@ -169,12 +187,13 @@ export default new Router({
     },
     {
       path:'/consult/registered',
-      name:'咨询-选择医院',
+      name:'咨询-选择工作室/医生',
       component:registered
     },
 
     {
       path:'/consult/advisory',
+      name:'我的医生',
       component:advisory
     },
     {
@@ -194,16 +213,19 @@ export default new Router({
     {
       //评价
       path:'/consult/registered/comment',
+      name:'评论',
       component:comment
     },
     {
-      //团队列表
-      path:'/consult/registered/expert',
-      component:expert
+      //专家动态
+      path:'/consult/registered/doctorexpert',
+      name:'专家动态',
+      component:doctorExpert
     },
     {
       //团队列表
       path:'/consult/registered/knowndoctor',
+      name:'医生详情',
       component:knownDoctor
     },
     {
@@ -214,18 +236,20 @@ export default new Router({
     {
       //电话、视频、图文咨询
       path:'/consult/registered/phoneservice',
+      name:'咨询订单',
       component:phoneservice
     },
     {
       //医生电话、视频、图文咨询
       path:'/consult/registered/doctorservice',
+      name:'医生咨询',
       component:doctorService
     },
 
     {
       //工作室详情
       path:'/consult/registered/doctordetails',
-      name:'doctorDetails',
+      name:'工作室详情',
       component:doctorDetails
     },
     {
@@ -236,14 +260,19 @@ export default new Router({
     {
       //文章列表
       path:'/consult/registered/articlelist',
-      name:'articleList',
+      name:'文章列表',
       component:articleList
     },
     {
       //文章详情
       path:'/consult/registered/articledetails',
-      name:'articleDetails',
+      name:'文章详情',
       component:articleDetails
+    },
+    {
+      path: '/consult/registered/articleAndVideoList',
+      name:'列表',
+      component: articleAndVideoList,
     },
     {
       //医生详细
@@ -259,11 +288,13 @@ export default new Router({
     {
       //填资料
       path:'/consult/registered/fillout',
+      name:'资料编辑',
       component:fillout
     },
     {
       // 创建患者信息
       path:'/consult/registered/existingdata',
+      name:'患者选择',
       component:existingData
     },
 
@@ -272,7 +303,7 @@ export default new Router({
       //关注医生列表
       path:'/consult/personal/attention',
       component:attention,
-      name:'我关注的医生'
+      name:'我关注的医生/工作室'
     },
     {
       path:'/consult/personal/personal',
@@ -282,12 +313,17 @@ export default new Router({
     {
       path:'/consult/personal/doctors',
       component:userDoctors,
-      name:'我预约的医生'
+      name:'我咨询的医生'
     },
     {
       path:'/consult/personal/arrangement',
       component:arrangement,
       name:'我的挂号'
+    },
+    {
+      path:'/consult/personal/specialservice',
+      component:specialService,
+      name:'项目订单'
     },
     {
       path:'/consult/personal/refund',
@@ -306,6 +342,7 @@ export default new Router({
     },
     {
       path:'/consult/personal/privatechat',
+      name:'对话',
       component:privateChat
     },
 
@@ -313,43 +350,55 @@ export default new Router({
     {
       //个人中心
       path:'/doctors/doctorpersonal',
+      name:'个人中心-医生',
       component:doctorPersonal
     },
+    // {
+    //   //专家动态
+    //   path:'/doctors/expert',
+    //   name:'个人中心-医生',
+    //   component:expert
+    // },
     {
       //回复我的
       path:'/doctors/reply',
+      name:'回复我的',
       component:reply
     },
     {
       //其他专家详情
       path:'/doctors/otherexperts',
+      name:'工作室成员',
       component:otherExperts
     },
     {
       //图文患者
       path:'/doctors/graphic',
-      name:'graphic',
+      name:'咨询订单-医生',
       component:graphic
     },
     {
       //团队订单
       path:'/doctors/studiographic',
-      name:'studioGraphic',
+      name:'团队订单',
       component:studioGraphic
     },
     {
       //团队列表
       path:'/doctors/teamlist',
+      name:'工作室列表',
       component:TeamList
     },
     {
       //医生端首页
       path:'/doctors/index',
+      name:'首页',
       component:index2
     },
     {
       //我的诊室
       path:'/doctors/studioid',
+      name:'我的诊室',
       component:studioId
     },
     {
@@ -360,32 +409,44 @@ export default new Router({
     {
       //资料编辑
       path:'/doctors/release',
+      name:'发布动态',
       component:release
     },
     {
       //文章上传
       path:'/doctors/upload',
+      name:'文章上传',
       component:upload
     },
     {
       //团队信息
       path:'/doctors/temainfo',
+      name:"工作室申请",
       component:temaInfo
     },
     {
       //挂号订单
       path:'/doctors/register',
+      name:"挂号订单",
       component:register
     },
     {
-      //挂号订单
+      //消息列表
       path:'/doctors/doctormsg',
+      name:'患者消息列表',
       component:doctorMessage
     },
     {
       //挂号订单
       path:'/doctors/myorder',
+      name:'医生-我的挂号',
       component:myorder
+    },
+    {
+      //咨询订单
+      path:'/doctors/advisoryorder',
+      name:'医生-我的咨询',
+      component:advisoryOrder
     },
   ]
 })

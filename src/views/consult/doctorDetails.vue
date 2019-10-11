@@ -3,7 +3,7 @@
         <section class="doctors-info">
             <div>
                 <span style="float: right;margin-right: .3rem;background:rgba(255,255,255,0.3);color: white;font-size: .3rem;padding: 0 .3rem;border-radius: .1rem;"
-                      @click="mySelectDialog = true"><i style="transform: rotate(90deg);font-weight: 800"
+                      @click="mySelectDialogClick"><i style="transform: rotate(90deg);font-weight: 800;line-height: .5rem"
                                                         class="el-icon-sort"></i></span>
                 <article class="avatar-info">
                     <img :src="studioInfo.avatar" alt="头像">
@@ -13,17 +13,17 @@
                             <span v-for="label of studioInfo.label">{{label}}</span>
                         </article>
                     </div>
+                    <span>关注数: {{studioInfo.follow_num}} 人</span>
                 </article>
                 <article class="dynamic-btn">
-                    <div class="tally">
-                        <span>关注数: {{studioInfo.follow_num}} 人</span>
-                    </div>
+                    <span class="js">工作室介绍:</span>
                     <div>
                         <span @click="attention" :class="{'isFollow':studioInfo.is_follow === 1}"><i
                                 class="el-icon-user"></i> {{this.studioInfo.is_follow ===1?'已订阅':'订阅'}}</span>
                     </div>
                 </article>
-                <span class="js">工作室介绍</span>
+                <p>{{studioInfo.content}}</p>
+
             </div>
         </section>
         <section class="listDate">
@@ -54,9 +54,6 @@
                         <div>
                             <p>{{item.content}}</p>
                         </div>
-                        <!--                        <div style="text-align: right;padding-right: .15rem;font-size: .3rem">-->
-                        <!--                            <span style="color: #09aba7">全文</span>-->
-                        <!--                        </div>-->
                         <div class="photos">
                             <img v-for="img of item.photo" :src="img" alt="">
                         </div>
@@ -85,8 +82,6 @@
 <!--                </article>-->
             </transition-group>
         </section>
-
-        <!--        :studio=""-->
 
         <my-select @replace="getRegistered" :show.sync="mySelectDialog" :studio="studioId"></my-select>
         <p class="pjt">{{isDataList}}</p>
@@ -124,6 +119,10 @@
             this.getRegistered()
         },
         methods: {
+            mySelectDialogClick(){
+                this.mySelectDialog = true
+                document.body.classList.add('modal-open')
+            },
             chat() {
                 this.$toast.fail('暂未开发');
             },
@@ -137,7 +136,13 @@
                 })).then(res => {
                     console.log(res.data.msg)
                     if (res.data.msg === 'ok') {
+
                         this.studioInfo.is_follow = this.studioInfo.is_follow === 1 ? 0 : 1
+                        if (this.studioInfo.is_follow === 0) {
+                            this.studioInfo.follow_num -= 1
+                        }else {
+                            this.studioInfo.follow_num += 1
+                        }
                     }
                 })
             },
@@ -226,6 +231,12 @@
 </script>
 
 <style scoped lang="scss">
+    .dynamic-btn+p{
+        color: white;
+        font-size: .3rem;
+        padding: 0 .3rem .1rem .3rem;
+        font-weight: 200;
+    }
 
     .pjt {
             margin-top: 1rem;
@@ -267,7 +278,7 @@
                 display: block;
                 width: .6rem;
                 height: .6rem;
-                background-color: #00b5bd;
+                background-color: #4d8fec;
                 border-radius: 50%;
             }
 
@@ -301,7 +312,7 @@
 
     .isFollow {
         background: white !important;
-        color: #00b5bd !important;
+        color: #4d8fec !important;
         box-shadow: 0 0 3px 2px rgba(1, 189, 187, 0.3);
     }
 
@@ -309,9 +320,18 @@
         width: 100%;
         display: flex;
         align-items: center;
-        padding: .3rem;
+        justify-content: space-between;
+        padding:.2rem .3rem .1rem .3rem;
         box-sizing: border-box;
-
+        .js {
+            /*width: 2.5rem;*/
+            color: white;
+            /*padding: .1rem .3rem;*/
+            /*background-color: #40d6cc;*/
+            /*border-radius: .1rem;*/
+            font-size: .3rem;
+            flex-shrink: 0;
+        }
         .tally {
             width: 100%;
             text-align: left;
@@ -327,15 +347,12 @@
         }
 
         div {
-            text-align: right;
-            width: 100%;
-
             span {
                 font-size: .3rem;
                 padding: .1rem .3rem;
                 border-radius: .1rem;
                 color: white;
-                background: linear-gradient(to bottom right, #4ae2df, #02bdb9);
+                background: linear-gradient(to bottom right, #4d8fec, #4d8fec);
             }
         }
     }
@@ -354,7 +371,7 @@
                 display: block;
                 width: calc(100% / 3 - .3rem);
                 height: 2.2rem;
-                background-color: #00b5bd;
+                background-color: #4d8fec;
                 border-radius: .1rem;
             }
         }
@@ -374,7 +391,7 @@
                 display: block;
                 height: .8rem;
                 width: .8rem;
-                background-color: #00b5bd;
+                background-color: #4d8fec;
                 border-radius: 50%;
             }
         }
@@ -396,28 +413,23 @@
     }
 
     .active-box {
-        background: linear-gradient(to bottom right, #4ae2df, #02bdb9) !important;
+        background: linear-gradient(to bottom right, #4d8fec, #4d8fec) !important;
         box-shadow: 0 5px 5px rgba(1, 189, 184, 0.2);
         color: white !important;
     }
 
     .advisory-select {
-        /*position: absolute;*/
-        /*top: 0;*/
         font-size: .3rem;
         width: 100%;
-        /*margin-top: 2rem;*/
-        /*bottom: 0;*/
-        /*width: 100%;*/
+
         .box {
-            margin: .6rem auto;
+            margin: .4rem auto;
             width: 90%;
             padding: .25rem 0;
             background: #f5f5f5;
             text-align: center;
             border-radius: 5px;
             color: #5b5b5b;
-            /*margin-bottom: .6rem;*/
             .icon {
                 margin-left: calc(50% - .325rem);
                 margin-bottom: .1rem;
@@ -437,8 +449,8 @@
     }
 
     .active-title {
-        border-bottom: 2px #01bdb8 solid;
-        color: #01bdb8;
+        border-bottom: 2px #4d8fec solid;
+        color: #4d8fec;
     }
 
     .registered-star {
@@ -447,27 +459,23 @@
 
     .doctors-info {
         width: 100%;
-        height: 3.8rem;
+        min-height: 3rem;
         background: url("../../assets/phoneserve/BG.png");
         background-size: cover;
-        padding-top: .3rem;
+        padding-top: .1rem;
 
         div {
-            .js {
-                margin-left: .3rem;
-                color: white;
-                padding: .1rem .3rem;
-                background-color: #40d6cc;
-                border-radius: .1rem;
-                font-size: .3rem;
-            }
+
 
             height: 100%;
 
             .avatar-info {
                 line-height: 0.4rem;
                 margin-left: 0.3rem;
-
+                >span{
+                    font-size: .25rem;
+                    color: white;
+                }
                 img {
                     margin-right: 0.3rem;
                     float: left;
@@ -479,9 +487,9 @@
                 }
 
                 div {
-                    font-size: 0.4rem;
+                    font-size: 0.3rem;
                     font-weight: 600;
-                    padding-top: 0.25rem;
+                    /*padding-top: 0.25rem;*/
                     color: white;
 
                     #zj {
@@ -505,7 +513,7 @@
                     color: white;
                     font-size: 0.25rem;
                     background: rgba(255, 255, 255, 0.2);
-                    padding: .05rem .2rem;
+                    padding: 0 .2rem;
                     border-radius: 20px;
                     font-weight: 300;
                     margin-right: 0.3rem;
@@ -538,16 +546,15 @@
     }
 
     .listDate {
-        background: white;
-        margin-top: -.5rem;
-        border-radius: 20px 20px 0 0;
+        background-color: #00bdb7;
         width: 100%;
-
         /*position: absolute;*/
         height: auto;
 
         .listDate-title {
-            line-height: 1rem;
+            border-radius: .3rem .3rem 0 0;
+            background-color: white;
+            line-height: .8rem;
             color: #4c4c4c;
             font-size: 0.3rem;
             display: flex;

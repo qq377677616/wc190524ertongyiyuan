@@ -6,7 +6,7 @@
                 <span><img :src="inquiryClass.icon" alt=""></span>
                 <div>
                     <h4>{{inquiryClass.name}}</h4>
-                    <p>此开关使用图文问诊的都快急死了地方</p>
+<!--                    <p>此开关使用图文问诊的都快急死了地方</p>-->
                 </div>
             </article>
         </section>
@@ -14,11 +14,11 @@
             <article class="choice-menus">
                 <p>
                     <span
-                            @click="activeMens=1"
+                            @click="setActiveMens(1)"
                             :class="{'active-mens':activeMens === 1}">解答中</span></p>
                 <p>
                     <span
-                            @click="activeMens=2"
+                            @click="setActiveMens(2)"
                             :class="{'active-mens':activeMens === 2}">已完成</span></p>
             </article>
             <div @click="goToChat(item)" v-for="(item, key) of getUserInfoListClass" :key="key">
@@ -41,7 +41,8 @@
                     item.team_id,
                     item.doctor_id,
                     item.order_number,
-                    item.status
+                    item.status,
+                    item
                     )" type="button"
                             v-show="item.status!=='2'"
                             :class="{'acceptOn':item.status === '1'}">
@@ -65,30 +66,79 @@
         name: "graphic",
         data() {
             return {
+                timerObj:null,
+                isNum:0, //是否第一次进来
                 inquiryClass: this.$route.query,
                 activeMens: 1,
                 isGraphic: true,
                 userInfoOnList: [],
                 userInfoOffList: [],
+                pages:1,
             }
         },
         created() {
-
+            window.addEventListener('scroll', this.handleScroll);
             console.log(this.$route.query)
             this.getOrderForm();
         },
+        beforeDestroy () {
+            window.removeEventListener('scroll', this.handleScroll);   //  离开页面清除（移除）滚轮滚动事件
+        },
         methods: {
+            setActiveMens(index){
+                this.pages = 1
+                this.activeMens = index
+            },
+            handleScroll(){
+                let visibleHeight = document.documentElement.clientHeight || document.body.clientHeight
+                let scrollHeight = document.documentElement.scrollHeight
+                let scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop
+                let list = new Map([
+                    [1,this.userInfoOnList],
+                    [2,this.userInfoOffList]
+                ])
+                if(scrollTop + visibleHeight == scrollHeight){
+                    // this.pages += 1
+                    // this.$axios.get('Chatorder/doctorOrderList', {status: this.activeMens, type: this.inquiryClass.type, doctor_id: this.inquiryClass.id,page:this.pages}).then(res=>{
+                    //     switch (this.activeMens) {
+                    //         case 1:
+                    //             this.userInfoOnList =[...this.userInfoOnList, ...res.data.data]
+                    //             break;
+                    //         case 2:
+                    //             this.userInfoOffList =[...this.userInfoOffList, ...res.data.data]
+                    //             break;
+                    //     }
+                    // })
+                }
+            },
             goToChat(item) {
                 //已完成的订单不进行跳转
-                console.log(item.pay_type);
+                console.log(item);
+                if (this.inquiryClass.name === '电话咨询'){
+                    window.location.href = `tel:${item.user_mobile}`;
+                    return
+                }
                 if (item.status !== '2' && item.pay_type != 0 && item.status != 0) {
                     console.log(item)
-                    this.$router.push({path: '/consult/personal/privatechat',query:{id:item.identifier}})
+                    this.$router.push({path: '/consult/personal/privatechat',query:{id:item.identifier,avatar:item.avatar,utd:'1',user:item}})
                 }
             },
 
-            accept(index, team_id, doctor_id, order_number, order_status) {
+            async accept(index, team_id, doctor_id, order_number, order_status, item) {
                 // 订单处理
+                let std
+                if (order_status === '1') {
+                    await this.$dialog.confirm({
+                        title: '提示',
+                        message: '是否确认完成?'
+                    }).then(()=>{
+                        std = true
+                    }).catch(()=>{
+                        std = false
+                    })
+                    if (!std) return
+                }
+                this.$toast.loading({forbidClick: true,message:'处理中'})
                 this.$axios.post('Chatorder/editOrder', this.$Qs.stringify({
                     team_id,
                     doctor_id,
@@ -98,6 +148,7 @@
                     console.log(res.data);
                     if (res.data.msg === 'ok') {
                         //更新状态
+                        this.$toast.clear()
                         if (this.userInfoOnList[index].status === '1') {
                             this.userInfoOnList[index].status = '2';
                             this.userInfoOffList.push(this.userInfoOnList[index]);
@@ -105,30 +156,34 @@
                         } else {
                             this.userInfoOnList[index].status = '1'
                         }
+                        this.goToChat(item)
                     }
                 })
+            },
+            polling(){
+                this.timerObj = setInterval(()=>{
+                    this.getOrderForm()
+                },4000)
             },
             getOrderForm() {
                 //获取订单列表
                 //userInfoOnList 未接受、进行中订单
                 //userInfoOffList 已完成的订单
-                console.log(this.inquiryClass.id)
-                this.$axios.get('Chatorder/doctorOrderList', {type: 2, doctor_id: this.inquiryClass.id}).then(res=>{
-                    console.log(res)
-                })
-                this.$axios.all([
-                    this.$axios.get('Chatorder/doctorOrderList', {status: 1, type: this.inquiryClass.type, doctor_id: this.inquiryClass.id}),
-                    this.$axios.get('Chatorder/doctorOrderList', {status: 2, type: this.inquiryClass.type, doctor_id: this.inquiryClass.id})
-                ]).then(this.$axios.spread((on_data, off_data) => {
-                    console.log(on_data, off_data);
-                    this.userInfoOnList = on_data.data.data;
-                    this.userInfoOffList = off_data.data.data;
-                }));
+                    this.$axios.all([
+                        this.$axios.get('Chatorder/doctorOrderList', {status: 1, type: this.inquiryClass.type, doctor_id: this.inquiryClass.id}),
+                        this.$axios.get('Chatorder/doctorOrderList', {status: 2, type: this.inquiryClass.type, doctor_id: this.inquiryClass.id})
+                    ]).then(this.$axios.spread((on_data, off_data) => {
+                        this.userInfoOnList = on_data.data.data;
+                        this.userInfoOffList = off_data.data.data;
+                        this.isNum === 0 ? this.polling() : ''
+                        this.isNum = 1
+                    }));
             }
         },
         computed: {
             setUserInfoList() {
                 //根据状态进行分类列表的展示
+
                 let list = [];
                 switch (this.activeMens) {
                     case 1:
@@ -148,12 +203,15 @@
                         if (item.type === this.inquiryClass.type) {
                             list.push(item)
                         }
-                    } 
+                    }
                 }else {
                     return this.setUserInfoList
                 }
                 return list
             }
+        },
+        destroyed(){
+            window.clearInterval(this.timerObj)
         }
     }
 </script>

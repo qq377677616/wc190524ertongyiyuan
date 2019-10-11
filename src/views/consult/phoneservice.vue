@@ -49,6 +49,7 @@
                 <span><img src="../../assets/phoneserve/wei.png" alt="">未使用随时可退</span>
                 <span><img src="../../assets/phoneserve/bu.png" alt="">不满意可申诉</span>
             </article>
+
             <article class="detailed-text">
                 <div style="display: flex;align-items: center">
                     <input
@@ -68,14 +69,17 @@
                     <li><span>医生接诊后问诊最长开启48小时，逾期自动结束</span></li>
                 </ul>
             </article>
+
         </section>
         <section class="btn">
             <button @click="goTo" type="button">立即申请</button>
         </section>
+
     </div>
 </template>
 
 <script>
+
     export default {
         name: "phoneservice",
         data() {
@@ -83,8 +87,8 @@
                 radio: 1,
                 // consulting:JSON.parse(),
                 dataList:[
-                    {title:'电话咨询',content:'提交手机号码，医生会联系您',},
-                    {title:'视频咨询',content:'提交手机号码，医生会联系您',},
+                    {title:'电话咨询',content:'提交手机号码、补充完善信息 ( 医生会在下单后30分钟内主动与您联系确认 )',},
+                    {title:'视频咨询',content:'提交手机号码、补充完善信息 ( 医生会在下单后30分钟内主动与您联系确认 )',},
                     {title:'图文咨询',content:'医生问诊不限交流次数',},
                     ],
                 activeMoney:{},
@@ -240,8 +244,9 @@
         height: 100%;
     }
     .btn{
-        position: fixed;
-        bottom: 0.35rem;
+        padding: 1rem 0;
+        /*position: fixed;*/
+        /*bottom: 1rem;*/
         width: 100%;
         text-align: center;
         button{
@@ -250,71 +255,10 @@
             border-radius: 5px;
             border: none;
             color: white;
-            background:linear-gradient(to bottom right, #4ae2df, #02bdb9);
+            background:linear-gradient(to bottom right, #4d8fec, #4d8fec);
             font-size: 0.3rem;
         }
     }
-    /*.doctors-info {*/
-    /*    width: 100%;*/
-    /*    height: 5rem;*/
-    /*    background: url("../../assets/phoneserve/BG.png");*/
-    /*    background-size: cover;*/
-
-    /*    div {*/
-    /*        height: 90%;*/
-
-    /*        .avatar-info {*/
-    /*            line-height: 0.5rem;*/
-    /*            margin-left: 0.3rem;*/
-
-    /*            img {*/
-    /*                margin-right: 0.2rem;*/
-    /*                float: left;*/
-    /*                width: 1.45rem;*/
-    /*                height: 1.45rem;*/
-    /*                background: #9b9c9d;*/
-    /*                background-size: cover;*/
-    /*                border-radius: 50%;*/
-    /*            }*/
-
-    /*            div {*/
-    /*                font-size: 0.3rem;*/
-    /*                font-weight: 600;*/
-    /*                padding-top: 0.25rem;*/
-    /*                color: white;*/
-
-    /*                .ic {*/
-    /*                    font-size: 0.25rem;*/
-    /*                    font-weight: 300;*/
-    /*                }*/
-    /*            }*/
-    /*        }*/
-
-    /*        .tag {*/
-    /*            margin-top: 0.4rem;*/
-
-    /*            span {*/
-    /*                color: white;*/
-    /*                font-size: 0.25rem;*/
-    /*                background: rgba(255, 255, 255, 0.2);*/
-    /*                padding: 3px 10px;*/
-    /*                border-radius: 20px;*/
-    /*                font-weight: 300;*/
-    /*                margin-left: 0.3rem;*/
-    /*            }*/
-    /*        }*/
-
-    /*        .text {*/
-    /*            height: 1.5rem;*/
-    /*            color: white;*/
-    /*            font-weight: 300;*/
-    /*            font-size: 0.26rem;*/
-    /*            line-height: 0.55rem;*/
-    /*            margin-left: 0.3rem;*/
-    /*            margin-top: 0.2rem;*/
-    /*        }*/
-    /*    }*/
-    /*}*/
 
     .detailed {
         margin-top: -0.7rem;
@@ -343,9 +287,10 @@
         }
 
         .detailed-text {
-            position: absolute;
-            left: 0;
-            right: 0;
+            /*position: absolute;*/
+            /*left: 0;*/
+            /*right: 0;*/
+            /*border-bottom:.1rem #f5f3ed solid;*/
             height: 3rem;
             padding: .3rem;
             div{
@@ -354,7 +299,7 @@
                 span{
                     margin-left: 0.2rem;
                     font-size: 0.2rem;
-                    color: #01bdb8;
+                    color: #4d8fec;
                 }
             }
 
@@ -363,7 +308,7 @@
                 height: 0.4rem;
                 line-height: 0.6rem;
                 li {
-                    color: #01bdb8;
+                    color: #4d8fec;
                     span {
                         font-size: 0.3rem;
                         color: #606266;
@@ -388,13 +333,13 @@
         margin-bottom: 0.07rem;
         margin-right: .2rem;
         border-radius: 50%;
-        border: #01bdb8 solid .02rem;
+        border: #4d8fec solid .02rem;
     }
 
     input[type='radio']:checked + label::before {
         width: .18rem;
         height: .18rem;
-        background-color: #01bdb8;
+        background-color: #4d8fec;
         background-clip: content-box;
         padding: .06rem;
     }

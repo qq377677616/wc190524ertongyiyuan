@@ -91,7 +91,7 @@
                 inFoSelect: [
                     {id: 'A', name: '我的咨询', url: '/consult/personal/doctors'},
                     {id: 'B', name: '我的挂号', url: '/consult/personal/arrangement', std: 0},
-                    {id: 'C', name: '项目订单', url: '/consult/personal/arrangement', std: 1},
+                    {id: 'C', name: '项目订单', url: '/consult/personal/specialservice', std: 1},
                     // {title:'我发布过的帖子',icon:require('../../../assets/personal/yuyue.png'),url:''},
                 ]
             }
@@ -116,7 +116,8 @@
 
 <style scoped lang="scss">
     .user-select {
-        border-bottom: 4px #f1f2f3 solid;
+        /*border-bottom: 4px #f1f2f3 solid;*/
+        padding-bottom: 1.4rem;
         /*padding: .3rem;*/
         ul li {
             display: flex;
@@ -153,7 +154,7 @@
     .personal {
         padding-top: .3rem;
         height: 3.5rem;
-        background: url("../../../assets/phoneserve/BG.png");
+        background: url("../../../assets/reservation/newTopBg.png");
         background-size: cover;
         position: relative;
 

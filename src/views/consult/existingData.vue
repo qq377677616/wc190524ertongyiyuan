@@ -17,7 +17,10 @@
                 </li>
             </ul>
         </section>
-        <button type="submit" @click="goTo">确 认</button>
+        <div class="btns">
+            <button type="submit" @click="goTo(2)" v-if="activeUserInfo && (activeUserInfo.is_vip == 1)">会员支付</button>
+            <button type="submit" @click="goTo(1)">微信支付</button> 
+        </div>
     </div>
 </template>
 
@@ -77,7 +80,8 @@
             return{
                 userInfoList:[],
                 activeUserInfo:null,
-                order:this.$route.query
+                order:this.$route.query,
+                notClick: true
             }
         },
         created() {
@@ -90,9 +94,18 @@
                     console.log(sessionStorage.user_id);
                     console.log(res.data);
                     this.userInfoList = res.data.data
+                    console.log("userInfoList", this.userInfoList)
                 })
             },
-            goTo(){
+            goTo(pay_mode){
+                if (!this.notClick) return
+                this.notClick = false
+                console.log("pay_mode", pay_mode)
+                console.log(this.order.acTime)
+                let acTime = {date:{plan_id:''},time:{sjc:'1562994000'}}
+                if (this.order.acTime) {
+                    acTime = JSON.parse(this.order.acTime)
+                }
 
                 if (this.activeUserInfo !== null){
                     this.$axios.post('Chatorder/addOrder',this.$Qs.stringify({
@@ -102,18 +115,30 @@
                         record_id:this.activeUserInfo.id,
                         type:this.order.type,
                         money:this.order.money,
-                        register_time:'1999-12-23'
+                        plan_id:acTime.date.plan_id,
+                        register_time:acTime.time.sjc,
+                        pay_mode: pay_mode
                     })).then(res=>{
                         console.log(res)
-                        if (res.data.msg === 'ok') {
+                        if (res.data.errcode == 0) {
                             // callPay(res.data);
-                            this.callPay(res.data.data);
+                            if (pay_mode == 1) {
+                              this.callPay(res.data.data);    
+                            } else {
+                               this.$toast.success('申请成功\n请耐心等待\n医生接单回复');
+                               setTimeout(() => {
+                                 this.$router.push("/consult/personal/personal") 
+                               }, 1000)
+                            }
+                            
                             // alert(std);
-                        }else {
+                        } else {
+                            this.notClick = true
                             this.$toast.fail('请稍后重试');
                         }
                     });
                 } else {
+                    this.notClick = true
                     this.$toast.fail('请选择患者');
                 }
             },
@@ -149,24 +174,26 @@
                         if(res.err_msg === "get_brand_wcpay_request:ok"){
                             // alert('hello');
                             // alert("支付成功!");
-                            if (this.order.doctor_id !== undefined){
-                                if (this.order.title !== '图文咨询') {
-                                    this.$toast.success('申请成功');
-                                    this.$router.go(-2);
-                                    return
-                                }
-                                this.$router.push({path: '/consult/personal/privatechat', query: {id:this.order.user_id,avatar:this.order.avatar}})
-                            } else {
-                                this.$toast.success('申请成功');
-                                this.$router.go(-2);
-                            }
+                            // if (this.order.doctor_id !== undefined){
+                            //     if (this.order.title !== '图文咨询') {
+                                    this.$router.replace('/consult/personal/personal');
+                            this.$toast.success('申请成功\n请耐心等待\n医生接单回复');
+                                    // return
+                                // }
+                                // this.$router.push({path: '/consult/personal/privatechat', query: {id:this.order.user_id,avatar:this.order.avatar}})
+                            // } else {
+                            //     this.$toast.success('申请成功');
+                            //     this.$router.go(-2);
+                            // }
 
                             //window.location.href="http://m.blog.csdn.net/article/details?id=72765676";
                         }else if(res.err_msg === "get_brand_wcpay_request:cancel"){
                             // alert('xxxx')
+                            this.notClick = true
                             alert("用户取消支付!");
 
                         }else{
+                            this.notClick = true
                             alert("支付失败!");
                         }
                     }
@@ -177,16 +204,28 @@
 </script>
 
 <style scoped lang="scss">
-    button[type='submit']{
+    .btns{
         position: fixed;
         bottom: 1rem;
-        background: linear-gradient(to bottom right, #4ae2df, #02bdb9);
-        border-radius: .1rem;
-        border: none;
-        width: 2.5rem;
-        color: white;
-        height: .8rem;
-        left: calc(50% - 1.25rem);
+        left: 0; 
+        width:100%;
+        display: flex;
+        justify-content:center;
+
+        button{
+            background: linear-gradient(to bottom right, #4d8fec, #4d8fec);
+            border-radius: .1rem;
+            border: none;
+            width: 2.5rem;
+            color: white;
+            height: .8rem;
+            margin:0 .2rem;
+        }
+        button:first-child{
+            background:none;
+            border:1px solid #4d8fec;
+            color:#4d8fec;
+        }
     }
     ul li{
       list-style: none;
@@ -220,7 +259,7 @@
             font-size: .4rem;
         }
         p+span{
-            color: #01bdbb;
+            color: #4d8fec;
             font-size: .3rem;
             font-weight: 200;
         }
@@ -229,7 +268,7 @@
             padding: .2rem .6rem;
             border: none;
             border-radius: 5px;
-            color: #01bdbb;
+            color: #4d8fec;
             font-size: .35rem;
             font-weight: 200;
             margin-top: .3rem;
@@ -244,7 +283,7 @@
         }
         .active-bg{
             background-color: white;
-            box-shadow: 0 0 5px 1px rgba(1,189,186,0.3);
+            box-shadow: 0 0 5px 1px rgba(77, 143, 236,0.3);
         }
         ul {
             li{

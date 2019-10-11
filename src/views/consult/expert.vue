@@ -65,11 +65,11 @@
                 padding: 3px 8px;
                 border-radius: 15px;
                 margin-right: 10px;
-                color: #01bdb8;
+                color: #4d8fec;
                 font-size: 0.2rem
             }
             .ck{
-                background: linear-gradient(to bottom right,#93dddc, #00b5bd);
+                background: linear-gradient(to bottom right,#93dddc, #4d8fec);
                 box-shadow:0 5px 4px rgba(106,188,186,0.2);
                 padding: 0.05rem 0.3rem;
                 width: 1.2rem;

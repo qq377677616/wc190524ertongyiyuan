@@ -25,7 +25,7 @@
             return {
                 doctorInfo: {},
                 items: [
-                    {title: '我的咨询', icon: require('../../assets/mydoctor/huifu.png'), url: '/doctors/myorder'},
+                    {title: '我的咨询', icon: require('../../assets/mydoctor/huifu.png'), url: '/doctors/advisoryorder'},
                     {title: '我的挂号', icon: require('../../assets/mydoctor/huanzhe.png'), url: '/doctors/myorder'},
                     {title: '工作室申请', icon: require('../../assets/mydoctor/temainfo.png'), url: '/doctors/temainfo'},
                 ]
@@ -41,7 +41,7 @@
             getDoctorInfo() {
                 this.$axios.get('personinfo/myinfo', {openid: sessionStorage.openid}).then(res => {
                     console.log(res);
-                    this.doctorInfo = res.data.data[0]
+                    this.doctorInfo = res.data.data
                 })
             },
             goTo(index) {
@@ -75,7 +75,7 @@
     .personal {
         /*z-index: 1;*/
         /*height: 4rem;*/
-        line-height: 3rem;
+        line-height: 2.5rem;
         background: url("../../assets/phoneserve/BG.png");
         background-size: cover;
         position: relative;
@@ -84,7 +84,7 @@
             position: relative;
             display: flex;
             align-items: center;
-            padding: .3rem;
+            padding: 0 .3rem .3rem .3rem;
 
             .title {
                 span {

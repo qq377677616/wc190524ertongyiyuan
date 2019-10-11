@@ -126,6 +126,7 @@
             margin-bottom: .4rem;
 
             .info {
+
                 display: flex;
                 align-items: center;
 
@@ -201,6 +202,7 @@
 
             .info {
                 display: flex;
+                padding-bottom: .2rem;
                 /*align-items: center;*/
                 div {
                     flex: 1;

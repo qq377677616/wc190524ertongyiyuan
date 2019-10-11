@@ -7,6 +7,7 @@ import 'vant/lib/picker/style'
 import 'vant/lib/toast/style'
 import 'vant/lib/dialog/style'
 import 'vant/lib/uploader/style'
+import 'vant/lib/image-preview/style'
 
 // import 'mint-ui/lib/picker/style.css'
 // import { Picker } from 'mint-ui';
@@ -18,6 +19,7 @@ Vue.use(Picker);
 Vue.use(Toast);
 Vue.use(Dialog);
 Vue.use(Uploader);
+// Vue.use(ImagePreview);
 
 Vue.use(Progress);
 Vue.use(Rate);

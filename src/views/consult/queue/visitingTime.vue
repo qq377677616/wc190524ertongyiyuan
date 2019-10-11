@@ -48,7 +48,8 @@
 <style scoped lang="scss">
 .doctor-info{
     height: 1.6rem;
-    background: url("../../../assets/consult/BG.png") no-repeat;
+    // background: url("../../../assets/consult/BG.png") no-repeat;
+    background: url("../../../assets/reservation/newTopBg.png") no-repeat;
     background-size: cover;
     display: flex;
     align-items: center;
@@ -64,6 +65,7 @@
         align-items: center;
         .avatar{
             background-size: cover;
+            background-position:center;
             background-color: white;
             border-radius: 50%;
             height: 1.4rem;

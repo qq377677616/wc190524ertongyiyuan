@@ -93,22 +93,22 @@
             border-radius: 5px;
             border: none;
             font-size: 0.35rem;
-            box-shadow: 0 2px 5px 2px rgba(1, 189, 184, 0.3);
+            box-shadow: 0 2px 5px 2px rgba(77, 143, 236, 0.3);
         }
         .btn-on{
             color: white;
-            background:linear-gradient(to bottom right, #4ae2df, #02bdb9);
+            background:linear-gradient(to bottom right, #4d8fec, #4d8fec);
         }
         .btn-off{
             background: white;
-            color: #01bdb8;
+            color: #4d8fec;
 
         }
     }
     .patient-form{
 
         line-height: 1.2rem;
-        padding: 0.3rem;
+        padding: 0.8rem 0.3rem 0.3rem;
     }
     label {
 
@@ -146,13 +146,13 @@
         margin-bottom: 0.07rem;
         margin-left: .2rem;
         border-radius: 50%;
-        border: #01bdb8 solid .02rem;
+        border: #4d8fec solid .02rem;
     }
 
     input[type='radio']:checked + label::after {
         width: .18rem;
         height: .18rem;
-        background-color: #01bdb8;
+        background-color: #4d8fec;
         background-clip: content-box;
         padding: .06rem;
     }

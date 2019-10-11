@@ -43,9 +43,9 @@
         methods:{
             audit(key,id){
                 console.log(id)
-                this.$axios.get('personinfo/audit',{team_building: this.$route.query.id,doctor_id:id}).then(res=>{
+                this.$axios.get('Doctor/applyDepartmentListOk',{apply_id:id,doctor_id:sessionStorage.doctor_id}).then(res=>{
                     console.log(res)
-                    if (res.data.msg === '审核通过'){
+                    if (res.data.errcode === 0){
                         this.$toast.success('通过');
                         this.notAduitdoc.splice(key,1)
                     }

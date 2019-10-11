@@ -98,7 +98,7 @@
                     margin-left: 0.3rem;
 
                     span {
-                        color: #01bdb8;
+                        color: #4d8fec;
                     }
                 }
 
@@ -136,7 +136,7 @@
                 display: block;
                 height: 0.6rem;
                 width: 0.6rem;
-                background: linear-gradient(to bottom right, #93dddc, #00b5bd);
+                background: linear-gradient(to bottom right, #93dddc, #4d8fec);
                 border-radius: 50%;
 
                 img {
@@ -157,7 +157,7 @@
                 font-size: 0.3rem;
                 padding-right: 0.3rem;
                 float: right;
-                color: #01bdb8;
+                color: #4d8fec;
             }
 
         }
@@ -173,7 +173,7 @@
             border-radius: 5px;
             border: none;
             color: white;
-            background:linear-gradient(to bottom right, #4ae2df, #02bdb9);
+            background:linear-gradient(to bottom right, #4d8fec, #4d8fec);
             font-size: 0.3rem;
             i{
                 margin-right: 0.2rem;

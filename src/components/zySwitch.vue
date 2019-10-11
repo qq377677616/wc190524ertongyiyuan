@@ -18,12 +18,13 @@
         },
         methods:{
             updateBol(){
-
+                // console.log(this.std.zx_status)
                 this.$axios.post('doctor/zs_by_status',this.$Qs.stringify({
                     doctor_id:this.std.id,
-                    status:this.std.zx_status === '2'?'1':'2'
+                    status:this.std.zx_status == 2?1:2
                 })).then(res=>{
-
+                    
+                    // console.log(res)
                 })
             }
         },
